@@ -2244,7 +2244,7 @@ app.put('/api/training/applications/:id/status', async (req, res) => {
     const row = result.rows[0];
 
     // Sync with appointments table
-    if (status === 'SSDD VALIDATED' || status === 'TRAINING SCHEDULED / ORIENTATION APPOINTED' || apptDate) {
+    if (status === 'APPROVED BY ADMIN' || status === 'SSDD VALIDATED' || status === 'TRAINING SCHEDULED / ORIENTATION APPOINTED' || apptDate) {
       const apptStatus = apptDate || status.includes('SCHEDULED') ? 'Orientation Scheduled' : 'Pending Schedule';
       try {
         const checkAppt = await pool.query(`SELECT id FROM appointments WHERE reference_no = $1`, [row.reference_no]);

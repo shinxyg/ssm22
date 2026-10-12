@@ -353,21 +353,19 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
   // Open Schedule Modal with default prefilled exact real time and date
   const handleOpenScheduleModal = (app: ApplicationRecord) => {
     setSchedulingApp(app);
-    const isTrn = (app.referenceNo || '').startsWith('TRN-') || app.category === 'training' || (app.serviceName || '').toLowerCase().includes('training') || (app.serviceName || '').toLowerCase().includes('barista') || (app.serviceName || '').toLowerCase().includes('hairdressing');
-
-    const existingDate = (app as any).orientation_date || (app as any).orientationDate || app.appointmentDate || (app as any).appointment_date || (isTrn ? '2026-10-08' : '');
-    const existingTime = (app as any).orientation_time || (app as any).orientationTime || app.appointmentTime || (app as any).appointment_time || (isTrn ? '09:00' : '');
+    const existingDate = (app as any).orientation_date || (app as any).orientationDate || app.appointmentDate || (app as any).appointment_date || app.appointmentDetails?.appointmentDate || '';
+    const existingTime = (app as any).orientation_time || (app as any).orientationTime || app.appointmentTime || (app as any).appointment_time || app.appointmentDetails?.appointmentTime || '';
 
     if (existingDate && existingDate.includes('-')) {
       setSchedDate(existingDate);
     } else {
-      setSchedDate('2026-10-08');
+      setSchedDate(getCurrentDateString());
     }
 
     if (existingTime) {
       setSchedTime(existingTime.includes('AM') || existingTime.includes('PM') ? '09:00' : existingTime);
     } else {
-      setSchedTime('09:00');
+      setSchedTime(getCurrentTimeString());
     }
   };
 
@@ -552,18 +550,23 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                     const isCwProtection = (app.referenceNo || '').startsWith('QC-CW-') || (app.referenceNo || '').startsWith('CW-PROT-') || (app.serviceName || '').toLowerCase() === 'child welfare services' || (app.serviceName || '').toLowerCase().includes('child protection');
 
                     const rawDate = isTrn 
-                      ? ((app as any).orientation_date || (app as any).orientationDate || app.appointmentDate || (app as any).appointment_date || appt?.appointmentDate || '2026-10-08')
-                      : (appt?.appointmentDate || (app as any).appointmentDate || (app as any).appointment_date || (app as any).scheduledPayoutDate || (app as any).payout_date);
+                      ? ((app as any).orientation_date || (app as any).orientationDate || app.appointmentDate || (app as any).appointment_date || appt?.appointmentDate || '')
+                      : (appt?.appointmentDate || (app as any).appointmentDate || (app as any).appointment_date || (app as any).scheduledPayoutDate || (app as any).payout_date || '');
 
                     const rawTime = isTrn 
-                      ? ((app as any).orientation_time || (app as any).orientationTime || app.appointmentTime || (app as any).appointment_time || appt?.appointmentTime || '09:00 AM')
-                      : (appt?.appointmentTime || (app as any).appointmentTime || (app as any).appointment_time || (app as any).scheduledPayoutTime || (app as any).payout_time);
+                      ? ((app as any).orientation_time || (app as any).orientationTime || app.appointmentTime || (app as any).appointment_time || appt?.appointmentTime || '')
+                      : (appt?.appointmentTime || (app as any).appointmentTime || (app as any).appointment_time || (app as any).scheduledPayoutTime || (app as any).payout_time || '');
 
-                    const schedDate = formatDateDisplay(rawDate);
-                    const schedTime = formatTo12Hour(rawTime);
+                    const schedDate = rawDate ? formatDateDisplay(rawDate) : '';
+                    const schedTime = rawTime ? formatTo12Hour(rawTime) : '';
 
-                    const isAppCompletedOrApproved = (app.status || '').toUpperCase().includes('APPROV') || (app.status || '').toUpperCase().includes('COMPLET') || (app.status || '').toUpperCase().includes('RELEASED');
-                    const isScheduled = Boolean(schedDate && schedDate !== 'Awaiting Schedule' && (appt?.status !== 'Pending Schedule' || isAppCompletedOrApproved));
+                    const isAppFinalApproved = isAppApproved(app.status) || isAppApproved(appt?.status);
+                    const isScheduled = Boolean(
+                      schedDate && 
+                      schedDate !== 'Awaiting Schedule' && 
+                      appt?.status !== 'Pending Schedule' && 
+                      ((app.status || '').toUpperCase().includes('SCHEDULED') || appt?.status === 'Interview Scheduled' || appt?.status === 'Orientation Scheduled' || isAppFinalApproved)
+                    );
                     const isGLPrintable = (app.serviceName.toLowerCase().includes('medical bill') || app.serviceName.toLowerCase().includes('hospital') || app.assistanceType?.toLowerCase().includes('medical bill') || app.serviceName.toLowerCase().includes('funeral') || app.serviceName.toLowerCase().includes('burial') || app.referenceNo.includes('FUN')) && !app.serviceName.toLowerCase().includes('medicine') && !(app.assistanceType || '').toLowerCase().includes('medicine');
 
                     return (

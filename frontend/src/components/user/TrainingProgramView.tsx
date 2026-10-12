@@ -1968,12 +1968,12 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
               const isUnqualified = st.includes('UNQUALIFIED');
               const isSsddVal = st.includes('SSDD VALIDATED') || st.includes('VALIDATED');
 
-              const rawDate = activeApp.orientation_date || activeApp.orientationDate || activeApp.appointment_date || activeApp.appointmentDate || '2026-10-08';
-              const rawTime = activeApp.orientation_time || activeApp.orientationTime || activeApp.appointment_time || activeApp.appointmentTime || '09:00 AM';
+              const rawDate = activeApp.orientation_date || activeApp.orientationDate || activeApp.appointment_date || activeApp.appointmentDate || '';
+              const rawTime = activeApp.orientation_time || activeApp.orientationTime || activeApp.appointment_time || activeApp.appointmentTime || '';
               const venueVal = activeApp.orientation_venue || activeApp.orientationVenue || activeApp.appointment_venue || activeApp.appointmentVenue || selectedScheduleModal.venue || 'Quezon City Skills Development Center';
 
               const formatDateDisplay = (dateStr?: string): string => {
-                if (!dateStr) return 'Oct 8, 2026';
+                if (!dateStr) return '';
                 if (
                   dateStr.includes(',') || 
                   dateStr.includes('Jan') || dateStr.includes('Feb') || dateStr.includes('Mar') || 
@@ -1999,7 +1999,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
               };
 
               const formatTo12Hour = (timeStr?: string): string => {
-                if (!timeStr) return '09:00 AM';
+                if (!timeStr) return '';
                 if (timeStr.toUpperCase().includes('AM') || timeStr.toUpperCase().includes('PM')) {
                   return timeStr;
                 }
