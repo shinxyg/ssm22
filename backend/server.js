@@ -79,6 +79,18 @@ const handleResetAllData = async (req, res) => {
 app.post('/api/admin/reset-all-data', handleResetAllData);
 app.get('/api/admin/reset-all-data', handleResetAllData);
 
+// Endpoint to clear only Child Welfare records
+const handleClearChildWelfare = async (req, res) => {
+  try {
+    const delRes = await pool.query('DELETE FROM child_welfare_applications;');
+    res.json({ success: true, message: `Successfully cleared ${delRes.rowCount} child welfare records.` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+app.post('/api/admin/clear-child-welfare', handleClearChildWelfare);
+app.get('/api/admin/clear-child-welfare', handleClearChildWelfare);
+
 // POST endpoint to send emails
 app.post('/api/send-email', async (req, res) => {
   const { to, subject, text, html } = req.body;
