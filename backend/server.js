@@ -21,6 +21,8 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
+});
+
 // Endpoint to reset and clear all data from applications, appointments, logs, etc.
 const handleResetAllData = async (req, res) => {
   try {
