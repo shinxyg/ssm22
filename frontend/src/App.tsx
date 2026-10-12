@@ -191,29 +191,32 @@ export default function App() {
         details: row.details
       }));
 
-      const soloApps: ApplicationRecord[] = (Array.isArray(soloRaw) ? soloRaw : []).map(row => ({
-        referenceNo: row.reference_no,
-        applicantName: row.applicant_name,
-        serviceName: row.service_name || 'Solo Parent Financial Subsidy Program',
-        category: row.category || 'soloparent',
-        assistanceType: row.assistance_type || 'Solo Parent Welfare Grant',
-        status: row.status || 'Pending Document Validation',
-        dateSubmitted: row.date_submitted ? new Date(row.date_submitted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Today',
-        amountOrType: '₱3,000.00 Fixed Solo Parent Cash Subsidy',
-        assignedSocialWorker: 'Ms. Jocelyn Reyes, RSW (Solo Parent Welfare Division)',
-        scheduledPayoutDate: row.payout_date || row.scheduled_payout_date,
-        scheduledPayoutTime: row.payout_time || row.scheduled_payout_time,
-        appointmentDate: row.appointment_date,
-        appointmentTime: row.appointment_time,
-        appointmentDetails: {
+      const soloApps: ApplicationRecord[] = (Array.isArray(soloRaw) ? soloRaw : []).map(row => {
+        const isEdu = (row.reference_no || '').startsWith('QC-SP-EDU') || ((row.service_name || '').toLowerCase().includes('educational'));
+        return {
+          referenceNo: row.reference_no,
+          applicantName: row.applicant_name,
+          serviceName: isEdu ? 'Solo Parent Educational Assistance Program' : (row.service_name || 'Solo Parent Financial Subsidy Program'),
+          category: isEdu ? 'Solo Parent Services' : (row.category || 'soloparent'),
+          assistanceType: isEdu ? 'Solo Parent Educational Grant' : (row.assistance_type || 'Solo Parent Welfare Grant'),
+          status: row.status || 'Pending Document Validation',
+          dateSubmitted: row.date_submitted ? new Date(row.date_submitted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Today',
+          amountOrType: isEdu ? '₱5,000.00 Fixed Solo Parent Educational Grant' : '₱3,000.00 Fixed Solo Parent Cash Subsidy',
+          assignedSocialWorker: 'Ms. Jocelyn Reyes, RSW (Solo Parent Welfare Division)',
+          scheduledPayoutDate: row.payout_date || row.scheduled_payout_date,
+          scheduledPayoutTime: row.payout_time || row.scheduled_payout_time,
           appointmentDate: row.appointment_date,
           appointmentTime: row.appointment_time,
-          venue: row.appointment_venue || 'Quezon City Hall SSDD Office',
-          assignedWorker: 'SSDD Social Worker, RSW'
-        },
-        disapprovalReason: row.disapproval_reason,
-        details: row.details
-      }));
+          appointmentDetails: {
+            appointmentDate: row.appointment_date,
+            appointmentTime: row.appointment_time,
+            venue: row.appointment_venue || 'Quezon City Hall SSDD Office',
+            assignedWorker: 'SSDD Social Worker, RSW'
+          },
+          disapprovalReason: row.disapproval_reason,
+          details: row.details
+        };
+      });
 
       const eduApps: ApplicationRecord[] = (Array.isArray(eduRaw) ? eduRaw : []).map(row => ({
         referenceNo: row.reference_no,

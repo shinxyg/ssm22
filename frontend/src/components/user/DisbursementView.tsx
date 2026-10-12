@@ -446,7 +446,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
                       <span className="text-[10px] font-mono font-bold text-blue-400 tracking-wider uppercase block">
                         REF NO: {app.referenceNo}
                       </span>
-                      <h4 className="text-base font-extrabold text-white mt-0.5">{(app.serviceName || '').replace(/\bNieto\s*/gi, '')}</h4>
+                      <h4 className="text-base font-extrabold text-white mt-0.5">{isSoloParentEdu ? 'Solo Parent Educational Assistance Program' : (app.serviceName || '').replace(/\bNieto\s*/gi, '')}</h4>
                     </div>
 
                     <div className="flex items-center gap-2">

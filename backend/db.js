@@ -699,6 +699,12 @@ export const initDB = async () => {
       ALTER TABLE educational_applications ALTER COLUMN status TYPE TEXT;
       CREATE UNIQUE INDEX IF NOT EXISTS idx_educational_ref_no ON educational_applications (reference_no);
 
+      -- Sync service_name for existing QC-SP-EDU applications in solo_parent_applications
+      UPDATE solo_parent_applications 
+      SET service_name = 'Solo Parent Educational Assistance Program',
+          assistance_type = 'Solo Parent Educational Grant'
+      WHERE reference_no LIKE 'QC-SP-EDU-%';
+
       CREATE TABLE IF NOT EXISTS training_applications (
         id SERIAL PRIMARY KEY,
         reference_no VARCHAR(50) UNIQUE NOT NULL,
