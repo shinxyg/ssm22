@@ -21,7 +21,61 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-});
+// Endpoint to reset and clear all data from applications, appointments, logs, etc.
+const handleResetAllData = async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const tables = [
+      'aics_applications',
+      'pwd_applications',
+      'senior_applications',
+      'solo_parent_applications',
+      'educational_applications',
+      'child_welfare_applications',
+      'livelihood_applications',
+      'training_applications',
+      'appointments',
+      'financial_disbursements',
+      'activity_logs',
+      'beneficiary_verifications'
+    ];
+
+    const deletedCounts = {};
+    for (const tbl of tables) {
+      try {
+        const delRes = await client.query(`DELETE FROM ${tbl};`);
+        deletedCounts[tbl] = delRes.rowCount;
+      } catch (e) {
+        console.warn(`Could not clear ${tbl}:`, e.message);
+      }
+    }
+
+    try {
+      await client.query(`
+        UPDATE users 
+        SET failed_login_attempts = 0, 
+            lockout_stage = 0, 
+            lockout_until = NULL, 
+            unlock_otp = NULL, 
+            unlock_otp_expires = NULL, 
+            last_failed_attempt = NULL;
+      `);
+    } catch (e) {}
+
+    client.release();
+    res.json({
+      success: true,
+      message: 'All application records and activity logs cleared from database.',
+      deletedCounts
+    });
+  } catch (err) {
+    console.error('Reset error:', err);
+    res.status(500).json({ error: 'Failed to reset database', details: err.message });
+  }
+};
+
+app.post('/api/admin/reset-all-data', handleResetAllData);
+app.get('/api/admin/reset-all-data', handleResetAllData);
 
 // POST endpoint to send emails
 app.post('/api/send-email', async (req, res) => {
