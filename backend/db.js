@@ -618,8 +618,38 @@ export const initDB = async () => {
       ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS is_4ps_beneficiary VARCHAR(10);
       ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS is_solo_educational_beneficiary VARCHAR(10);
       ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS is_pwd_educational_beneficiary VARCHAR(10);
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS service_name VARCHAR(255) DEFAULT 'Child Welfare Services Aid';
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'child_welfare';
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS amount NUMERIC(10,2) DEFAULT 5000.00;
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS status VARCHAR(100) DEFAULT 'Pending Document Validation';
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS disapproval_reason TEXT;
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS appointment_date VARCHAR(50);
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS appointment_time VARCHAR(50);
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS appointment_venue VARCHAR(255);
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS payout_date VARCHAR(50);
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS payout_time VARCHAR(50);
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS payout_venue VARCHAR(255);
       ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS uploaded_documents JSONB;
       ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS details JSONB;
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+      ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+      -- ALTER TABLE migrations for educational_applications to ensure all columns exist
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS service_name VARCHAR(255) DEFAULT 'Educational Assistance for Indigent Children & Youth';
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'educational';
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS amount NUMERIC(10,2) DEFAULT 5000.00;
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS status VARCHAR(100) DEFAULT 'Pending Document Validation';
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS disapproval_reason TEXT;
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS appointment_date VARCHAR(50);
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS appointment_time VARCHAR(50);
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS appointment_venue VARCHAR(255);
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS payout_date VARCHAR(50);
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS payout_time VARCHAR(50);
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS payout_venue VARCHAR(255);
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS uploaded_documents JSONB;
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS details JSONB;
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+      ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
       CREATE TABLE IF NOT EXISTS training_applications (
         id SERIAL PRIMARY KEY,
