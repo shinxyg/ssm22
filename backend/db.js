@@ -702,8 +702,14 @@ export const initDB = async () => {
       -- Sync service_name for existing QC-SP-EDU applications in solo_parent_applications
       UPDATE solo_parent_applications 
       SET service_name = 'Solo Parent Educational Assistance Program',
-          assistance_type = 'Solo Parent Educational Grant'
+          assistance_type = 'Solo Parent Educational Grant',
+          amount = '5000.00'
       WHERE reference_no LIKE 'QC-SP-EDU-%';
+
+      -- Ensure PWD financial subsidy amount is standard 1500.00
+      UPDATE pwd_applications 
+      SET amount = '1500.00' 
+      WHERE amount IS NULL OR amount = '3000.00' OR amount = '5000.00';
 
       CREATE TABLE IF NOT EXISTS training_applications (
         id SERIAL PRIMARY KEY,

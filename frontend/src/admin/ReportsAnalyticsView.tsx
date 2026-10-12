@@ -206,16 +206,20 @@ export const ReportsAnalyticsView: React.FC<ReportsAnalyticsViewProps> = ({
           status: p.status || 'Pending Verification',
           date: parseAppDate(p.date_submitted || p.created_at),
           dateSubmittedString: p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent',
-          disbursedAmount: isApprovedStatus(p.status) ? 3000 : 0
+          disbursedAmount: isApprovedStatus(p.status) ? 1500 : 0
         });
       }
     });
 
-    // 4. Solo Parent (₱1,000 Subsidy)
+    // 4. Solo Parent (₱3,000 Subsidy vs ₱5,000 Educational Aid)
     dbSoloApps.forEach(sp => {
       const ref = sp.reference_no || `SP-${sp.id}`;
       if (!seenRefs.has(ref)) {
         seenRefs.add(ref);
+        const isEdu = ref.includes('EDU') || (sp.service_name || '').toLowerCase().includes('educ') || (sp.assistance_type || '').toLowerCase().includes('educ') || (sp.solo_parent_category || '').toLowerCase().includes('educ');
+        const defaultAmount = isEdu ? 5000 : 3000;
+        const parsedAmt = parseFloat(sp.amount);
+        const grantAmount = !isNaN(parsedAmt) && parsedAmt > 0 ? (isEdu && parsedAmt === 3000 ? 5000 : parsedAmt) : defaultAmount;
         list.push({
           id: `solo-${sp.id}`,
           referenceNo: ref,
@@ -224,7 +228,7 @@ export const ReportsAnalyticsView: React.FC<ReportsAnalyticsViewProps> = ({
           status: sp.status || 'Pending Document Verification',
           date: parseAppDate(sp.date_submitted || sp.created_at),
           dateSubmittedString: sp.created_at ? new Date(sp.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent',
-          disbursedAmount: isApprovedStatus(sp.status) ? (parseFloat(sp.amount) || 3000) : 0
+          disbursedAmount: isApprovedStatus(sp.status) ? grantAmount : 0
         });
       }
     });

@@ -999,7 +999,7 @@ app.post('/api/pwd/applications', async (req, res) => {
       serviceName || 'PWD Social Assistance Program',
       category || 'pwd',
       assistanceType || 'PWD Social Aid',
-      amount || 5000.00,
+      amount || 1500.00,
       status || 'Pending Review',
       details ? JSON.stringify(details) : null
     ];
@@ -1522,10 +1522,13 @@ app.put('/api/solo-parent/applications/:id/status', async (req, res) => {
             WHERE reference_no = $5;
           `, [payoutDate || row.payout_date || null, payoutTime || row.payout_time || null, payoutVenue || row.payout_venue || null, status === 'PAYOUT SCHEDULED' ? 'PAYOUT SCHEDULED' : 'PENDING PAYOUT SCHEDULE', row.reference_no]);
         } else {
+          const isEdu = (row.reference_no || '').startsWith('QC-SP-EDU') || (row.service_name || '').toLowerCase().includes('educ') || (row.solo_parent_category || '').toLowerCase().includes('educ');
+          const benefitName = isEdu ? '₱5,000 Fixed Solo Parent Educational Grant' : '₱3,000 Fixed Solo Parent Cash Subsidy';
+          const amountVal = isEdu ? 5000.00 : 3000.00;
           await pool.query(`
             INSERT INTO financial_disbursements (reference_no, applicant_name, module_name, benefit_name, amount, payout_date, payout_start_time, venue, status)
-            VALUES ($1, $2, 'SOLO PARENT', '₱3,000 Fixed Solo Parent Cash Subsidy', 3000.00, $3, $4, $5, $6);
-          `, [row.reference_no, row.applicant_name, payoutDate || row.payout_date || null, payoutTime || row.payout_time || null, payoutVenue || row.payout_venue || null, status === 'PAYOUT SCHEDULED' ? 'PAYOUT SCHEDULED' : 'PENDING PAYOUT SCHEDULE']);
+            VALUES ($1, $2, 'SOLO PARENT', $3, $4, $5, $6, $7, $8);
+          `, [row.reference_no, row.applicant_name, benefitName, amountVal, payoutDate || row.payout_date || null, payoutTime || row.payout_time || null, payoutVenue || row.payout_venue || null, status === 'PAYOUT SCHEDULED' ? 'PAYOUT SCHEDULED' : 'PENDING PAYOUT SCHEDULE']);
         }
       } catch (e) {
         console.warn('Sync financial_disbursements warning:', e.message);
