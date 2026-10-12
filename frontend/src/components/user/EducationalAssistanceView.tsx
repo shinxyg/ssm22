@@ -274,10 +274,8 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
       referenceNo: newRef,
       serviceName: mode === 'childwelfare'
         ? 'Child Welfare Services'
-        : mode === 'soloparent'
-        ? 'Solo Parent Educational Assistance Program'
         : 'Educational Assistance for Indigent Children & Youth',
-      category: mode === 'childwelfare' ? 'child_welfare' : (mode === 'soloparent' ? 'solo_parent' : 'educational'),
+      category: mode === 'childwelfare' ? 'child_welfare' : 'educational',
       applicantName: `${applicantFirstName} ${applicantMiddleName} ${applicantLastName} ${applicantSuffix}`.trim(),
       firstName: applicantFirstName,
       middleName: applicantMiddleName,
@@ -361,16 +359,14 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
 
     const newAppRecord: ApplicationRecord = {
       referenceNo: newRef,
-      serviceName: mode === 'soloparent'
-        ? 'Solo Parent Educational Assistance Program'
-        : mode === 'childwelfare'
+      serviceName: mode === 'childwelfare'
         ? 'Child Welfare Services'
         : 'Educational Assistance for Indigent Children & Youth',
-      category: mode === 'soloparent' ? 'Solo Parent Services' : 'AICS Assistance',
+      category: mode === 'childwelfare' ? 'Child Welfare Services' : 'Educational Assistance',
       dateSubmitted: `${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • ${new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}`,
       status: 'Pending Document Validation',
       assignedSocialWorker: 'Maria Santos, RSW (QC Social Services)',
-      amountOrType: mode === 'soloparent' ? '₱5,000 Solo Parent Educational Grant' : '₱5,000 Educational Grant',
+      amountOrType: '₱5,000 Educational Grant',
       details: payload.details
     };
 

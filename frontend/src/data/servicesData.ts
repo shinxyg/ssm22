@@ -83,24 +83,9 @@ export const initialServices: ServiceItem[] = [
       'Barangay Residency Certificate (at least 6 months residency)'
     ],
     processingTime: '3 - 5 Business Days',
-    benefitAmount: '₱1,000 Monthly Financial Subsidy',
+    benefitAmount: '₱1,000 - ₱3,000 Monthly Financial Subsidy',
     iconName: 'soloparent',
     badge: 'Welfare Subsidy'
-  },
-  {
-    id: 'soloparent-edu',
-    title: 'Solo Parent Educational Assistance Program',
-    category: 'soloparent',
-    description: "Educational financial assistance for indigent solo parents' dependent children/beneficiaries who are currently studying. The program includes solo parents with two (2) or more children enrolled in public school, providing financial assistance of P5,000 per qualified beneficiary, subject to interview and social worker assessment prior to granting assistance.",
-    requirements: [
-      'Valid Solo Parent ID',
-      'School Enrollment / Registration Card of Child',
-      'Barangay Certificate of Indigency'
-    ],
-    processingTime: '3 - 5 Business Days',
-    benefitAmount: '₱5,000 per Student Beneficiary',
-    iconName: 'education',
-    badge: 'Scholarship'
   },
 
   // 5. Child Welfare Services

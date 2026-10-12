@@ -68,19 +68,13 @@ export const ModuleCardGrid: React.FC<ModuleCardGridProps> = ({ activeTab, onApp
 
       case 'soloparent':
         return {
-          maxCols: 'grid-cols-1 md:grid-cols-2 max-w-5xl mx-auto',
+          maxCols: 'grid-cols-1 max-w-2xl mx-auto',
           cards: [
             {
               title: isTagalog ? 'Tulong Pinansyal Subsidy para sa Solo Parent' : 'Solo Parent Financial Subsidy Program',
               description: isTagalog
                 ? 'SEKTOR NG SOLO PARENT: Ang mga kwalipikadong aplikante ay makatatanggap ng cash subsidy. Para sa mga nag-iisang magulang na nakatutugon sa pamantayan sa kita at dokumentasyon.'
                 : 'SOLO PARENT SECTOR: Qualified applicants may receive financial subsidy. For qualified Solo Parents who meet the applicable income and program requirements. Eligibility is subject to document verification and assessment before approval.',
-            },
-            {
-              title: isTagalog ? 'Tulong sa Edukasyon ng Anak ng Solo Parent' : 'Solo Parent Educational Assistance Program',
-              description: isTagalog
-                ? 'Tulong pampinansyal sa edukasyon na Php5,000 bawat kwalipikadong anak ng indigent solo parents na kasalukuyang nag-aaral sa pampublikong paaralan.'
-                : "Educational financial assistance for indigent solo parents' dependent children/beneficiaries who are currently studying. The program includes solo parents with two (2) or more children enrolled in public school, providing financial assistance of P5,000 per qualified beneficiary, subject to interview and social worker assessment prior to granting assistance.",
             },
           ],
         };

@@ -91,6 +91,27 @@ const handleClearChildWelfare = async (req, res) => {
 app.post('/api/admin/clear-child-welfare', handleClearChildWelfare);
 app.get('/api/admin/clear-child-welfare', handleClearChildWelfare);
 
+// Endpoint to clear Educational Assistance records
+const handleClearEducational = async (req, res) => {
+  try {
+    const delRes = await pool.query('DELETE FROM educational_applications;');
+    res.json({ success: true, message: `Successfully cleared ${delRes.rowCount} educational records.` });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+app.post('/api/admin/clear-educational', handleClearEducational);
+app.get('/api/admin/clear-educational', handleClearEducational);
+app.delete('/api/educational/applications/:refNo', async (req, res) => {
+  try {
+    const { refNo } = req.params;
+    const delRes = await pool.query('DELETE FROM educational_applications WHERE reference_no = $1;', [refNo]);
+    res.json({ success: true, deleted: delRes.rowCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST endpoint to send emails
 app.post('/api/send-email', async (req, res) => {
   const { to, subject, text, html } = req.body;
@@ -1589,7 +1610,7 @@ app.post('/api/educational/applications', async (req, res) => {
   } = req.body;
 
   try {
-    const refNo = referenceNo || `QC-SP-EDU-${Math.floor(100000 + Math.random() * 900000)}`;
+    const refNo = referenceNo || `QC-EDU-${Math.floor(100000 + Math.random() * 900000)}`;
     const name = applicantName || details?.applicantName || `${firstName || 'JEFFERSON'} ${lastName || 'LEE'}`.trim();
     const savedDetails = JSON.stringify(details || {});
     const savedDocs = JSON.stringify(uploadedDocuments || {});

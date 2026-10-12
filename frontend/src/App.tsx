@@ -194,18 +194,12 @@ export default function App() {
       const soloApps: ApplicationRecord[] = (Array.isArray(soloRaw) ? soloRaw : []).map(row => ({
         referenceNo: row.reference_no,
         applicantName: row.applicant_name,
-        serviceName: (row.reference_no || '').startsWith('QC-SP-EDU')
-          ? 'Solo Parent Educational Assistance Program'
-          : row.service_name || 'Solo Parent Financial Subsidy Program',
+        serviceName: row.service_name || 'Solo Parent Financial Subsidy Program',
         category: row.category || 'soloparent',
-        assistanceType: (row.reference_no || '').startsWith('QC-SP-EDU')
-          ? 'Solo Parent Educational Assistance Program'
-          : row.assistance_type || 'Solo Parent Welfare Grant',
+        assistanceType: row.assistance_type || 'Solo Parent Welfare Grant',
         status: row.status || 'Pending Document Validation',
         dateSubmitted: row.date_submitted ? new Date(row.date_submitted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Today',
-        amountOrType: (row.reference_no || '').startsWith('QC-SP-EDU')
-          ? '₱5,000.00 Educational Grant'
-          : '₱3,000.00 Fixed Solo Parent Cash Subsidy',
+        amountOrType: '₱3,000.00 Fixed Solo Parent Cash Subsidy',
         assignedSocialWorker: 'Ms. Jocelyn Reyes, RSW (Solo Parent Welfare Division)',
         scheduledPayoutDate: row.payout_date || row.scheduled_payout_date,
         scheduledPayoutTime: row.payout_time || row.scheduled_payout_time,
@@ -224,9 +218,7 @@ export default function App() {
       const eduApps: ApplicationRecord[] = (Array.isArray(eduRaw) ? eduRaw : []).map(row => ({
         referenceNo: row.reference_no,
         applicantName: row.applicant_name,
-        serviceName: (row.reference_no || '').startsWith('QC-SP-EDU')
-          ? 'Solo Parent Educational Assistance Program'
-          : (row.reference_no || '').startsWith('QC-CW')
+        serviceName: (row.reference_no || '').startsWith('QC-CW')
           ? 'Child Welfare Services'
           : row.service_name || 'Educational Assistance for Indigent Children & Youth',
         category: row.category || 'educational',
@@ -477,13 +469,9 @@ export default function App() {
       return;
     }
 
-    // 3. Check Solo Parent
+    // 3. Check Solo Parent (Strictly Financial Subsidy)
     if (titleLower.includes('solo parent') || titleLower.includes('soloparent')) {
-      if (titleLower.includes('educational') || titleLower.includes('edu') || titleLower.includes('edukasyon') || titleLower.includes('anak')) {
-        setActiveTab('soloparent-edu-form');
-      } else {
-        setActiveTab('soloparent-financial-form');
-      }
+      setActiveTab('soloparent-financial-form');
       return;
     }
 
