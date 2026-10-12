@@ -634,6 +634,19 @@ export const initDB = async () => {
       ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
       ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
+      -- Ensure columns in child_welfare_applications can hold long values and unique index
+      ALTER TABLE child_welfare_applications ALTER COLUMN incident_date TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN incident_location TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN dob TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN child_dob TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN phone_number TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN solo_parent_id_no TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN qcitizen_id TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN monthly_family_income TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN assistance_type TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN service_name TYPE TEXT;
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_child_welfare_ref_no ON child_welfare_applications (reference_no);
+
       -- ALTER TABLE migrations for educational_applications to ensure all columns exist
       ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS service_name VARCHAR(255) DEFAULT 'Educational Assistance for Indigent Children & Youth';
       ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS category VARCHAR(50) DEFAULT 'educational';

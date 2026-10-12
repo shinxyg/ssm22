@@ -1113,53 +1113,86 @@ app.post('/api/child-welfare/applications', async (req, res) => {
   try {
     const refNo = referenceNo || `QC-CW-${Math.floor(100000 + Math.random() * 900000)}`;
     const name = applicantName || details?.applicantName || `${firstName || 'JEFFERSON'} ${lastName || 'LEE'}`.trim();
-    const savedDetails = JSON.stringify(details || {});
-    const savedDocs = JSON.stringify(uploadedDocuments || {});
     const resolvedServiceName = serviceName || (refNo.startsWith('QC-CW-') ? 'Child Welfare Services' : 'Child Welfare Services Aid');
     const resolvedCategory = category || 'child_welfare';
 
-    const query = `
-      INSERT INTO child_welfare_applications (
-        reference_no, applicant_name, first_name, middle_name, last_name, suffix, qcitizen_id, nationality, dob, age, gender, civil_status,
-        house_no, street_name, barangay, phone_number, email_address, solo_parent_id_no, relationship_to_child,
-        child_full_name, child_dob, child_age, child_sex, child_address, school_name, grade_level, lrn_number, type_of_school, other_enrollment_info,
-        selected_sectors, selected_services, concern_description, incident_date, incident_location, assistance_type, service_name, category,
-        num_children_in_family, num_children_studying, monthly_family_income, is_4ps_beneficiary, is_solo_educational_beneficiary, is_pwd_educational_beneficiary,
-        status, uploaded_documents, details
-      )
-      VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
-        $13, $14, $15, $16, $17, $18, $19,
-        $20, $21, $22, $23, $24, $25, $26, $27, $28, $29,
-        $30, $31, $32, $33, $34, $35, $36, $37,
-        $38, $39, $40, $41, $42, $43,
-        $44, $45, $46
-      )
-      ON CONFLICT (reference_no) DO UPDATE SET
-        applicant_name = EXCLUDED.applicant_name,
-        service_name = EXCLUDED.service_name,
-        category = EXCLUDED.category,
-        status = EXCLUDED.status,
-        uploaded_documents = EXCLUDED.uploaded_documents,
-        details = EXCLUDED.details,
-        updated_at = CURRENT_TIMESTAMP
-      RETURNING *;
-    `;
+    const safeJsonString = (val, fallback) => {
+      if (!val) return fallback;
+      if (typeof val === 'string') return val;
+      try {
+        return JSON.stringify(val);
+      } catch (e) {
+        return fallback;
+      }
+    };
 
-    const values = [
-      refNo, name, firstName || 'JEFFERSON', middleName || 'FERNANDO', lastName || 'LEE', suffix || '', qcitizenId || '110008262304143', nationality || 'FILIPINO',
-      dob || '2004-09-27', age || '22', gender || 'Male', civilStatus || 'Single',
-      houseNo || '176', streetName || '23', barangay || 'Bagong Silangan', phoneNumber || '09155582122', emailAddress || 'jeffersonlee1234@gmail.com',
-      soloParentIdNo || '', relationshipToChild || 'Parent',
-      childFullName || '', childDob || '', childAge || '', childSex || '', childAddress || '', schoolName || '', gradeLevel || '', lrnNumber || '', typeOfSchool || '', otherEnrollmentInfo || '',
-      JSON.stringify(selectedSectors || []), JSON.stringify(selectedServices || []), concernDescription || '', incidentDate || '', incidentLocation || '', assistanceType || 'Child Welfare Aid',
-      resolvedServiceName, resolvedCategory,
-      numChildrenInFamily || '', numChildrenStudying || '', monthlyFamilyIncome || '', is4psBeneficiary || 'No', isSoloEducationalBeneficiary || 'No', isPwdEducationalBeneficiary || 'No',
-      status || 'Pending Document Validation', savedDocs, savedDetails
-    ];
+    const savedDocs = safeJsonString(uploadedDocuments, '{}');
+    const savedDetails = safeJsonString(details, '{}');
+    const savedSectors = safeJsonString(selectedSectors, '[]');
+    const savedServices = safeJsonString(selectedServices, '[]');
 
-    const result = await pool.query(query, values);
-    const row = result.rows[0];
+    // Check if record already exists
+    const existing = await pool.query('SELECT id FROM child_welfare_applications WHERE reference_no = $1 LIMIT 1', [refNo]);
+
+    let row;
+    if (existing.rows.length > 0) {
+      const updateQuery = `
+        UPDATE child_welfare_applications SET
+          applicant_name = $1,
+          service_name = $2,
+          category = $3,
+          status = $4,
+          uploaded_documents = $5::jsonb,
+          details = $6::jsonb,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE reference_no = $7
+        RETURNING *;
+      `;
+      const updateRes = await pool.query(updateQuery, [
+        name,
+        resolvedServiceName,
+        resolvedCategory,
+        status || 'Pending Document Validation',
+        savedDocs,
+        savedDetails,
+        refNo
+      ]);
+      row = updateRes.rows[0];
+    } else {
+      const insertQuery = `
+        INSERT INTO child_welfare_applications (
+          reference_no, applicant_name, first_name, middle_name, last_name, suffix, qcitizen_id, nationality, dob, age, gender, civil_status,
+          house_no, street_name, barangay, phone_number, email_address, solo_parent_id_no, relationship_to_child,
+          child_full_name, child_dob, child_age, child_sex, child_address, school_name, grade_level, lrn_number, type_of_school, other_enrollment_info,
+          selected_sectors, selected_services, concern_description, incident_date, incident_location, assistance_type, service_name, category,
+          num_children_in_family, num_children_studying, monthly_family_income, is_4ps_beneficiary, is_solo_educational_beneficiary, is_pwd_educational_beneficiary,
+          status, uploaded_documents, details
+        )
+        VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12,
+          $13, $14, $15, $16, $17, $18, $19,
+          $20, $21, $22, $23, $24, $25, $26, $27, $28, $29,
+          $30::jsonb, $31::jsonb, $32, $33, $34, $35, $36, $37,
+          $38, $39, $40, $41, $42, $43,
+          $44, $45::jsonb, $46::jsonb
+        )
+        RETURNING *;
+      `;
+      const values = [
+        refNo, name, firstName || 'JEFFERSON', middleName || 'FERNANDO', lastName || 'LEE', suffix || '', qcitizenId || '110008262304143', nationality || 'FILIPINO',
+        dob || '2004-09-27', age || '22', gender || 'Male', civilStatus || 'Single',
+        houseNo || '176', streetName || '23', barangay || 'Bagong Silangan', phoneNumber || '09155582122', emailAddress || 'jeffersonlee1234@gmail.com',
+        soloParentIdNo || '', relationshipToChild || 'Parent',
+        childFullName || '', childDob || '', childAge || '', childSex || '', childAddress || '', schoolName || '', gradeLevel || '', lrnNumber || '', typeOfSchool || '', otherEnrollmentInfo || '',
+        savedSectors, savedServices, concernDescription || '', incidentDate || '', incidentLocation || '', assistanceType || 'Child Welfare Aid',
+        resolvedServiceName, resolvedCategory,
+        numChildrenInFamily || '', numChildrenStudying || '', monthlyFamilyIncome || '', is4psBeneficiary || 'No', isSoloEducationalBeneficiary || 'No', isPwdEducationalBeneficiary || 'No',
+        status || 'Pending Document Validation', savedDocs, savedDetails
+      ];
+      const insertRes = await pool.query(insertQuery, values);
+      row = insertRes.rows[0];
+    }
+
     res.status(201).json(row);
   } catch (err) {
     console.error('Error saving Child Welfare application:', err);

@@ -318,6 +318,8 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
       is4psBeneficiary,
       isSoloEducationalBeneficiary: isSoloParentBeneficiary,
       isPwdEducationalBeneficiary: isPwdBeneficiary,
+      selectedSectors: selectedSector,
+      selectedServices: selectedServices,
       uploadedDocuments: uploadedDocsObj,
       status: 'Pending Document Validation',
       details: {
@@ -335,6 +337,8 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
         typeOfSchool,
         schoolAddress,
         otherEnrollmentInfo: schoolAddress || otherEnrollmentInfo,
+        selectedSectors: selectedSector,
+        selectedServices: selectedServices,
         concernDescription,
         incidentDate,
         incidentLocation,
@@ -354,13 +358,26 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
         ? `${API_BASE_URL}/api/child-welfare/applications`
         : `${API_BASE_URL}/api/educational/applications`;
 
-      await fetch(targetEndpoint, {
+      const response = await fetch(targetEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-    } catch (err) {
-      console.warn("Educational Assistance API post warning:", err);
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => ({ error: response.statusText }));
+        console.error("API post failed:", response.status, errJson);
+        alert(isTagalog 
+          ? `Hindi nai-save sa database: ${errJson.error || response.statusText || 'Server Error'}` 
+          : `Failed to save in database: ${errJson.error || response.statusText || 'Server Error'}`);
+        return;
+      }
+    } catch (err: any) {
+      console.error("Educational Assistance API post error:", err);
+      alert(isTagalog 
+        ? `Hindi makakonekta sa server: ${err?.message || 'Network error'}` 
+        : `Could not connect to server: ${err?.message || 'Network error'}`);
+      return;
     }
 
     const newAppRecord: ApplicationRecord = {
