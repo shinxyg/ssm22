@@ -372,9 +372,9 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
           customBenefitReceived: customOtherBenefit
         },
         uploadedDocuments: {
-          seniorIdCard: docSeniorId?.name || null,
-          indigencyCert: docIndigency?.name || null,
-          otherSupport: docOtherSupport?.name || null
+          seniorIdCard: docSeniorId ? { name: docSeniorId.name, url: docSeniorId.dataUrl || docSeniorId.url, dataUrl: docSeniorId.dataUrl || docSeniorId.url } : null,
+          indigencyCert: docIndigency ? { name: docIndigency.name, url: docIndigency.dataUrl || docIndigency.url, dataUrl: docIndigency.dataUrl || docIndigency.url } : null,
+          otherSupport: docOtherSupport ? { name: docOtherSupport.name, url: docOtherSupport.dataUrl || docOtherSupport.url, dataUrl: docOtherSupport.dataUrl || docOtherSupport.url } : null
         },
         uploadedDocData: {
           seniorIdCard: docSeniorId ? { name: docSeniorId.name, url: docSeniorId.dataUrl || docSeniorId.url, dataUrl: docSeniorId.dataUrl || docSeniorId.url } : null,

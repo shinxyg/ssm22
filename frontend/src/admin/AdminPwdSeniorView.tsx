@@ -24,8 +24,7 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
   const [dbPwdApps, setDbPwdApps] = useState<any[]>([]);
   const [selectedApp, setSelectedApp] = useState<any | null>(null);
   const [rejectModalApp, setRejectModalApp] = useState<any | null>(null);
-  const [rejectReason, setRejectReason] = useState<string>('');
-  const [viewingDoc, setViewingDoc] = useState<{ title: string; fileName: string; dataUrl?: string; url?: string; isFallback?: boolean; fallbackSvg?: string } | null>(null);
+  const [viewingDoc, setViewingDoc] = useState<{ title: string; fileName: string; dataUrl?: string; url?: string } | null>(null);
 
   const fetchDbApps = async () => {
     try {
@@ -451,228 +450,37 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
           }
         ];
 
-        // Senior Citizen Document SVG Generators & Fallback Engine
-        const escapeXml = (unsafe: string) => {
-          return String(unsafe || '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&apos;');
-        };
-
-        const createSeniorIdCardSvg = (name: string, oscaNo: string, brgy: string, refNo: string) => {
-          const safeName = escapeXml(name.toUpperCase());
-          const safeOsca = escapeXml(oscaNo);
-          const safeBrgy = escapeXml(brgy);
-          const safeRef = escapeXml(refNo);
-
-          const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 460" width="100%" height="100%">
-            <defs>
-              <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#0a192f"/>
-                <stop offset="50%" stop-color="#112d4e"/>
-                <stop offset="100%" stop-color="#1e3a8a"/>
-              </linearGradient>
-              <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#f59e0b"/>
-                <stop offset="100%" stop-color="#d97706"/>
-              </linearGradient>
-            </defs>
-            <rect x="10" y="10" width="730" height="440" rx="20" fill="url(#cardGrad)" stroke="#f59e0b" stroke-width="3"/>
-            <rect x="22" y="22" width="706" height="416" rx="14" fill="none" stroke="#3b82f6" stroke-width="1.2" stroke-opacity="0.4" stroke-dasharray="8 4"/>
-            <path d="M 24 24 L 726 24 L 726 95 L 24 95 Z" fill="#091427" opacity="0.85"/>
-            <rect x="24" y="93" width="702" height="3" fill="url(#goldGrad)"/>
-            <circle cx="75" cy="59" r="28" fill="#1e3a8a" stroke="#f59e0b" stroke-width="2"/>
-            <text x="75" y="55" font-family="Arial, sans-serif" font-size="10" font-weight="900" fill="#f59e0b" text-anchor="middle">QC</text>
-            <text x="75" y="68" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">OSCA</text>
-            <text x="115" y="44" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#93c5fd" letter-spacing="1">REPUBLIC OF THE PHILIPPINES • CITY GOVERNMENT OF QUEZON</text>
-            <text x="115" y="63" font-family="Arial, sans-serif" font-size="16" font-weight="900" fill="#fbbf24" letter-spacing="1.5">OFFICE FOR SENIOR CITIZENS AFFAIRS (OSCA)</text>
-            <text x="115" y="81" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#e2e8f0" letter-spacing="2">SENIOR CITIZEN IDENTIFICATION CARD (R.A. 9994)</text>
-            <rect x="45" y="125" width="170" height="210" rx="12" fill="#0b1329" stroke="#f59e0b" stroke-width="2"/>
-            <circle cx="130" cy="195" r="42" fill="#1e293b"/>
-            <path d="M 85 295 C 85 245, 175 245, 175 295 Z" fill="#1e293b"/>
-            <text x="130" y="325" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#94a3b8" text-anchor="middle">OFFICIAL PHOTO</text>
-            <rect x="55" y="135" width="65" height="18" rx="4" fill="#059669"/>
-            <text x="87" y="148" font-family="Arial, sans-serif" font-size="9" font-weight="900" fill="#ffffff" text-anchor="middle">QC VALID</text>
-            <text x="240" y="140" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#93c5fd">FULL NAME</text>
-            <text x="240" y="165" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#ffffff">${safeName}</text>
-            <line x1="240" y1="174" x2="705" y2="174" stroke="#334155" stroke-width="1.5"/>
-            <text x="240" y="202" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#93c5fd">OSCA / CONTROL NO.</text>
-            <rect x="240" y="210" width="220" height="32" rx="6" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
-            <text x="250" y="232" font-family="Courier New, monospace" font-size="15" font-weight="900" fill="#38bdf8">${safeOsca}</text>
-            <text x="485" y="202" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#93c5fd">QC APP REFERENCE</text>
-            <rect x="485" y="210" width="220" height="32" rx="6" fill="#0f172a" stroke="#3b82f6" stroke-width="1.2"/>
-            <text x="495" y="232" font-family="Courier New, monospace" font-size="15" font-weight="900" fill="#38bdf8">${safeRef}</text>
-            <text x="240" y="268" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#93c5fd">JURISDICTION / BARANGAY RESIDENCE</text>
-            <text x="240" y="290" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#e2e8f0">Brgy. ${safeBrgy}, Quezon City, Metro Manila</text>
-            <line x1="240" y1="298" x2="705" y2="298" stroke="#334155" stroke-width="1.5"/>
-            <text x="280" y="375" font-family="Brush Script MT, cursive, Arial" font-size="18" fill="#93c5fd" text-anchor="middle">Ma. Josefina G. Belmonte</text>
-            <line x1="200" y1="382" x2="360" y2="382" stroke="#64748b" stroke-width="1"/>
-            <text x="280" y="396" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#cbd5e1" text-anchor="middle">HON. MA. JOSEFINA G. BELMONTE</text>
-            <text x="280" y="407" font-family="Arial, sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">City Mayor, Quezon City</text>
-            <text x="560" y="375" font-family="Brush Script MT, cursive, Arial" font-size="18" fill="#93c5fd" text-anchor="middle">Atty. Hermogenes Verzosa</text>
-            <line x1="480" y1="382" x2="640" y2="382" stroke="#64748b" stroke-width="1"/>
-            <text x="560" y="396" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#cbd5e1" text-anchor="middle">OSCA DEPARTMENT HEAD</text>
-            <text x="560" y="407" font-family="Arial, sans-serif" font-size="8" fill="#94a3b8" text-anchor="middle">Office for Senior Citizens Affairs</text>
-            <rect x="45" y="355" width="130" height="50" rx="4" fill="#091328" stroke="#334155"/>
-            <line x1="55" y1="365" x2="55" y2="395" stroke="#ffffff" stroke-width="2"/>
-            <line x1="60" y1="365" x2="60" y2="395" stroke="#ffffff" stroke-width="1"/>
-            <line x1="65" y1="365" x2="65" y2="395" stroke="#ffffff" stroke-width="3"/>
-            <line x1="72" y1="365" x2="72" y2="395" stroke="#ffffff" stroke-width="2"/>
-            <line x1="78" y1="365" x2="78" y2="395" stroke="#ffffff" stroke-width="1"/>
-            <line x1="84" y1="365" x2="84" y2="395" stroke="#ffffff" stroke-width="3"/>
-            <line x1="92" y1="365" x2="92" y2="395" stroke="#ffffff" stroke-width="1"/>
-            <line x1="98" y1="365" x2="98" y2="395" stroke="#ffffff" stroke-width="2"/>
-            <line x1="104" y1="365" x2="104" y2="395" stroke="#ffffff" stroke-width="3"/>
-            <line x1="112" y1="365" x2="112" y2="395" stroke="#ffffff" stroke-width="1"/>
-            <line x1="120" y1="365" x2="120" y2="395" stroke="#ffffff" stroke-width="2"/>
-            <line x1="128" y1="365" x2="128" y2="395" stroke="#ffffff" stroke-width="2"/>
-            <line x1="135" y1="365" x2="135" y2="395" stroke="#ffffff" stroke-width="3"/>
-            <line x1="145" y1="365" x2="145" y2="395" stroke="#ffffff" stroke-width="2"/>
-            <line x1="155" y1="365" x2="155" y2="395" stroke="#ffffff" stroke-width="3"/>
-            <line x1="163" y1="365" x2="163" y2="395" stroke="#ffffff" stroke-width="1"/>
-          </svg>`;
-          return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-        };
-
-        const createSeniorIndigencySvg = (name: string, brgy: string, refNo: string) => {
-          const safeName = escapeXml(name.toUpperCase());
-          const safeBrgy = escapeXml(brgy);
-          const safeRef = escapeXml(refNo);
-
-          const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="100%" height="100%">
-            <defs>
-              <linearGradient id="paperGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="100%" stop-color="#f8fafc"/>
-              </linearGradient>
-            </defs>
-            <rect x="10" y="10" width="580" height="730" rx="12" fill="url(#paperGrad)" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="24" y="24" width="552" height="702" rx="8" fill="none" stroke="#1e3a8a" stroke-width="2"/>
-            <rect x="28" y="28" width="544" height="694" rx="6" fill="none" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 2"/>
-            <circle cx="95" cy="90" r="34" fill="#1e3a8a" stroke="#f59e0b" stroke-width="2"/>
-            <text x="95" y="86" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="#f59e0b" text-anchor="middle">QC</text>
-            <text x="95" y="99" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#ffffff" text-anchor="middle">BARANGAY</text>
-            <text x="300" y="65" font-family="Georgia, serif" font-size="11" fill="#475569" text-anchor="middle" letter-spacing="1">REPUBLIC OF THE PHILIPPINES • CITY OF QUEZON</text>
-            <text x="300" y="82" font-family="Georgia, serif" font-size="13" font-weight="bold" fill="#1e293b" text-anchor="middle">BARANGAY ${safeBrgy.toUpperCase()}</text>
-            <text x="300" y="98" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0284c7" text-anchor="middle">OFFICE OF THE PUNONG BARANGAY</text>
-            <line x1="60" y1="120" x2="540" y2="120" stroke="#1e3a8a" stroke-width="2"/>
-            <line x1="60" y1="124" x2="540" y2="124" stroke="#f59e0b" stroke-width="1"/>
-            <text x="300" y="170" font-family="Georgia, serif" font-size="22" font-weight="bold" fill="#0f172a" text-anchor="middle" letter-spacing="2">CERTIFICATE OF INDIGENCY</text>
-            <text x="300" y="190" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b" text-anchor="middle">REF: ${safeRef}</text>
-            <text x="65" y="240" font-family="Georgia, serif" font-size="13" font-weight="bold" fill="#0f172a">TO WHOM IT MAY CONCERN:</text>
-            <text x="65" y="280" font-family="Georgia, serif" font-size="12" fill="#334155">This is to certify that according to the official records of this Barangay:</text>
-            <rect x="65" y="300" width="470" height="50" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
-            <text x="300" y="332" font-family="Arial, sans-serif" font-size="16" font-weight="900" fill="#0f172a" text-anchor="middle">${safeName}</text>
-            <text x="65" y="380" font-family="Georgia, serif" font-size="12" fill="#334155">is a bona fide resident of Barangay ${safeBrgy}, Quezon City, and is currently living</text>
-            <text x="65" y="402" font-family="Georgia, serif" font-size="12" fill="#334155">under indigent circumstances, having limited income and financial resources.</text>
-            <text x="65" y="445" font-family="Georgia, serif" font-size="12" fill="#334155">This certification is issued upon the request of the above-named person as a</text>
-            <text x="65" y="467" font-family="Georgia, serif" font-size="12" fill="#334155">supporting document for <tspan font-weight="bold" fill="#0369a1">SENIOR CITIZEN FINANCIAL ASSISTANCE</tspan> under</text>
-            <text x="65" y="489" font-family="Georgia, serif" font-size="12" fill="#334155">the Quezon City Social Services Development Department (SSDD).</text>
-            <circle cx="150" cy="600" r="46" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="6 3"/>
-            <circle cx="150" cy="600" r="40" fill="none" stroke="#0284c7" stroke-width="1"/>
-            <text x="150" y="596" font-family="Arial, sans-serif" font-size="9" font-weight="900" fill="#0284c7" text-anchor="middle">OFFICIAL</text>
-            <text x="150" y="609" font-family="Arial, sans-serif" font-size="9" font-weight="900" fill="#0284c7" text-anchor="middle">BARANGAY</text>
-            <text x="150" y="622" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#0284c7" text-anchor="middle">SEAL</text>
-            <text x="430" y="580" font-family="Brush Script MT, cursive, Arial" font-size="20" fill="#0369a1" text-anchor="middle">Hon. Roberto Santos</text>
-            <line x1="330" y1="590" x2="530" y2="590" stroke="#334155" stroke-width="1.5"/>
-            <text x="430" y="606" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="middle">HON. PUNONG BARANGAY</text>
-            <text x="430" y="620" font-family="Arial, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Barangay ${safeBrgy}, Quezon City</text>
-          </svg>`;
-          return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-        };
-
-        const createSeniorSupportSvg = (name: string, brgy: string, refNo: string) => {
-          const safeName = escapeXml(name.toUpperCase());
-          const safeBrgy = escapeXml(brgy);
-          const safeRef = escapeXml(refNo);
-
-          const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 750" width="100%" height="100%">
-            <defs>
-              <linearGradient id="suppGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffffff"/>
-                <stop offset="100%" stop-color="#f1f5f9"/>
-              </linearGradient>
-            </defs>
-            <rect x="10" y="10" width="580" height="730" rx="12" fill="url(#suppGrad)" stroke="#cbd5e1" stroke-width="2"/>
-            <rect x="24" y="24" width="552" height="702" rx="8" fill="none" stroke="#475569" stroke-width="2"/>
-            <text x="300" y="65" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#475569" text-anchor="middle">QUEZON CITY SOCIAL SERVICES DEVELOPMENT DEPARTMENT</text>
-            <text x="300" y="85" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="#1e293b" text-anchor="middle">PROOF OF RESIDENCY &amp; SOCIO-ECONOMIC SUPPORT</text>
-            <text x="300" y="102" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b" text-anchor="middle">APPLICATION REFERENCE: ${safeRef}</text>
-            <line x1="60" y1="120" x2="540" y2="120" stroke="#64748b" stroke-width="1.5"/>
-            <rect x="60" y="145" width="480" height="90" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
-            <text x="80" y="172" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#64748b">BENEFICIARY NAME</text>
-            <text x="80" y="196" font-family="Arial, sans-serif" font-size="15" font-weight="900" fill="#0f172a">${safeName}</text>
-            <text x="80" y="218" font-family="Arial, sans-serif" font-size="11" fill="#334155">Jurisdiction: Brgy. ${safeBrgy}, Quezon City</text>
-            <rect x="60" y="255" width="480" height="240" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
-            <text x="80" y="285" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0f172a">ASSESSMENT VERIFICATION CHECKLIST</text>
-            <circle cx="90" cy="320" r="8" fill="#059669"/>
-            <text x="110" y="324" font-family="Arial, sans-serif" font-size="12" fill="#1e293b">1. Bona fide Senior Resident (60 Years Old &amp; Above)</text>
-            <circle cx="90" cy="360" r="8" fill="#059669"/>
-            <text x="110" y="364" font-family="Arial, sans-serif" font-size="12" fill="#1e293b">2. Indigency / Household Financial Vulnerability Verified</text>
-            <circle cx="90" cy="400" r="8" fill="#059669"/>
-            <text x="110" y="404" font-family="Arial, sans-serif" font-size="12" fill="#1e293b">3. Barangay Residency and Quezon City Jurisdiction Confirmed</text>
-            <circle cx="90" cy="440" r="8" fill="#059669"/>
-            <text x="110" y="444" font-family="Arial, sans-serif" font-size="12" fill="#1e293b">4. Eligible for QC SSDD Social Pension Program</text>
-            <text x="430" y="620" font-family="Brush Script MT, cursive, Arial" font-size="20" fill="#1e3a8a" text-anchor="middle">Maria Santos, RSW</text>
-            <line x1="330" y1="630" x2="530" y2="630" stroke="#334155" stroke-width="1.5"/>
-            <text x="430" y="646" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#0f172a" text-anchor="middle">MARIA SANTOS, RSW</text>
-            <text x="430" y="660" font-family="Arial, sans-serif" font-size="9" fill="#64748b" text-anchor="middle">Licensed Social Worker • Senior Sector</text>
-          </svg>`;
-          return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-        };
-
-        const seniorApplicantName = pInfo.firstName 
-          ? `${pInfo.firstName} ${pInfo.middleName || ''} ${pInfo.lastName}`.trim() 
-          : (selectedApp.applicantName || raw.applicant_name || 'Senior Citizen');
-        const seniorBarangay = pInfo.barangay || det.barangay || raw.barangay || 'Quezon City';
-        const seniorRefNo = selectedApp.referenceNo || 'SENIOR-2026';
-        const oscaIdNo = seniorIdNo && seniorIdNo !== 'N/A' ? seniorIdNo : 'QC-OSCA-VERIFIED';
-
         const rawSeniorIdData = typeof docsInfo.seniorIdCard === 'object' 
           ? (docsInfo.seniorIdCard?.dataUrl || docsInfo.seniorIdCard?.url) 
-          : (det.uploadedDocData?.seniorIdCard?.dataUrl || det.uploadedDocData?.seniorIdCard?.url);
+          : (det.uploadedDocData?.seniorIdCard?.dataUrl || det.uploadedDocData?.seniorIdCard?.url || (typeof docsInfo.seniorIdCard === 'string' && (docsInfo.seniorIdCard.startsWith('data:') || docsInfo.seniorIdCard.startsWith('http')) ? docsInfo.seniorIdCard : undefined));
 
         const rawIndigencyData = typeof docsInfo.indigencyCert === 'object' 
           ? (docsInfo.indigencyCert?.dataUrl || docsInfo.indigencyCert?.url) 
-          : (det.uploadedDocData?.indigencyCert?.dataUrl || det.uploadedDocData?.indigencyCert?.url);
+          : (det.uploadedDocData?.indigencyCert?.dataUrl || det.uploadedDocData?.indigencyCert?.url || (typeof docsInfo.indigencyCert === 'string' && (docsInfo.indigencyCert.startsWith('data:') || docsInfo.indigencyCert.startsWith('http')) ? docsInfo.indigencyCert : undefined));
 
         const rawSupportData = typeof docsInfo.otherSupport === 'object' 
           ? (docsInfo.otherSupport?.dataUrl || docsInfo.otherSupport?.url) 
-          : (det.uploadedDocData?.otherSupport?.dataUrl || det.uploadedDocData?.otherSupport?.url);
-
-        const fallbackSeniorIdSvg = createSeniorIdCardSvg(seniorApplicantName, oscaIdNo, seniorBarangay, seniorRefNo);
-        const fallbackIndigencySvg = createSeniorIndigencySvg(seniorApplicantName, seniorBarangay, seniorRefNo);
-        const fallbackSupportSvg = createSeniorSupportSvg(seniorApplicantName, seniorBarangay, seniorRefNo);
-
-        const isDirectUsableImg = (src?: string) => !!src && (src.startsWith('data:image/') || (src.startsWith('http') && !src.startsWith('blob:')));
+          : (det.uploadedDocData?.otherSupport?.dataUrl || det.uploadedDocData?.otherSupport?.url || (typeof docsInfo.otherSupport === 'string' && (docsInfo.otherSupport.startsWith('data:') || docsInfo.otherSupport.startsWith('http')) ? docsInfo.otherSupport : undefined));
 
         const seniorDocsList = [
           { 
             title: 'Senior Citizen ID Card / Valid Photo ID (PhilSys / OSCA)', 
             fileName: typeof docsInfo.seniorIdCard === 'object' ? docsInfo.seniorIdCard?.name : (docsInfo.seniorIdCard || det.seniorIdCard || 'Senior_ID_Photo.png'),
-            dataUrl: isDirectUsableImg(rawSeniorIdData) ? rawSeniorIdData : fallbackSeniorIdSvg,
-            fallbackSvg: fallbackSeniorIdSvg,
-            isFallback: !isDirectUsableImg(rawSeniorIdData),
+            dataUrl: rawSeniorIdData,
             icon: FileText,
             iconColor: 'text-blue-400'
           },
           { 
             title: 'Certificate of Indigency (Barangay Indigency Clearance)', 
             fileName: typeof docsInfo.indigencyCert === 'object' ? docsInfo.indigencyCert?.name : (docsInfo.indigencyCert || det.indigencyCert || 'Barangay_Indigency.png'),
-            dataUrl: isDirectUsableImg(rawIndigencyData) ? rawIndigencyData : fallbackIndigencySvg,
-            fallbackSvg: fallbackIndigencySvg,
-            isFallback: !isDirectUsableImg(rawIndigencyData),
+            dataUrl: rawIndigencyData,
             icon: FileText,
             iconColor: 'text-emerald-400'
           },
           { 
             title: 'Supporting Documents / Proof of Residency & Income', 
             fileName: typeof docsInfo.otherSupport === 'object' ? docsInfo.otherSupport?.name : (docsInfo.otherSupport || det.otherSupport || 'Proof_Residency.png'),
-            dataUrl: isDirectUsableImg(rawSupportData) ? rawSupportData : fallbackSupportSvg,
-            fallbackSvg: fallbackSupportSvg,
-            isFallback: !isDirectUsableImg(rawSupportData),
+            dataUrl: rawSupportData,
             icon: FileText,
             iconColor: 'text-purple-400'
           }
@@ -921,8 +729,7 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                             title: doc.title, 
                             fileName: doc.fileName, 
                             dataUrl: doc.dataUrl,
-                            fallbackSvg: (doc as any).fallbackSvg,
-                            isFallback: (doc as any).isFallback
+                            url: doc.dataUrl
                           })}
                           className="p-3.5 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
                         >
@@ -1067,24 +874,19 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                 <div className="w-full flex items-center justify-between border-b border-slate-800/80 pb-2.5 text-xs font-mono">
                   <span className="text-emerald-400 font-bold bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-800 flex items-center gap-1 text-[10px]">
                     <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                    {viewingDoc.isFallback ? 'QC OSCA OFFICIAL SENIOR RECORD' : 'ACTUAL CITIZEN UPLOADED FILE'}
+                    ACTUAL CITIZEN UPLOADED FILE
                   </span>
                   <span className="text-slate-400 text-[10px]">{viewingDoc.fileName}</span>
                 </div>
 
-                <div className="w-full flex items-center justify-center bg-black/70 p-2 rounded-xl border border-slate-800/90 min-h-[250px] max-h-[420px] overflow-hidden">
+                <div className="w-full flex items-center justify-center bg-black/70 p-2 rounded-xl border border-slate-800/90 min-h-[250px] max-h-[480px] overflow-hidden">
                   <img 
                     src={viewingDoc.dataUrl || viewingDoc.url} 
                     alt={viewingDoc.title}
                     onError={() => {
-                      if (viewingDoc.fallbackSvg && viewingDoc.dataUrl !== viewingDoc.fallbackSvg) {
-                        setViewingDoc(prev => prev ? { ...prev, dataUrl: prev.fallbackSvg, url: prev.fallbackSvg, isFallback: true } : null);
-                      } else {
-                        // Switch viewingDoc dataUrl to undefined so it shows clean file verification card
-                        setViewingDoc(prev => prev ? { ...prev, dataUrl: undefined, url: undefined } : null);
-                      }
+                      setViewingDoc(prev => prev ? { ...prev, dataUrl: undefined, url: undefined } : null);
                     }}
-                    className="max-h-[400px] w-auto max-w-full rounded-lg object-contain shadow-2xl border border-slate-700/60"
+                    className="max-h-[460px] w-auto max-w-full rounded-lg object-contain shadow-2xl border border-slate-700/60"
                   />
                 </div>
 
