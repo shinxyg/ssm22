@@ -195,6 +195,38 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
     });
   }, [existingApplications]);
 
+  // Helper to dynamically calculate remaining slots for any course based on active DB applications
+  const getCourseSlotData = (courseTitle: string) => {
+    const TOTAL_SLOTS = 25;
+    const cleanTarget = (courseTitle || '').toLowerCase().trim();
+
+    const courseApplicants = existingApplications.filter(a => {
+      const appCourse = (a.course_title || a.assistance_type || a.serviceName || a.title || '').toLowerCase().trim();
+      if (!appCourse) return false;
+
+      const isMatch = appCourse === cleanTarget || 
+                      appCourse.includes(cleanTarget) || 
+                      cleanTarget.includes(appCourse);
+      if (!isMatch) return false;
+
+      const st = (a.status || '').toUpperCase();
+      const isRejected = st.includes('REJECT') || st.includes('DISAPPROV') || st.includes('UNQUALIFIED');
+      return !isRejected;
+    });
+
+    const enrolledCount = courseApplicants.length;
+    const remainingSlots = Math.max(0, TOTAL_SLOTS - enrolledCount);
+    const isFull = remainingSlots === 0;
+
+    return {
+      totalSlots: TOTAL_SLOTS,
+      enrolledCount,
+      remainingSlots,
+      isFull,
+      badgeText: isFull ? 'Full / 0 slots' : `${remainingSlots} slots left`
+    };
+  };
+
   // Navigation Tabs State (1: Available Training, 2: Apply for Training, 3: Schedule, 4: History)
   const [activeTab, setActiveTab] = useState<number>(1);
 
@@ -372,6 +404,11 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
   ];
 
   const handleStartApply = (courseTitle: string) => {
+    const slotData = getCourseSlotData(courseTitle);
+    if (slotData.isFull) {
+      alert(`Puno na po ang lahat ng ${slotData.totalSlots} slots para sa ${courseTitle} sa batch na ito.`);
+      return;
+    }
     setSelectedCourseTitle(courseTitle);
     setActiveTab(2);
     setApplyStep(2);
@@ -626,13 +663,20 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                         </div>
                       </div>
 
-                      <span className={`text-[10px] font-bold border px-2.5 py-0.5 rounded-full shrink-0 ${
-                        darkMode 
-                          ? 'text-emerald-400 bg-emerald-950/60 border-emerald-700/50' 
-                          : 'text-emerald-700 bg-emerald-50 border-emerald-200'
-                      }`}>
-                        {course.slots}
-                      </span>
+                      {(() => {
+                        const slotData = getCourseSlotData(course.title);
+                        return (
+                          <span className={`text-[10px] font-bold border px-2.5 py-0.5 rounded-full shrink-0 transition-all ${
+                            slotData.isFull
+                              ? (darkMode ? 'text-rose-400 bg-rose-950/60 border-rose-700/50' : 'text-rose-700 bg-rose-50 border-rose-200')
+                              : slotData.remainingSlots <= 5
+                              ? (darkMode ? 'text-amber-400 bg-amber-950/60 border-amber-700/50' : 'text-amber-700 bg-amber-50 border-amber-200')
+                              : (darkMode ? 'text-emerald-400 bg-emerald-950/60 border-emerald-700/50' : 'text-emerald-700 bg-emerald-50 border-emerald-200')
+                          }`}>
+                            {slotData.badgeText}
+                          </span>
+                        );
+                      })()}
                     </div>
 
                     {/* Description */}
@@ -650,6 +694,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                       const activeCourseTitle = (activeApp?.course_title || activeApp?.assistance_type || '').toLowerCase();
                       const isAppliedCourse = activeApp && (activeCourseTitle.includes(courseTitleLower) || courseTitleLower.includes(activeCourseTitle));
                       const isEnrolled = isAppliedCourse && (activeApp?.status || '').toUpperCase().includes('QUALIFIED');
+                      const slotData = getCourseSlotData(course.title);
 
                       return (
                         <>
@@ -735,6 +780,15 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                               >
                                 <Lock className="w-3.5 h-3.5" />
                                 <span>Active Application Exists</span>
+                              </button>
+                            ) : slotData.isFull ? (
+                              <button
+                                type="button"
+                                disabled
+                                className="flex-1 py-2.5 bg-rose-950/60 border border-rose-700/50 text-rose-300 text-xs font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5"
+                              >
+                                <Lock className="w-3.5 h-3.5 text-rose-400" />
+                                <span>Batch Full (0 Slots Left)</span>
                               </button>
                             ) : !batchInfo.isRegistrationOpen ? (
                               <button
@@ -1927,7 +1981,23 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                 </div>
                 <div>
                   <h3 className="text-base font-extrabold text-white">{selectedScheduleModal.course}</h3>
-                  <span className="text-xs font-bold text-blue-400">{selectedScheduleModal.category} • {selectedScheduleModal.batch}</span>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xs font-bold text-blue-400">{selectedScheduleModal.category} • {selectedScheduleModal.batch}</span>
+                    {(() => {
+                      const sData = getCourseSlotData(selectedScheduleModal.course);
+                      return (
+                        <span className={`text-[10px] font-bold border px-2.5 py-0.5 rounded-full ${
+                          sData.isFull
+                            ? 'text-rose-400 bg-rose-950/60 border-rose-700/50'
+                            : sData.remainingSlots <= 5
+                            ? 'text-amber-400 bg-amber-950/60 border-amber-700/50'
+                            : 'text-emerald-400 bg-emerald-950/60 border-emerald-700/50'
+                        }`}>
+                          {sData.badgeText}
+                        </span>
+                      );
+                    })()}
+                  </div>
                 </div>
               </div>
               <button
@@ -2183,21 +2253,36 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                   <span>Active Application Exists</span>
                 </button>
               )
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedCourseTitle(selectedScheduleModal.course);
-                  setSelectedScheduleModal(null);
-                  setApplyStep(2);
-                  setActiveTab(2);
-                }}
-                className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-blue-600/30"
-              >
-                <span>Apply for this Training</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            )}
+            ) : (() => {
+              const modalSlotData = getCourseSlotData(selectedScheduleModal.course);
+              if (modalSlotData.isFull) {
+                return (
+                  <button
+                    type="button"
+                    disabled
+                    className="px-6 py-2.5 bg-rose-950/60 border border-rose-700/50 text-rose-300 text-xs font-bold rounded-xl cursor-not-allowed flex items-center gap-2"
+                  >
+                    <Lock className="w-4 h-4 text-rose-400" />
+                    <span>Batch Full (0 Slots Left)</span>
+                  </button>
+                );
+              }
+              return (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCourseTitle(selectedScheduleModal.course);
+                    setSelectedScheduleModal(null);
+                    setApplyStep(2);
+                    setActiveTab(2);
+                  }}
+                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-blue-600/30 cursor-pointer"
+                >
+                  <span>Apply for this Training</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              );
+            })()}
           </div>
         </div>
       </div>,
