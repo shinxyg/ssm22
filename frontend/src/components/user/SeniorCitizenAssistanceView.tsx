@@ -197,8 +197,22 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
   };
 
   const handleCapturePhoto = () => {
-    const fakePhotoUrl = `https://images.unsplash.com/photo-1584433144859-1fc3ab64a957?w=500&auto=format&fit=crop&q=80`;
-    const photoDoc = { name: `camera_capture_${Date.now()}.jpg`, url: fakePhotoUrl };
+    let capturedUrl = 'https://images.unsplash.com/photo-1584433144859-1fc3ab64a957?w=500&auto=format&fit=crop&q=80';
+    if (videoRef.current && videoRef.current.videoWidth > 0) {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+          capturedUrl = canvas.toDataURL('image/jpeg', 0.85);
+        }
+      } catch (e) {
+        console.warn('Canvas camera capture notice:', e);
+      }
+    }
+    const photoDoc = { name: `camera_capture_${Date.now()}.jpg`, url: capturedUrl, dataUrl: capturedUrl };
 
     if (activeCameraDocKey === 'seniorId') setDocSeniorId(photoDoc);
     if (activeCameraDocKey === 'indigency') setDocIndigency(photoDoc);
@@ -244,7 +258,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
     setFamilyMembers((prev) => prev.filter((m) => m.id !== id));
   };
 
-  // File Upload Handler with dataUrl conversion
+  // File Upload Handler with compressed persistent Base64 dataUrl conversion
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>, 
     setDoc: React.Dispatch<React.SetStateAction<{ name: string; url?: string; dataUrl?: string } | null>>
@@ -253,8 +267,41 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const dataUrl = event.target?.result as string;
-        setDoc({ name: file.name, url: dataUrl, dataUrl });
+        const rawDataUrl = event.target?.result as string;
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const maxDim = 1200;
+            let w = img.width;
+            let h = img.height;
+            if (w > maxDim || h > maxDim) {
+              if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+              } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+              }
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, w, h);
+              const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+              setDoc({ name: file.name, url: compressedDataUrl, dataUrl: compressedDataUrl });
+              return;
+            }
+          } catch (err) {
+            console.warn('Canvas compression notice:', err);
+          }
+          setDoc({ name: file.name, url: rawDataUrl, dataUrl: rawDataUrl });
+        };
+        img.onerror = () => {
+          setDoc({ name: file.name, url: rawDataUrl, dataUrl: rawDataUrl });
+        };
+        img.src = rawDataUrl;
       };
       reader.readAsDataURL(file);
     }
@@ -328,9 +375,9 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
           otherSupport: docOtherSupport?.name || null
         },
         uploadedDocData: {
-          seniorIdCard: docSeniorId ? { name: docSeniorId.name, dataUrl: docSeniorId.dataUrl || docSeniorId.url } : null,
-          indigencyCert: docIndigency ? { name: docIndigency.name, dataUrl: docIndigency.dataUrl || docIndigency.url } : null,
-          otherSupport: docOtherSupport ? { name: docOtherSupport.name, dataUrl: docOtherSupport.dataUrl || docOtherSupport.url } : null
+          seniorIdCard: docSeniorId ? { name: docSeniorId.name, url: docSeniorId.dataUrl || docSeniorId.url, dataUrl: docSeniorId.dataUrl || docSeniorId.url } : null,
+          indigencyCert: docIndigency ? { name: docIndigency.name, url: docIndigency.dataUrl || docIndigency.url, dataUrl: docIndigency.dataUrl || docIndigency.url } : null,
+          otherSupport: docOtherSupport ? { name: docOtherSupport.name, url: docOtherSupport.dataUrl || docOtherSupport.url, dataUrl: docOtherSupport.dataUrl || docOtherSupport.url } : null
         }
       }
     };
@@ -1328,12 +1375,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            const file = e.target.files[0];
-                            item.setDoc({ name: file.name, url: URL.createObjectURL(file) });
-                          }
-                        }}
+                        onChange={(e) => handleFileUpload(e, item.setDoc)}
                       />
                     </label>
 
