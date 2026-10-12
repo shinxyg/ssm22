@@ -218,14 +218,26 @@ export default function App() {
       const eduApps: ApplicationRecord[] = (Array.isArray(eduRaw) ? eduRaw : []).map(row => ({
         referenceNo: row.reference_no,
         applicantName: row.applicant_name,
-        serviceName: (row.reference_no || '').startsWith('QC-CW')
+        serviceName: (row.reference_no || '').startsWith('QC-SP-EDU')
+          ? 'Solo Parent Educational Assistance Program'
+          : (row.reference_no || '').startsWith('QC-CW')
           ? 'Child Welfare Services'
-          : row.service_name || 'Educational Assistance for Indigent Children & Youth',
-        category: row.category || 'educational',
-        assistanceType: row.assistance_type || 'Educational Cash Grant',
+          : 'Educational Assistance for Indigent Children & Youth',
+        category: (row.reference_no || '').startsWith('QC-SP-EDU')
+          ? 'soloparent'
+          : (row.reference_no || '').startsWith('QC-CW')
+          ? 'child_welfare'
+          : 'educational',
+        assistanceType: (row.reference_no || '').startsWith('QC-SP-EDU')
+          ? 'Solo Parent Educational Grant'
+          : (row.reference_no || '').startsWith('QC-CW')
+          ? 'Child Welfare Case Intake'
+          : 'Educational Cash Grant',
         status: row.status || 'Pending Document Validation',
         dateSubmitted: row.date_submitted ? new Date(row.date_submitted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Today',
-        amountOrType: '₱5,000.00 Educational Grant',
+        amountOrType: (row.reference_no || '').startsWith('QC-CW')
+          ? 'Child Protection & Case Intake Services (Non-Financial)'
+          : '₱5,000.00 Educational Grant',
         assignedSocialWorker: 'Ms. Corazon Mendoza, RSW (Child & Youth Welfare)',
         scheduledPayoutDate: row.payout_date || row.scheduled_payout_date,
         scheduledPayoutTime: row.payout_time || row.scheduled_payout_time,
@@ -469,9 +481,13 @@ export default function App() {
       return;
     }
 
-    // 3. Check Solo Parent (Strictly Financial Subsidy)
+    // 3. Check Solo Parent
     if (titleLower.includes('solo parent') || titleLower.includes('soloparent')) {
-      setActiveTab('soloparent-financial-form');
+      if (titleLower.includes('educational') || titleLower.includes('edu') || titleLower.includes('edukasyon') || titleLower.includes('anak')) {
+        setActiveTab('soloparent-edu-form');
+      } else {
+        setActiveTab('soloparent-financial-form');
+      }
       return;
     }
 

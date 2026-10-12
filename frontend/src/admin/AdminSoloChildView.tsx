@@ -531,6 +531,8 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                         <td className={`py-4 px-6 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                           {(app.reference_no || '').startsWith('QC-CW') 
                             ? 'Child Welfare Services'
+                            : (app.reference_no || '').startsWith('QC-SP-EDU')
+                            ? 'Solo Parent Educational Assistance Program'
                             : (app.reference_no || '').startsWith('QC-EDU') 
                             ? 'Educational Assistance for Indigent Children & Youth' 
                             : 'Solo Parent Financial Subsidy Program'}
