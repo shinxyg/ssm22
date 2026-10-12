@@ -635,6 +635,18 @@ export const initDB = async () => {
       ALTER TABLE child_welfare_applications ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 
       -- Ensure columns in child_welfare_applications can hold long values and unique index
+      ALTER TABLE child_welfare_applications ALTER COLUMN age TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN child_age TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN gender TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN child_sex TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN civil_status TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN is_4ps_beneficiary TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN is_solo_educational_beneficiary TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN is_pwd_educational_beneficiary TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN num_children_in_family TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN num_children_studying TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN monthly_family_income TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN relationship_to_child TYPE TEXT;
       ALTER TABLE child_welfare_applications ALTER COLUMN incident_date TYPE TEXT;
       ALTER TABLE child_welfare_applications ALTER COLUMN incident_location TYPE TEXT;
       ALTER TABLE child_welfare_applications ALTER COLUMN dob TYPE TEXT;
@@ -642,9 +654,10 @@ export const initDB = async () => {
       ALTER TABLE child_welfare_applications ALTER COLUMN phone_number TYPE TEXT;
       ALTER TABLE child_welfare_applications ALTER COLUMN solo_parent_id_no TYPE TEXT;
       ALTER TABLE child_welfare_applications ALTER COLUMN qcitizen_id TYPE TEXT;
-      ALTER TABLE child_welfare_applications ALTER COLUMN monthly_family_income TYPE TEXT;
       ALTER TABLE child_welfare_applications ALTER COLUMN assistance_type TYPE TEXT;
       ALTER TABLE child_welfare_applications ALTER COLUMN service_name TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN category TYPE TEXT;
+      ALTER TABLE child_welfare_applications ALTER COLUMN status TYPE TEXT;
       CREATE UNIQUE INDEX IF NOT EXISTS idx_child_welfare_ref_no ON child_welfare_applications (reference_no);
 
       -- ALTER TABLE migrations for educational_applications to ensure all columns exist
@@ -663,6 +676,28 @@ export const initDB = async () => {
       ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS details JSONB;
       ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS date_submitted TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
       ALTER TABLE educational_applications ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+      -- Ensure columns in educational_applications can hold long values and unique index
+      ALTER TABLE educational_applications ALTER COLUMN age TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN child_age TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN gender TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN child_sex TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN civil_status TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN is_4ps_beneficiary TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN is_solo_educational_beneficiary TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN is_pwd_educational_beneficiary TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN num_children_in_family TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN num_children_studying TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN monthly_family_income TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN relationship_to_child TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN dob TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN child_dob TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN phone_number TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN solo_parent_id_no TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN service_name TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN category TYPE TEXT;
+      ALTER TABLE educational_applications ALTER COLUMN status TYPE TEXT;
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_educational_ref_no ON educational_applications (reference_no);
 
       CREATE TABLE IF NOT EXISTS training_applications (
         id SERIAL PRIMARY KEY,
