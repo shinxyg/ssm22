@@ -24,6 +24,7 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
   const [dbPwdApps, setDbPwdApps] = useState<any[]>([]);
   const [selectedApp, setSelectedApp] = useState<any | null>(null);
   const [rejectModalApp, setRejectModalApp] = useState<any | null>(null);
+  const [rejectReason, setRejectReason] = useState<string>('');
   const [viewingDoc, setViewingDoc] = useState<{ title: string; fileName: string; dataUrl?: string; url?: string } | null>(null);
 
   const fetchDbApps = async () => {
