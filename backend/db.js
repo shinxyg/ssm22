@@ -6,13 +6,25 @@ dotenv.config();
 
 const { Pool } = pg;
 
-export const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'govserve_db',
-  password: process.env.DB_PASSWORD || 'postgres',
-  port: parseInt(process.env.DB_PORT || '5432', 10),
-});
+const isInternalOrLocal = (url) => !url || url.includes('localhost') || url.includes('.internal');
+
+const poolConfig = process.env.DATABASE_URL
+  ? {
+      connectionString: process.env.DATABASE_URL,
+      ssl: isInternalOrLocal(process.env.DATABASE_URL) ? false : { rejectUnauthorized: false }
+    }
+  : {
+      user: process.env.DB_USER || process.env.PGUSER || 'postgres',
+      host: process.env.DB_HOST || process.env.PGHOST || 'localhost',
+      database: process.env.DB_NAME || process.env.PGDATABASE || 'govserve_db',
+      password: process.env.DB_PASSWORD || process.env.PGPASSWORD || 'postgres',
+      port: parseInt(process.env.DB_PORT || process.env.PGPORT || '5432', 10),
+      ssl: (process.env.PGHOST && !process.env.PGHOST.includes('localhost') && !process.env.PGHOST.includes('.internal'))
+        ? { rejectUnauthorized: false }
+        : false
+    };
+
+export const pool = new Pool(poolConfig);
 
 // Helper function to test DB connection and initialize tables
 export const initDB = async () => {

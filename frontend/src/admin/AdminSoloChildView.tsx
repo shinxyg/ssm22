@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { API_BASE_URL } from '../config/api';
 import { 
   Search, 
   FileText, 
@@ -98,9 +99,9 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
   const fetchApplications = async () => {
     try {
       const [spRes, eduRes, cwRes] = await Promise.all([
-        fetch('http://localhost:5000/api/solo-parent/applications').catch(() => null),
-        fetch('http://localhost:5000/api/educational/applications').catch(() => null),
-        fetch('http://localhost:5000/api/child-welfare/applications').catch(() => null),
+        fetch(`${API_BASE_URL}/api/solo-parent/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/educational/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/child-welfare/applications`).catch(() => null),
       ]);
       let combined: SoloParentApplication[] = [];
       if (spRes && spRes.ok) {
@@ -236,20 +237,20 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
 
       const endpointsToTry = isCw
         ? [
-            `http://localhost:5000/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`,
-            `http://localhost:5000/api/educational/applications/${encodeURIComponent(refNo)}/status`,
-            `http://localhost:5000/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`
+            `${API_BASE_URL}/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`,
+            `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`,
+            `${API_BASE_URL}/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`
           ]
         : isEdu
         ? [
-            `http://localhost:5000/api/educational/applications/${encodeURIComponent(refNo)}/status`,
-            `http://localhost:5000/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`,
-            `http://localhost:5000/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`
+            `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`,
+            `${API_BASE_URL}/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`,
+            `${API_BASE_URL}/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`
           ]
         : [
-            `http://localhost:5000/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`,
-            `http://localhost:5000/api/educational/applications/${encodeURIComponent(refNo)}/status`,
-            `http://localhost:5000/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`
+            `${API_BASE_URL}/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`,
+            `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`,
+            `${API_BASE_URL}/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`
           ];
 
       let res: Response | null = null;

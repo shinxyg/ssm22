@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { API_BASE_URL } from '../../config/api';
 import { 
   BookOpen, 
   FileEdit, 
@@ -157,7 +158,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
 
   const fetchExistingApplications = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/training/applications');
+      const res = await fetch(`${API_BASE_URL}/api/training/applications`);
       if (res.ok) {
         const data = await res.json();
         setExistingApplications(Array.isArray(data) ? data : []);
@@ -442,7 +443,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
     };
 
     try {
-      await fetch('http://localhost:5000/api/training/applications', {
+      await fetch(`${API_BASE_URL}/api/training/applications`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(appData)

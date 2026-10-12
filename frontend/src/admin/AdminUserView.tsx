@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, CheckCircle2, ChevronDown, UserCog, RefreshCw, Power, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 import { maskEmail, maskPhoneNumber, logDataUnmaskEvent } from '../utils/masking';
+import { API_BASE_URL } from '../config/api';
 
 interface UserRecord {
   id: number;
@@ -47,7 +48,7 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/users');
+      const res = await fetch(`${API_BASE_URL}/api/users`);
       if (res.ok) {
         const data = await res.json();
         setUsers(data);
@@ -70,7 +71,7 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
     const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
     setUpdatingId(user.id);
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user.id}/status`, {
+      const res = await fetch(`${API_BASE_URL}/api/users/${user.id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),

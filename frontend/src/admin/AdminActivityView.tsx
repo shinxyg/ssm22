@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Search, CheckCircle2, XCircle, ChevronDown, Trash2, Activity, RotateCcw, FileText, Info } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 interface ActivityLog {
   id: number;
@@ -25,7 +26,7 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
   const fetchLogs = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/activity-logs');
+      const res = await fetch(`${API_BASE_URL}/api/activity-logs`);
       if (res.ok) {
         const data = await res.json();
         setLogs(data);
@@ -40,7 +41,7 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
   const fetchDeletedLogs = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/activity-logs?deleted=true');
+      const res = await fetch(`${API_BASE_URL}/api/activity-logs?deleted=true`);
       if (res.ok) {
         const data = await res.json();
         setDeletedLogs(data);
@@ -62,7 +63,7 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
 
   const handleDelete = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/activity-logs/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/activity-logs/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setLogs(prev => prev.filter(item => item.id !== id));
       }
@@ -75,7 +76,7 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
     if (logs.length === 0) return;
     if (!window.confirm('Are you sure you want to move ALL activity logs to Recently Deleted?')) return;
     try {
-      const res = await fetch('http://localhost:5000/api/activity-logs/bulk/soft-delete-all', { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/activity-logs/bulk/soft-delete-all`, { method: 'DELETE' });
       if (res.ok) {
         setLogs([]);
       }
@@ -86,7 +87,7 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
 
   const handleRestore = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/activity-logs/${id}/restore`, { method: 'POST' });
+      const res = await fetch(`${API_BASE_URL}/api/activity-logs/${id}/restore`, { method: 'POST' });
       if (res.ok) {
         setDeletedLogs(prev => prev.filter(item => item.id !== id));
       }
@@ -98,7 +99,7 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
   const handlePermanentDeleteSingle = async (id: number) => {
     if (!window.confirm('Permanently delete this activity log record? This cannot be undone.')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/activity-logs/${id}/permanent`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/activity-logs/${id}/permanent`, { method: 'DELETE' });
       if (res.ok) {
         setDeletedLogs(prev => prev.filter(item => item.id !== id));
       }
@@ -111,7 +112,7 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
     if (deletedLogs.length === 0) return;
     if (!window.confirm('PERMANENTLY DELETE ALL LOGS in Recently Deleted? This CANNOT be undone!')) return;
     try {
-      const res = await fetch('http://localhost:5000/api/activity-logs/bulk/empty-trash', { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/activity-logs/bulk/empty-trash`, { method: 'DELETE' });
       if (res.ok) {
         setDeletedLogs([]);
       }

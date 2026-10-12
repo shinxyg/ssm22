@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { API_BASE_URL } from '../../config/api';
 import { 
   ArrowLeft, 
   FileText, 
@@ -247,7 +248,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
     };
 
     try {
-      const res = await fetch('http://localhost:5000/api/livelihood/applications', {
+      const res = await fetch(`${API_BASE_URL}/api/livelihood/applications`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

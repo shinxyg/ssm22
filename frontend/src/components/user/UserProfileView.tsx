@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage, Language } from '../../context/LanguageContext';
+import { API_BASE_URL } from '../../config/api';
 import { 
   User, 
   Key, 
@@ -169,7 +170,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     setIsSavingPass(true);
 
     try {
-      const response = await fetch('http://localhost:5000/api/change-password', {
+      const response = await fetch(`${API_BASE_URL}/api/change-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

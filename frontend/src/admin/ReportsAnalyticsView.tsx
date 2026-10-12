@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Award
 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 interface ProgramStats {
   id: string;
@@ -76,15 +77,15 @@ export const ReportsAnalyticsView: React.FC<ReportsAnalyticsViewProps> = ({
       const [
         aicsRes, seniorRes, pwdRes, soloRes, eduRes, cwRes, liveRes, trainRes, disbRes
       ] = await Promise.all([
-        fetch('http://localhost:5000/api/aics/applications').catch(() => null),
-        fetch('http://localhost:5000/api/senior/applications').catch(() => null),
-        fetch('http://localhost:5000/api/pwd/applications').catch(() => null),
-        fetch('http://localhost:5000/api/solo-parent/applications').catch(() => null),
-        fetch('http://localhost:5000/api/educational/applications').catch(() => null),
-        fetch('http://localhost:5000/api/child-welfare/applications').catch(() => null),
-        fetch('http://localhost:5000/api/livelihood/applications').catch(() => null),
-        fetch('http://localhost:5000/api/training/applications').catch(() => null),
-        fetch('http://localhost:5000/api/financial-aid/disbursements').catch(() => null),
+        fetch(`${API_BASE_URL}/api/aics/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/senior/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/pwd/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/solo-parent/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/educational/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/child-welfare/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/livelihood/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/training/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/financial-aid/disbursements`).catch(() => null),
       ]);
 
       if (aicsRes && aicsRes.ok) setDbAicsApps(await aicsRes.json());

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Search, FileText, CheckCircle2, XCircle, Eye, Info, Clock, Check, X, User, Phone, MapPin, Calendar, Briefcase, Users, DollarSign, Home, HelpCircle } from 'lucide-react';
 import type { ApplicationRecord } from '../types';
+import { API_BASE_URL } from '../config/api';
 
 interface AdminPwdSeniorViewProps {
   darkMode?: boolean;
@@ -29,8 +30,8 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
   const fetchDbApps = async () => {
     try {
       const [srRes, pwdRes] = await Promise.all([
-        fetch('http://localhost:5000/api/senior/applications').catch(() => null),
-        fetch('http://localhost:5000/api/pwd/applications').catch(() => null)
+        fetch(`${API_BASE_URL}/api/senior/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/pwd/applications`).catch(() => null)
       ]);
 
       if (srRes && srRes.ok) {
@@ -216,7 +217,7 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
     const isPwd = (app.referenceNo || '').startsWith('QC-PWD-') || (app.category || '').toLowerCase().includes('pwd') || (app.serviceName || '').toLowerCase().includes('pwd');
     const apiModule = isPwd ? 'pwd' : 'senior';
     try {
-      await fetch(`http://localhost:5000/api/${apiModule}/applications/${app.referenceNo}/status`, {
+      await fetch(`${API_BASE_URL}/api/${apiModule}/applications/${app.referenceNo}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
@@ -235,7 +236,7 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
     const isPwd = (rejectModalApp.referenceNo || '').startsWith('QC-PWD-') || (rejectModalApp.category || '').toLowerCase().includes('pwd') || (rejectModalApp.serviceName || '').toLowerCase().includes('pwd');
     const apiModule = isPwd ? 'pwd' : 'senior';
     try {
-      await fetch(`http://localhost:5000/api/${apiModule}/applications/${rejectModalApp.referenceNo}/status`, {
+      await fetch(`${API_BASE_URL}/api/${apiModule}/applications/${rejectModalApp.referenceNo}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus, disapprovalReason: rejectReason || 'Requirements non-compliant' })

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import { API_BASE_URL } from '../../config/api';
 import { 
   ArrowLeft, 
   FileText, 
@@ -344,10 +345,10 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
 
     try {
       const targetEndpoint = mode === 'soloparent'
-        ? 'http://localhost:5000/api/solo-parent/applications'
+        ? `${API_BASE_URL}/api/solo-parent/applications`
         : mode === 'childwelfare'
-        ? 'http://localhost:5000/api/child-welfare/applications'
-        : 'http://localhost:5000/api/educational/applications';
+        ? `${API_BASE_URL}/api/child-welfare/applications`
+        : `${API_BASE_URL}/api/educational/applications`;
 
       await fetch(targetEndpoint, {
         method: 'POST',

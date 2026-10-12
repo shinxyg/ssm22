@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Sun, Moon, Bell, User, LogOut, CheckCircle2, Clock, Info, AlertTriangle, XCircle, Trash2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import type { ApplicationRecord } from '../../types';
+import { API_BASE_URL } from '../../config/api';
 
 interface NavbarProps {
   activeSection: string;
@@ -537,7 +538,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     if (savedUser) {
                       const parsed = JSON.parse(savedUser);
                       if (parsed?.email) {
-                        await fetch('http://localhost:5000/api/logout', {
+                        await fetch(`${API_BASE_URL}/api/logout`, {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
                           body: JSON.stringify({ email: parsed.email }),

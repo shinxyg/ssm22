@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import { API_BASE_URL } from '../../config/api';
 import { 
   ArrowLeft, 
   FileText, 
@@ -255,7 +256,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
     };
 
     try {
-      await fetch('http://localhost:5000/api/pwd/applications', {
+      await fetch(`${API_BASE_URL}/api/pwd/applications`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

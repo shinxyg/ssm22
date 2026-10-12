@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { API_BASE_URL } from '../config/api';
 import { 
   Search, 
   Calendar, 
@@ -192,7 +193,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
 
   // Fetch appointments from PostgreSQL Backend API on mount & interval
   const fetchAppointments = () => {
-    fetch('http://localhost:5000/api/appointments')
+    fetch(`${API_BASE_URL}/api/appointments`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -393,7 +394,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
     };
 
     try {
-      await fetch('http://localhost:5000/api/appointments', {
+      await fetch(`${API_BASE_URL}/api/appointments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -892,12 +893,12 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                           prev.map((item) => (item.referenceNo === ref ? { ...item, status: newStatus } : item))
                         );
                         try {
-                          await fetch(`http://localhost:5000/api/appointments/${encodeURIComponent(ref)}/status`, {
+                          await fetch(`${API_BASE_URL}/api/appointments/${encodeURIComponent(ref)}/status`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ status: newStatus })
                           });
-                          await fetch(`http://localhost:5000/api/training/applications/${encodeURIComponent(ref)}/status`, {
+                          await fetch(`${API_BASE_URL}/api/training/applications/${encodeURIComponent(ref)}/status`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ status: newStatus, rejectionReason: 'Did not pass training orientation requirements' })
@@ -923,12 +924,12 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                           prev.map((item) => (item.referenceNo === ref ? { ...item, status: newStatus } : item))
                         );
                         try {
-                          await fetch(`http://localhost:5000/api/appointments/${encodeURIComponent(ref)}/status`, {
+                          await fetch(`${API_BASE_URL}/api/appointments/${encodeURIComponent(ref)}/status`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ status: newStatus })
                           });
-                          await fetch(`http://localhost:5000/api/training/applications/${encodeURIComponent(ref)}/status`, {
+                          await fetch(`${API_BASE_URL}/api/training/applications/${encodeURIComponent(ref)}/status`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ status: newStatus })
@@ -956,7 +957,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                           prev.map((item) => (item.referenceNo === ref ? { ...item, status: newStatus } : item))
                         );
                         try {
-                          await fetch(`http://localhost:5000/api/appointments/${encodeURIComponent(ref)}/status`, {
+                          await fetch(`${API_BASE_URL}/api/appointments/${encodeURIComponent(ref)}/status`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ status: newStatus })
@@ -983,7 +984,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                           prev.map((item) => (item.referenceNo === ref ? { ...item, status: newStatus } : item))
                         );
                         try {
-                          await fetch(`http://localhost:5000/api/appointments/${encodeURIComponent(ref)}/status`, {
+                          await fetch(`${API_BASE_URL}/api/appointments/${encodeURIComponent(ref)}/status`, {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ status: newStatus })

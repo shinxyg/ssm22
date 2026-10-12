@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { API_BASE_URL } from '../config/api';
 import { 
   Search, FileText, ChevronDown, UserCheck, ShieldCheck, Clock, 
   AlertCircle, Eye, EyeOff, X, CheckCircle2, XCircle, ExternalLink, 
@@ -108,7 +109,7 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
   // Fetch all beneficiaries from the backend
   const fetchBeneficiaries = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/beneficiaries');
+      const res = await fetch(`${API_BASE_URL}/api/beneficiaries`);
       if (res.ok) {
         const data = await res.json();
         setBeneficiaries(data);
@@ -121,7 +122,7 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
   // Fetch audit activity logs
   const fetchLogs = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/activity-logs');
+      const res = await fetch(`${API_BASE_URL}/api/activity-logs`);
       if (res.ok) {
         const data = await res.json();
         setActivityLogs(data);
@@ -190,7 +191,7 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
   const handleVerifyBeneficiary = async (citizen: Beneficiary, newStatus: 'Verified' | 'Unverified') => {
     setIsSubmittingVerif(true);
     try {
-      const res = await fetch('http://localhost:5000/api/beneficiaries/verify', {
+      const res = await fetch(`${API_BASE_URL}/api/beneficiaries/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

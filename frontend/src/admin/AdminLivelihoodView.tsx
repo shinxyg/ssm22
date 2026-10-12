@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { API_BASE_URL } from '../config/api';
 import { 
   Search, 
   FileText, 
@@ -99,8 +100,8 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
   const fetchApplications = async () => {
     try {
       const [resLvh, resTrn] = await Promise.all([
-        fetch('http://localhost:5000/api/livelihood/applications').catch(() => null),
-        fetch('http://localhost:5000/api/training/applications').catch(() => null)
+        fetch(`${API_BASE_URL}/api/livelihood/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/training/applications`).catch(() => null)
       ]);
       const lvhData = (resLvh && resLvh.ok) ? await resLvh.json() : [];
       const trnData = (resTrn && resTrn.ok) ? await resTrn.json() : [];
@@ -160,8 +161,8 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
   const handleUpdateStatus = async (app: LivelihoodApplication, newStatus: string, reason?: string) => {
     const isTrn = app.reference_no.startsWith('TRN-') || app.sector === 'Skills Training';
     const endpoint = isTrn 
-      ? `http://localhost:5000/api/training/applications/${app.reference_no}/status`
-      : `http://localhost:5000/api/livelihood/applications/${app.reference_no}/status`;
+      ? `${API_BASE_URL}/api/training/applications/${app.reference_no}/status`
+      : `${API_BASE_URL}/api/livelihood/applications/${app.reference_no}/status`;
 
     try {
       const res = await fetch(endpoint, {

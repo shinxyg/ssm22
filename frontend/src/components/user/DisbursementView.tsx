@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
+import { API_BASE_URL } from '../../config/api';
 import { 
   Calendar, 
   Clock, 
@@ -60,7 +61,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
   // Fetch appointments registry from PostgreSQL DB
   React.useEffect(() => {
     const fetchAppts = () => {
-      fetch('http://localhost:5000/api/appointments')
+      fetch(`${API_BASE_URL}/api/appointments`)
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data)) {

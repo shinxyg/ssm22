@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
+import { API_BASE_URL } from '../../config/api';
 import { 
   ArrowLeft, 
   FileText, 
@@ -335,7 +336,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
     };
 
     try {
-      await fetch('http://localhost:5000/api/senior/applications', {
+      await fetch(`${API_BASE_URL}/api/senior/applications`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(fullPayload)

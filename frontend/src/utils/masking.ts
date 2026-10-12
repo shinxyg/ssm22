@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '../config/api';
+
 // Utility helper for Data Masking & Audit Logging across GovServe Admin Portal
 
 export function maskPhoneNumber(phone?: string, enabled = true): string {
@@ -97,7 +99,7 @@ export async function logDataUnmaskEvent(
   staffName = 'System Admin'
 ) {
   try {
-    await fetch('http://localhost:5000/api/activity-logs', {
+    await fetch(`${API_BASE_URL}/api/activity-logs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

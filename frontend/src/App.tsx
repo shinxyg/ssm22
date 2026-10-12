@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useLanguage } from './context/LanguageContext';
+import { API_BASE_URL } from './config/api';
 import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
 import { HeroBanner } from './components/user/HeroBanner';
@@ -123,14 +124,14 @@ export default function App() {
   const fetchDBApplications = async () => {
     try {
       const [resAics, resSenior, resPwd, resSolo, resEdu, resChildWelfare, resLivelihood, resTraining] = await Promise.all([
-        fetch('http://localhost:5000/api/aics/applications').catch(() => null),
-        fetch('http://localhost:5000/api/senior/applications').catch(() => null),
-        fetch('http://localhost:5000/api/pwd/applications').catch(() => null),
-        fetch('http://localhost:5000/api/solo-parent/applications').catch(() => null),
-        fetch('http://localhost:5000/api/educational/applications').catch(() => null),
-        fetch('http://localhost:5000/api/child-welfare/applications').catch(() => null),
-        fetch('http://localhost:5000/api/livelihood/applications').catch(() => null),
-        fetch('http://localhost:5000/api/training/applications').catch(() => null)
+        fetch(`${API_BASE_URL}/api/aics/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/senior/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/pwd/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/solo-parent/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/educational/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/child-welfare/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/livelihood/applications`).catch(() => null),
+        fetch(`${API_BASE_URL}/api/training/applications`).catch(() => null)
       ]);
 
       const aicsApps: ApplicationRecord[] = (resAics && resAics.ok) ? await resAics.json() : [];
@@ -387,7 +388,7 @@ export default function App() {
     let success = false;
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        const res = await fetch('http://localhost:5000/api/aics/applications', {
+        const res = await fetch(`${API_BASE_URL}/api/aics/applications`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newApp)
@@ -421,30 +422,30 @@ export default function App() {
     const endpointsToTry: string[] = [];
     if (isCw) {
       endpointsToTry.push(
-        `http://localhost:5000/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`,
-        `http://localhost:5000/api/educational/applications/${encodeURIComponent(refNo)}/status`,
-        `http://localhost:5000/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`
+        `${API_BASE_URL}/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`,
+        `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`,
+        `${API_BASE_URL}/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`
       );
     } else if (isSenior) {
-      endpointsToTry.push(`http://localhost:5000/api/senior/applications/${encodeURIComponent(refNo)}/status`);
+      endpointsToTry.push(`${API_BASE_URL}/api/senior/applications/${encodeURIComponent(refNo)}/status`);
     } else if (isPwd) {
-      endpointsToTry.push(`http://localhost:5000/api/pwd/applications/${encodeURIComponent(refNo)}/status`);
+      endpointsToTry.push(`${API_BASE_URL}/api/pwd/applications/${encodeURIComponent(refNo)}/status`);
     } else if (isSolo) {
       endpointsToTry.push(
-        `http://localhost:5000/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`,
-        `http://localhost:5000/api/educational/applications/${encodeURIComponent(refNo)}/status`
+        `${API_BASE_URL}/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`,
+        `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`
       );
     } else if (isEdu) {
       endpointsToTry.push(
-        `http://localhost:5000/api/educational/applications/${encodeURIComponent(refNo)}/status`,
-        `http://localhost:5000/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`
+        `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`,
+        `${API_BASE_URL}/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`
       );
     } else if (isLvh) {
-      endpointsToTry.push(`http://localhost:5000/api/livelihood/applications/${encodeURIComponent(refNo)}/status`);
+      endpointsToTry.push(`${API_BASE_URL}/api/livelihood/applications/${encodeURIComponent(refNo)}/status`);
     } else if (isTrn) {
-      endpointsToTry.push(`http://localhost:5000/api/training/applications/${encodeURIComponent(refNo)}/status`);
+      endpointsToTry.push(`${API_BASE_URL}/api/training/applications/${encodeURIComponent(refNo)}/status`);
     } else {
-      endpointsToTry.push(`http://localhost:5000/api/aics/applications/${encodeURIComponent(refNo)}/status`);
+      endpointsToTry.push(`${API_BASE_URL}/api/aics/applications/${encodeURIComponent(refNo)}/status`);
     }
 
     try {

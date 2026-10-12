@@ -16,6 +16,7 @@ import {
   Lock,
   KeyRound
 } from 'lucide-react';
+import { API_BASE_URL } from '../../config/api';
 
 interface LoginViewProps {
   onLoginSuccess: (role: 'user' | 'admin') => void;
@@ -152,8 +153,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
       try {
         const url = targetEmail
-          ? `http://localhost:5000/api/auth/lockout-status?email=${encodeURIComponent(targetEmail.trim().toLowerCase())}`
-          : 'http://localhost:5000/api/auth/lockout-status';
+          ? `${API_BASE_URL}/api/auth/lockout-status?email=${encodeURIComponent(targetEmail.trim().toLowerCase())}`
+          : `${API_BASE_URL}/api/auth/lockout-status`;
         const res = await fetch(url);
         const data = await res.json();
 
@@ -238,7 +239,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
   const checkEmailLockout = async (targetEmail: string) => {
     if (!targetEmail || !targetEmail.trim()) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/lockout-status?email=${encodeURIComponent(targetEmail.trim().toLowerCase())}`);
+      const res = await fetch(`${API_BASE_URL}/api/auth/lockout-status?email=${encodeURIComponent(targetEmail.trim().toLowerCase())}`);
       const data = await res.json();
       if (data.isLocked && data.lockoutUntil) {
         setIsLocked(true);
@@ -277,7 +278,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
     setIsSendingUnlockOtp(true);
     setUnlockModalError(null);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/send-unlock-otp', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/send-unlock-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: targetEmail }),
@@ -325,7 +326,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
     setUnlockModalError(null);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/verify-unlock-otp', {
+      const res = await fetch(`${API_BASE_URL}/api/auth/verify-unlock-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: targetEmail, otp: enteredOtp }),
@@ -471,7 +472,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: cleanEmail, password: cleanPassword }),
@@ -666,7 +667,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
     setGeneratedResetCode(codeNum);
 
     try {
-      await fetch('http://localhost:5000/api/send-email', {
+      await fetch(`${API_BASE_URL}/api/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -698,7 +699,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
     setGeneratedResetCode(codeNum);
 
     try {
-      await fetch('http://localhost:5000/api/send-email', {
+      await fetch(`${API_BASE_URL}/api/send-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -766,7 +767,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
     setIsSubmittingNewPassword(true);
 
     try {
-      await fetch('http://localhost:5000/api/reset-password', {
+      await fetch(`${API_BASE_URL}/api/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: resetEmail, newPassword }),
