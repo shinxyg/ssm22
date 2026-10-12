@@ -20,7 +20,8 @@ import {
   Printer,
   Download,
   Eye,
-  AlertCircle
+  AlertCircle,
+  RotateCcw
 } from 'lucide-react';
 import type { ApplicationRecord } from '../../types';
 
@@ -224,6 +225,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
   // Submission success state
   const [submittedAppRecord, setSubmittedAppRecord] = useState<ApplicationRecord | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
+  const [isReapplying, setIsReapplying] = useState<boolean>(false);
 
   // Auto-calculate applicant age from DOB
   useEffect(() => {
@@ -430,7 +432,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
     (submittedAppInList.status || '').toUpperCase().includes('DISAPPROVED')
   ) : false;
 
-  const targetApp = isSubmittedAppFinished ? null : (activePendingApp || (submittedAppRecord && !isSubmittedAppFinished ? submittedAppRecord : null));
+  const targetApp = isReapplying ? null : (isSubmittedAppFinished ? null : (activePendingApp || (submittedAppRecord && !isSubmittedAppFinished ? submittedAppRecord : null)));
 
   if (targetApp) {
     return (
@@ -473,20 +475,41 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
             </div>
           </div>
 
-          {/* Full Width Primary Blue Action Button */}
-          <button
-            type="button"
-            onClick={() => {
-              if (onNavigateToModule) {
-                onNavigateToModule('disbursements');
-              } else {
-                onBack();
-              }
-            }}
-            className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs tracking-wider uppercase rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
-          >
-            <span>VIEW IN FINANCIAL AID DISBURSEMENTS</span>
-          </button>
+          {/* Action Buttons */}
+          <div className="space-y-2.5 pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                if (onNavigateToModule) {
+                  onNavigateToModule('disbursements');
+                } else {
+                  onBack();
+                }
+              }}
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs tracking-wider uppercase rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>VIEW IN FINANCIAL AID DISBURSEMENTS</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  if (targetApp.referenceNo) {
+                    await fetch(`${API_BASE_URL}/api/senior/applications/${targetApp.referenceNo}`, { method: 'DELETE' }).catch(() => null);
+                  }
+                  await fetch(`${API_BASE_URL}/api/admin/clear-senior`, { method: 'POST' }).catch(() => null);
+                } catch (e) {}
+                setSubmittedAppRecord(null);
+                setIsReapplying(true);
+                setCurrentStep(1);
+              }}
+              className="w-full py-3.5 bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white font-extrabold text-xs tracking-wider uppercase rounded-2xl border border-slate-700 transition-all cursor-pointer flex items-center justify-center gap-2 shadow-md"
+            >
+              <RotateCcw className="w-4 h-4 text-emerald-400" />
+              <span>RE-APPLY / FILE NEW SENIOR APPLICATION</span>
+            </button>
+          </div>
         </div>
       </div>
     );

@@ -112,6 +112,28 @@ app.delete('/api/educational/applications/:refNo', async (req, res) => {
   }
 });
 
+// CLEAR SENIOR CITIZEN APPLICATIONS
+const handleClearSenior = async (req, res) => {
+  try {
+    const delRes = await pool.query('DELETE FROM senior_applications;');
+    res.json({ success: true, message: 'All senior applications cleared', deleted: delRes.rowCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+app.post('/api/admin/clear-senior', handleClearSenior);
+app.get('/api/admin/clear-senior', handleClearSenior);
+app.delete('/api/senior/applications', handleClearSenior);
+app.delete('/api/senior/applications/:refNo', async (req, res) => {
+  try {
+    const { refNo } = req.params;
+    const delRes = await pool.query('DELETE FROM senior_applications WHERE reference_no = $1;', [refNo]);
+    res.json({ success: true, deleted: delRes.rowCount });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST endpoint to send emails
 app.post('/api/send-email', async (req, res) => {
   const { to, subject, text, html } = req.body;
