@@ -440,11 +440,11 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
                           {app.applicant_name}
                         </td>
                         <td className="py-4 px-6 font-bold">
-                          <span className={app.sector === 'Skills Training' || app.reference_no.startsWith('TRN-') ? 'text-blue-500 font-extrabold' : app.assistance_type === 'Materials / Supplies' ? (darkMode ? 'text-slate-200' : 'text-slate-700') : (darkMode ? 'text-white' : 'text-slate-900')}>
+                          <span className={app.sector === 'Skills Training' || app.reference_no.startsWith('TRN-') ? (darkMode ? 'text-white font-extrabold' : 'text-slate-900 font-extrabold') : app.assistance_type === 'Materials / Supplies' ? (darkMode ? 'text-slate-200' : 'text-slate-700') : (darkMode ? 'text-white' : 'text-slate-900')}>
                             {app.assistance_type || 'Financial / Capital Assistance'}
                           </span>
                           {(app.reference_no.startsWith('TRN-') || app.sector === 'Skills Training') ? (
-                            <span className="block text-[10px] text-blue-500 font-extrabold">
+                            <span className={`block text-[10px] ${darkMode ? 'text-slate-200' : 'text-slate-600'} font-medium`}>
                               Free Skills Training Program
                             </span>
                           ) : app.assistance_type !== 'Materials / Supplies' && (
