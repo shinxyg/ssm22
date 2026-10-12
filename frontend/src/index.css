@@ -1,0 +1,171 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#0b1220] text-slate-100 min-h-screen overflow-x-hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Lock background scrolling & hide background scrollbars when modal is active */
+body.modal-open main,
+body.modal-open aside {
+  overflow: hidden !important;
+}
+
+body.modal-open main::-webkit-scrollbar-thumb,
+body.modal-open aside::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border: none !important;
+}
+
+body.modal-open main::-webkit-scrollbar-track,
+body.modal-open aside::-webkit-scrollbar-track {
+  background: transparent !important;
+  border-left: none !important;
+}
+
+/* Custom High-Visibility Scrollbar (Persists Dark Navy + Blue design across Light & Dark Modes) */
+*::-webkit-scrollbar,
+::-webkit-scrollbar {
+  width: 12px !important;
+  height: 12px !important;
+}
+
+*::-webkit-scrollbar-track,
+::-webkit-scrollbar-track {
+  background: #070d18 !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.2) !important;
+}
+
+*::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb {
+  background: #2563eb !important;
+  border-radius: 6px !important;
+  border: 2px solid #070d18 !important;
+}
+
+*::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6 !important;
+}
+
+*::-webkit-scrollbar-corner,
+::-webkit-scrollbar-corner {
+  background: #070d18 !important;
+}
+
+*::-webkit-scrollbar-button,
+::-webkit-scrollbar-button {
+  background-color: #070d18 !important;
+  height: 12px !important;
+  width: 12px !important;
+}
+
+*::-webkit-scrollbar-button:single-button:vertical:decrement,
+::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background: #070d18 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='%232563eb'><polygon points='12,4 4,18 20,18'/></svg>") no-repeat center !important;
+}
+
+*::-webkit-scrollbar-button:single-button:vertical:increment,
+::-webkit-scrollbar-button:single-button:vertical:increment {
+  background: #070d18 url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='%232563eb'><polygon points='12,20 4,6 20,6'/></svg>") no-repeat center !important;
+}
+
+/* Explicit Custom Scrollbar for Inner Modal Content Box */
+.custom-modal-scroll {
+  scrollbar-width: thin !important;
+  scrollbar-color: #3b82f6 #0f172a !important;
+}
+.custom-modal-scroll::-webkit-scrollbar {
+  width: 8px !important;
+  display: block !important;
+}
+.custom-modal-scroll::-webkit-scrollbar-track {
+  background: #0f172a !important;
+  border-radius: 4px !important;
+}
+.custom-modal-scroll::-webkit-scrollbar-thumb {
+  background: #3b82f6 !important;
+  border-radius: 4px !important;
+  border: none !important;
+}
+.custom-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #60a5fa !important;
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: auto !important;
+  scrollbar-color: #2563eb #070d18 !important;
+}
+
+/* Smooth Hardware-Accelerated Main Scroll Container */
+main, .overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  scroll-behavior: smooth;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Force GPU Layer Compositing for High Graphics Smooth Scrolling */
+.glass-card, .glass-card-hover, [class*="rounded-2xl"] {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Glassmorphism card effects - Optimized without expensive backdrop blur during scroll */
+.glass-card {
+  background: #101a2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card-hover {
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform;
+}
+.glass-card-hover:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -10px rgba(37, 99, 235, 0.25);
+}
+
+/* Seal Background Graphic */
+.bg-seal-pattern {
+  background-image: radial-gradient(circle at 80% 50%, rgba(37, 99, 235, 0.15), transparent 50%);
+}
+
+/* Hide number input spinners (up/down arrows) across all browsers */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Ensure text typing cursor (caret) is always crisp and visible in Light and Dark modes */
+input, select, textarea {
+  caret-color: #0f172a !important;
+  cursor: text;
+}
+
+.dark input, .dark select, .dark textarea {
+  caret-color: #38bdf8 !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  caret-color: #2563eb !important;
+}
+
+.dark input:focus, .dark select:focus, .dark textarea:focus {
+  caret-color: #38bdf8 !important;
+}
+
+
