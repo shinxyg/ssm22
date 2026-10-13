@@ -1302,8 +1302,21 @@ app.put('/api/child-welfare/applications/:id/status', async (req, res) => {
     }
 
     // Sync to financial disbursements when payout scheduled or approved
-    if (status === 'APPROVED' || status === 'APPROVED BY ADMIN' || status === 'Payout Scheduled' || status === 'PAYOUT SCHEDULED') {
-      const finStatus = (status === 'Payout Scheduled' || status === 'PAYOUT SCHEDULED') ? 'PAYOUT SCHEDULED' : 'PENDING PAYOUT SCHEDULE';
+    if (
+      status === 'APPROVED' || 
+      status === 'APPROVED BY ADMIN' || 
+      status === 'Payout Scheduled' || 
+      status === 'PAYOUT SCHEDULED' ||
+      status === 'RELEASED / COMPLETED' ||
+      status === 'Released & Archived' ||
+      (status || '').includes('Ready for Payout') ||
+      (status || '').includes('Approved')
+    ) {
+      const finStatus = (status === 'RELEASED / COMPLETED' || status === 'Released & Archived')
+        ? 'RELEASED / COMPLETED'
+        : (status === 'Payout Scheduled' || status === 'PAYOUT SCHEDULED')
+        ? 'PAYOUT SCHEDULED'
+        : 'PENDING PAYOUT SCHEDULE';
       try {
         const checkFin = await pool.query(`SELECT id FROM financial_disbursements WHERE reference_no = $1`, [row.reference_no]);
         if (checkFin.rows.length > 0) {
@@ -1844,9 +1857,22 @@ app.put('/api/educational/applications/:id/status', async (req, res) => {
       }
     }
 
-    // If status becomes "APPROVED", "APPROVED BY ADMIN", or "Payout Scheduled", sync to financial_disbursements
-    if (status === 'APPROVED' || status === 'APPROVED BY ADMIN' || status === 'Payout Scheduled' || status === 'PAYOUT SCHEDULED') {
-      const finStatus = (status === 'Payout Scheduled' || status === 'PAYOUT SCHEDULED') ? 'PAYOUT SCHEDULED' : 'PENDING PAYOUT SCHEDULE';
+    // If status becomes "APPROVED", "Approved & Ready for Payout", "Payout Scheduled", or "RELEASED", sync to financial_disbursements
+    if (
+      status === 'APPROVED' || 
+      status === 'APPROVED BY ADMIN' || 
+      status === 'Payout Scheduled' || 
+      status === 'PAYOUT SCHEDULED' ||
+      status === 'RELEASED / COMPLETED' ||
+      status === 'Released & Archived' ||
+      (status || '').includes('Ready for Payout') ||
+      (status || '').includes('Approved')
+    ) {
+      const finStatus = (status === 'RELEASED / COMPLETED' || status === 'Released & Archived')
+        ? 'RELEASED / COMPLETED'
+        : (status === 'Payout Scheduled' || status === 'PAYOUT SCHEDULED')
+        ? 'PAYOUT SCHEDULED'
+        : 'PENDING PAYOUT SCHEDULE';
       const checkFin = await pool.query(`SELECT id FROM financial_disbursements WHERE reference_no = $1`, [row.reference_no]);
       if (checkFin.rows.length > 0) {
         await pool.query(`
@@ -1860,10 +1886,13 @@ app.put('/api/educational/applications/:id/status', async (req, res) => {
           WHERE reference_no = $5;
         `, [payoutDate || row.payout_date || null, payoutTime || row.payout_time || null, payoutVenue || row.payout_venue || null, finStatus, row.reference_no]);
       } else {
+        const benefitName = (row.reference_no || '').startsWith('QC-SP-EDU')
+          ? 'Solo Parent Educational Assistance Program'
+          : 'Educational Assistance for Indigent Children & Youth';
         await pool.query(`
           INSERT INTO financial_disbursements (reference_no, applicant_name, module_name, benefit_name, amount, payout_date, payout_start_time, venue, status)
-          VALUES ($1, $2, 'EDUCATIONAL', 'Solo Parent Educational Assistance Grant', 5000.00, $3, $4, $5, $6);
-        `, [row.reference_no, row.applicant_name, payoutDate || row.payout_date || null, payoutTime || row.payout_time || null, payoutVenue || row.payout_venue || null, finStatus]);
+          VALUES ($1, $2, 'EDUCATIONAL', $3, 5000.00, $4, $5, $6, $7);
+        `, [row.reference_no, row.applicant_name, benefitName, payoutDate || row.payout_date || null, payoutTime || row.payout_time || null, payoutVenue || row.payout_venue || null, finStatus]);
       }
     }
 

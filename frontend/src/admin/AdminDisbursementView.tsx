@@ -117,6 +117,8 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
       return (
         st === 'APPROVED' ||
         st === 'READY FOR PAYOUT' || 
+        st === 'APPROVED & READY FOR PAYOUT' ||
+        st.includes('READY FOR PAYOUT') ||
         st === 'PAYOUT SCHEDULED' ||
         st === 'RELEASED / COMPLETED' || 
         st === 'RELEASED & ARCHIVED' ||
