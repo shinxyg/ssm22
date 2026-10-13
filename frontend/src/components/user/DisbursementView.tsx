@@ -555,10 +555,10 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
               const rawInterviewTime = (app as any).appointmentTime || (app as any).appointment_time || appt?.appointmentTime || dbAppt?.appointment_time || dbAppt?.appointmentTime;
 
               const hasExplicitPayoutSched = !!(rawPayoutDate || rawPayoutTime) || statusText === 'PAYOUT SCHEDULED' || statusText === 'Payout Scheduled';
-              const isPayoutScheduled = statusText === 'PAYOUT SCHEDULED' || statusText === 'Payout Scheduled';
+              const isPayoutScheduled = statusText === 'PAYOUT SCHEDULED' || statusText === 'Payout Scheduled' || (hasExplicitPayoutSched && (statusText.includes('Approved') || statusText.includes('Ready for Payout')));
               const isApprovedByAdmin = statusText === 'APPROVED BY ADMIN' || statusText === 'Approved by Admin';
               const isInterviewScheduled = statusText === 'INTERVIEW SCHEDULED' || statusText === 'Interview Scheduled' || statusText === 'Approved for Orientation';
-              const isApproved = statusText === 'APPROVED' || statusText === 'Approved' || statusText === 'Approved by Social Worker';
+              const isApproved = statusText === 'APPROVED' || statusText === 'Approved' || statusText === 'Approved by Social Worker' || statusText === 'Approved & Ready for Payout' || statusText.includes('Ready for Payout');
               const isReleased = statusText === 'RELEASED / COMPLETED' || statusText === 'COMPLETED' || statusText === 'Completed' || statusText === 'Released' || (isCwProtection && (statusText.includes('APPROVED') || statusText.includes('COMPLETED')));
               const isRejected = statusText === 'REJECTED' || statusText === 'Rejected' || statusText === 'Disapproved' || statusText === 'DISAPPROVED';
 
@@ -656,7 +656,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
               } else if (isApproved) {
                 statusBadge = (
                   <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 inline-block">
-                    APPROVED
+                    {statusText.includes('Ready for Payout') ? 'APPROVED & READY FOR PAYOUT' : 'APPROVED'}
                   </span>
                 );
                 processExplanation = isAics

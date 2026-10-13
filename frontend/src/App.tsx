@@ -421,17 +421,21 @@ export default function App() {
     const isSenior = (refNo || '').startsWith('SENIOR-');
     const isPwd = (refNo || '').startsWith('QC-PWD-') || (refNo || '').includes('PWD');
     const isSolo = (refNo || '').startsWith('SP-') || (refNo || '').startsWith('QC-SP-') || (refNo || '').includes('SOLO');
-    const isCw = (refNo || '').startsWith('QC-CW-') || (refNo || '').startsWith('QC-EDU-');
     const isEdu = (refNo || '').startsWith('QC-EDU-');
+    const isCw = (refNo || '').startsWith('QC-CW-') || (refNo || '').startsWith('CW-');
     const isLvh = (refNo || '').startsWith('LVH-');
     const isTrn = (refNo || '').startsWith('TRN-');
 
     const endpointsToTry: string[] = [];
-    if (isCw) {
+    if (isEdu) {
+      endpointsToTry.push(
+        `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`,
+        `${API_BASE_URL}/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`
+      );
+    } else if (isCw) {
       endpointsToTry.push(
         `${API_BASE_URL}/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`,
-        `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`,
-        `${API_BASE_URL}/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`
+        `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`
       );
     } else if (isSenior) {
       endpointsToTry.push(`${API_BASE_URL}/api/senior/applications/${encodeURIComponent(refNo)}/status`);
@@ -441,11 +445,6 @@ export default function App() {
       endpointsToTry.push(
         `${API_BASE_URL}/api/solo-parent/applications/${encodeURIComponent(refNo)}/status`,
         `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`
-      );
-    } else if (isEdu) {
-      endpointsToTry.push(
-        `${API_BASE_URL}/api/educational/applications/${encodeURIComponent(refNo)}/status`,
-        `${API_BASE_URL}/api/child-welfare/applications/${encodeURIComponent(refNo)}/status`
       );
     } else if (isLvh) {
       endpointsToTry.push(`${API_BASE_URL}/api/livelihood/applications/${encodeURIComponent(refNo)}/status`);
@@ -457,12 +456,11 @@ export default function App() {
 
     try {
       for (const ep of endpointsToTry) {
-        const res = await fetch(ep, {
+        await fetch(ep, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: newStatus, ...(extraFields || {}) })
-        });
-        if (res.ok) break;
+        }).catch(() => null);
       }
     } catch (err) {
       console.error('Error updating status in DB:', err);

@@ -1274,6 +1274,18 @@ app.put('/api/child-welfare/applications/:id/status', async (req, res) => {
       return res.status(404).json({ error: 'Child Welfare application not found' });
     }
 
+    // Also sync payout fields and status to educational_applications if reference matches
+    await pool.query(`
+      UPDATE educational_applications 
+      SET 
+        status = COALESCE($1, status),
+        payout_date = COALESCE($2, payout_date),
+        payout_time = COALESCE($3, payout_time),
+        payout_venue = COALESCE($4, payout_venue),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE reference_no = $5;
+    `, [status, payoutDate || null, payoutTime || null, payoutVenue || null, row.reference_no]).catch(() => null);
+
     // Sync to appointments table when approved / scheduled
     if (status === 'APPROVED BY ADMIN' || status === 'APPROVED' || (status || '').includes('Approved') || (status || '').includes('APPROVED') || (status || '').includes('Released') || (status || '').includes('COMPLETED') || appointmentDate) {
       const isCompleted = status === 'Released & Archived' || status === 'Approved' || status === 'APPROVED' || (status || '').includes('COMPLETED') || status === 'Ready for Payout' || status === 'Passed / Completed';
@@ -1830,6 +1842,18 @@ app.put('/api/educational/applications/:id/status', async (req, res) => {
       return res.status(404).json({ error: 'Educational application not found' });
     }
     const row = result.rows[0];
+
+    // Also sync payout fields and status to child_welfare_applications if reference matches
+    await pool.query(`
+      UPDATE child_welfare_applications 
+      SET 
+        status = COALESCE($1, status),
+        payout_date = COALESCE($2, payout_date),
+        payout_time = COALESCE($3, payout_time),
+        payout_venue = COALESCE($4, payout_venue),
+        updated_at = CURRENT_TIMESTAMP
+      WHERE reference_no = $5;
+    `, [status, payoutDate || null, payoutTime || null, payoutVenue || null, row.reference_no]).catch(() => null);
 
     // Sync to appointments table when approved / scheduled
     if (status === 'APPROVED BY ADMIN' || status === 'APPROVED' || (status || '').includes('Approved') || (status || '').includes('APPROVED') || appointmentDate) {
