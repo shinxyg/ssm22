@@ -796,11 +796,11 @@ export const LoginView: React.FC<LoginViewProps> = ({
   };
 
   return (
-    <div className={`h-screen max-h-screen overflow-hidden w-full flex flex-col md:flex-row font-['Plus_Jakarta_Sans',sans-serif] ${
+    <div className={`min-h-screen md:h-screen md:max-h-screen md:overflow-hidden overflow-y-auto w-full flex flex-col md:flex-row font-['Plus_Jakarta_Sans',sans-serif] ${
       darkMode ? 'bg-[#050a14] text-slate-100' : 'bg-slate-100 text-slate-900'
     }`}>
-      {/* Left Column: Branding / Official Seal Area (ALWAYS Dark Navy Seal Design) */}
-      <div className="md:w-1/2 h-full relative flex flex-col justify-between p-6 sm:p-8 lg:p-10 bg-[#070e1b] border-r border-slate-800/80 overflow-hidden select-none">
+      {/* Left Column: Branding / Official Seal Area (Visible on Desktop md:flex, Hidden on Mobile) */}
+      <div className="hidden md:flex md:w-1/2 h-full relative flex-col justify-between p-6 sm:p-8 lg:p-10 bg-[#070e1b] border-r border-slate-800/80 overflow-hidden select-none">
         
         {/* Top Header Action: Back to Home */}
         <div className="relative z-10">
@@ -850,9 +850,29 @@ export const LoginView: React.FC<LoginViewProps> = ({
       </div>
 
       {/* Right Column: Login or Forgot Password Form Card Container */}
-      <div className={`md:w-1/2 h-full flex items-center justify-center p-6 sm:p-8 overflow-hidden relative transition-colors duration-300 ${
+      <div className={`w-full md:w-1/2 min-h-screen md:h-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto md:overflow-hidden relative transition-colors duration-300 ${
         darkMode ? 'bg-[#050a14]' : 'bg-slate-100/80'
       }`}>
+        {/* Mobile Top Header: Back to Home + Compact GovSeal Branding (Mobile ONLY) */}
+        <div className="w-full max-w-sm mb-4 flex items-center justify-between md:hidden shrink-0">
+          <button
+            type="button"
+            onClick={onBackToHome}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer p-1.5 -ml-1.5 rounded-lg active:bg-slate-800/60"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Home</span>
+          </button>
+
+          <div className="flex items-center gap-2 select-none">
+            <img
+              src="/Government Service Integrity Seal.png"
+              alt="Government Service Integrity Seal"
+              className="w-7 h-7 object-contain"
+            />
+            <span className="font-extrabold text-xs tracking-tight text-white">GovServe</span>
+          </div>
+        </div>
         {viewMode === 'reset_password' ? (
           /* STEP 3: SET NEW PASSWORD CARD */
           <div className={`w-full max-w-sm border rounded-3xl p-6 sm:p-7 shadow-2xl backdrop-blur-sm animate-in fade-in duration-300 relative ${
@@ -1326,6 +1346,14 @@ export const LoginView: React.FC<LoginViewProps> = ({
             
             {/* Card Header */}
             <div className="space-y-1 mb-5 text-center">
+              {/* Mini seal logo inside card on mobile for clean official look */}
+              <div className="flex justify-center mb-2.5 md:hidden">
+                <img
+                  src="/Government Service Integrity Seal.png"
+                  alt="GovSeal"
+                  className="w-12 h-12 object-contain drop-shadow-md"
+                />
+              </div>
               <h1 className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${
                 darkMode ? 'text-white' : 'text-slate-900'
               }`}>
@@ -1780,6 +1808,10 @@ export const LoginView: React.FC<LoginViewProps> = ({
             </div>
           </div>
         )}
+        {/* Mobile Footer Credit (Visible ONLY on mobile) */}
+        <div className="mt-6 mb-2 text-center text-[10px] text-slate-500 font-medium md:hidden shrink-0">
+          © Social Services Management System • Community Care Portal
+        </div>
       </div>
     </div>
   );

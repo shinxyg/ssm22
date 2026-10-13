@@ -65,7 +65,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
         {/* Title & Subtitle */}
         <div className="text-center max-w-xl mx-auto space-y-3">
           <h1 className="text-2xl sm:text-3xl lg:text-[38px] font-extrabold tracking-tight leading-tight text-center drop-shadow-sm">
-            <span className="bg-gradient-to-r from-blue-500 via-blue-400 to-indigo-400 bg-clip-text text-transparent block whitespace-nowrap">
+            <span className="bg-gradient-to-r from-blue-500 via-blue-400 to-indigo-400 bg-clip-text text-transparent block sm:whitespace-nowrap">
               Social Services Management
             </span>
             <span className={`block mt-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
