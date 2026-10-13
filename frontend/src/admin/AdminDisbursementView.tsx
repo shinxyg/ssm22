@@ -194,6 +194,40 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
   const pendingCount = disbursementRecords.filter((a) => !checkIsDisbursementReleased(a.status)).length;
   const releasedCount = disbursementRecords.filter((a) => checkIsDisbursementReleased(a.status)).length;
 
+  // Helper for benefit text & location
+  const getDisbursementInfo = (app: ApplicationRecord) => {
+    let benefitText = 'Hospital Guarantee Letter (GL)';
+    let locationText = 'Quezon City General Hospital (QCGH)';
+
+    const s = app.serviceName.toLowerCase();
+    const cat = (app.category || '').toLowerCase();
+    const isEdu = s.includes('educational') || s.includes('indigent') || app.referenceNo.startsWith('QC-SP-EDU') || app.referenceNo.startsWith('QC-EDU') || app.referenceNo.startsWith('CW-');
+    if (s.includes('medicine')) {
+      benefitText = 'Pharmacy Voucher / Reseta Authorization';
+      locationText = 'Accredited Partner Pharmacy';
+    } else if (s.includes('funeral') || s.includes('burial')) {
+      benefitText = 'Up to ₱25,000 Funeral Guarantee';
+      locationText = 'Partner Funeral Parlor';
+    } else if (s.includes('pwd') || cat.includes('pwd')) {
+      benefitText = '₱1,500.00 Quarterly Pension & Financial Aid';
+      locationText = 'Quezon City Hall PDAO Room 102';
+    } else if (s.includes('senior') || cat.includes('senior')) {
+      benefitText = '₱3,000 Quarterly Social Pension';
+      locationText = 'OSCA Distribution Desk';
+    } else if (s.includes('livelihood') || cat.includes('livelihood') || app.referenceNo.startsWith('LVH-')) {
+      benefitText = '₱15,000.00 Livelihood Capital Grant';
+      locationText = 'Quezon City Hall Cashier / SSDD Office';
+    } else if (isEdu) {
+      benefitText = '₱5,000.00 Fixed Educational Grant';
+      locationText = 'Quezon City Hall Cashier / SSDD Office';
+    } else if (s.includes('solo') || s.includes('parent') || cat.includes('solo')) {
+      benefitText = '₱3,000.00 Fixed Cash Subsidy';
+      locationText = 'Quezon City Hall Cashier / SSDD Office';
+    }
+
+    return { benefitText, locationText };
+  };
+
   const handleConfirmRelease = (immediate = false) => {
     if (releasingRecord && onUpdateStatus) {
       if (immediate) {
@@ -220,66 +254,66 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
     <div className={`space-y-6 select-none font-['Plus_Jakarta_Sans',sans-serif] ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className={`text-2xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
             Financial Aid Disbursement & Releasing
           </h1>
         </div>
       </div>
 
-      {/* SUMMARY METRIC CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className={`border rounded-2xl p-5 shadow-lg flex justify-between items-start ${
+      {/* SUMMARY METRIC CARDS - 2 COLUMNS ON MOBILE */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg flex justify-between items-start ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL RELEASED</span>
-            <div className="text-3xl font-extrabold text-emerald-400 tracking-tight mt-2">{releasedCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL RELEASED</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 tracking-tight mt-1 sm:mt-2">{releasedCount}</div>
           </div>
-          <div className={`p-2 rounded-full ${darkMode ? 'bg-emerald-950/60 border border-emerald-500/30 text-emerald-400' : 'bg-emerald-100 border border-emerald-200 text-emerald-600'}`}>
-            <CheckCircle2 className="w-4 h-4" />
+          <div className={`p-1.5 sm:p-2 rounded-full shrink-0 ${darkMode ? 'bg-emerald-950/60 border border-emerald-500/30 text-emerald-400' : 'bg-emerald-100 border border-emerald-200 text-emerald-600'}`}>
+            <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg flex justify-between items-start ${
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg flex justify-between items-start ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>PENDING RELEASE</span>
-            <div className="text-3xl font-extrabold text-amber-400 tracking-tight mt-2">{pendingCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>PENDING RELEASE</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-amber-400 tracking-tight mt-1 sm:mt-2">{pendingCount}</div>
           </div>
-          <div className={`p-2 rounded-full ${darkMode ? 'bg-amber-950/60 border border-amber-500/30 text-amber-400' : 'bg-amber-100 border border-amber-200 text-amber-600'}`}>
-            <Clock className="w-4 h-4" />
+          <div className={`p-1.5 sm:p-2 rounded-full shrink-0 ${darkMode ? 'bg-amber-950/60 border border-amber-500/30 text-amber-400' : 'bg-amber-100 border border-amber-200 text-amber-600'}`}>
+            <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg flex justify-between items-start ${
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg flex justify-between items-start ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL MASTERLIST</span>
-            <div className="text-3xl font-extrabold text-blue-400 tracking-tight mt-2">{disbursementRecords.length}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL MASTERLIST</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-blue-400 tracking-tight mt-1 sm:mt-2">{disbursementRecords.length}</div>
           </div>
-          <div className={`p-2 rounded-full ${darkMode ? 'bg-blue-950/60 border border-blue-500/30 text-blue-400' : 'bg-blue-100 border border-blue-200 text-blue-600'}`}>
-            <Users className="w-4 h-4" />
+          <div className={`p-1.5 sm:p-2 rounded-full shrink-0 ${darkMode ? 'bg-blue-950/60 border border-blue-500/30 text-blue-400' : 'bg-blue-100 border border-blue-200 text-blue-600'}`}>
+            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg flex justify-between items-start ${
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg flex justify-between items-start ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>AUTOMATIC ARCHIVE</span>
-            <div className="text-sm font-extrabold text-blue-400 tracking-tight mt-2">RELEASED ➔ HISTORY</div>
-            <span className={`text-[10px] font-medium mt-1 block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Auto-moves to Application History</span>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>AUTOMATIC ARCHIVE</span>
+            <div className="text-xs sm:text-sm font-extrabold text-blue-400 tracking-tight mt-1 sm:mt-2">RELEASED ➔ HISTORY</div>
+            <span className={`text-[9px] sm:text-[10px] font-medium mt-1 block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Auto-moves to History</span>
           </div>
-          <div className={`p-2 rounded-full ${darkMode ? 'bg-purple-950/60 border border-purple-500/30 text-purple-400' : 'bg-purple-100 border border-purple-200 text-purple-600'}`}>
-            <Shield className="w-4 h-4" />
+          <div className={`p-1.5 sm:p-2 rounded-full shrink-0 ${darkMode ? 'bg-purple-950/60 border border-purple-500/30 text-purple-400' : 'bg-purple-100 border border-purple-200 text-purple-600'}`}>
+            <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
       </div>
 
-      {/* TABLE SECTION */}
-      <div className={`border rounded-2xl p-6 shadow-xl space-y-6 ${
+      {/* TABLE / CARDS SECTION */}
+      <div className={`border rounded-2xl p-4 sm:p-6 shadow-xl space-y-5 sm:space-y-6 ${
         darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90 shadow-sm'
       }`}>
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -307,11 +341,12 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* TABS - HORIZONTAL SCROLL ON MOBILE */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
           <button 
             type="button" 
             onClick={() => setTabFilter('ALL')} 
-            className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+            className={`px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               tabFilter === 'ALL' 
                 ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40' 
                 : darkMode 
@@ -324,7 +359,7 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
           <button 
             type="button" 
             onClick={() => setTabFilter('PENDING')} 
-            className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+            className={`px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               tabFilter === 'PENDING' 
                 ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40' 
                 : darkMode 
@@ -337,7 +372,7 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
           <button 
             type="button" 
             onClick={() => setTabFilter('RELEASED')} 
-            className={`px-4 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+            className={`px-3.5 sm:px-4 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               tabFilter === 'RELEASED' 
                 ? 'bg-emerald-600 text-white shadow-md border border-emerald-400/40' 
                 : darkMode 
@@ -349,7 +384,133 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
           </button>
         </div>
 
-        <div className={`overflow-x-auto border rounded-xl ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
+        {/* MOBILE VIEW: DEDICATED CARDS (md:hidden) */}
+        <div className="md:hidden space-y-3.5">
+          {filteredRecords.length > 0 ? (
+            filteredRecords.map((app) => {
+              const isReleased = checkIsDisbursementReleased(app.status);
+              const name = (app as any).applicantName || app.details?.applicantName || 'Juan Dela Cruz';
+              const schedInfo = scheduledPayoutTimes[app.referenceNo];
+              const payoutDate = schedInfo?.date || (app as any).scheduledPayoutDate || (app as any).scheduled_payout_date;
+              const payoutTime = schedInfo?.time || (app as any).scheduledPayoutTime || (app as any).scheduled_payout_time;
+              const hasSchedule = !!(payoutDate && payoutTime);
+              const { benefitText, locationText } = getDisbursementInfo(app);
+              const isUnmasked = unmaskedRefNos.has(app.referenceNo);
+
+              return (
+                <div
+                  key={app.referenceNo}
+                  className={`border rounded-2xl p-4 space-y-3 transition-all ${
+                    darkMode
+                      ? 'bg-[#0b1220] border-slate-800/80 hover:border-slate-700'
+                      : 'bg-white border-slate-200 shadow-sm hover:border-slate-300'
+                  }`}
+                >
+                  {/* Top Bar: ID with Unmask & Status Badge */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-mono font-bold text-blue-400 text-xs">
+                        {isUnmasked ? `DISB-${app.referenceNo}` : maskIdNumber(`DISB-${app.referenceNo}`, true)}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => toggleUnmaskDisbursement(app.referenceNo, name)}
+                        className={`p-1 rounded-lg border transition-all cursor-pointer ${
+                          isUnmasked
+                            ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
+                            : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                        }`}
+                        title={isUnmasked ? 'Click to mask payout details' : 'Click to unmask payout details'}
+                      >
+                        {isUnmasked ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                      </button>
+                    </div>
+
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black border whitespace-nowrap ${
+                      isReleased
+                        ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                        : hasSchedule
+                        ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                        : 'bg-blue-950/60 text-blue-300 border-blue-500/30'
+                    }`}>
+                      {isReleased
+                        ? 'RELEASED / COMPLETED'
+                        : hasSchedule
+                        ? 'PAYOUT SCHEDULED'
+                        : 'READY FOR PAYOUT'}
+                    </span>
+                  </div>
+
+                  {/* Beneficiary Name & Assistance */}
+                  <div>
+                    <h3 className={`font-bold text-sm leading-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                      {isUnmasked ? name : maskName(name, true)}
+                    </h3>
+                    <p className={`text-xs mt-0.5 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                      {app.serviceName}
+                    </p>
+                  </div>
+
+                  {/* Benefit & Payout Location */}
+                  <div className={`p-2.5 rounded-xl border space-y-1.5 text-xs ${
+                    darkMode ? 'bg-[#0e1726]/80 border-slate-800' : 'bg-slate-50 border-slate-200'
+                  }`}>
+                    <div className="flex items-start justify-between gap-2">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Benefit:</span>
+                      <span className="font-mono text-amber-500 font-bold text-[11px] text-right">{benefitText}</span>
+                    </div>
+                    <div className="flex items-start justify-between gap-2 pt-1 border-t border-slate-800/40">
+                      <span className={`text-[10px] font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Venue:</span>
+                      <span className={`text-[11px] text-right ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{locationText}</span>
+                    </div>
+                    {hasSchedule && (
+                      <div className="flex items-start justify-between gap-2 pt-1 border-t border-slate-800/40">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider text-amber-400`}>Time:</span>
+                        <span className="font-bold text-amber-400 text-[11px] text-right">
+                          {payoutDate} at {formatTo12Hour(payoutTime)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottom Action */}
+                  <div className="pt-1">
+                    {!isReleased ? (
+                      hasSchedule ? (
+                        <div className="w-full text-center py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-xs flex items-center justify-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Payout Scheduled ({payoutDate})</span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setReleasingRecord(app)}
+                          className="w-full py-2.5 px-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                        >
+                          <Clock className="w-3.5 h-3.5 shrink-0" />
+                          <span>Set Payout Date & Time</span>
+                        </button>
+                      )
+                    ) : (
+                      <div className="w-full text-center py-2 text-xs font-semibold text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 rounded-xl">
+                        ✓ Released & Archived to History
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className={`p-10 text-center rounded-2xl border ${darkMode ? 'bg-[#0b1220] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+              <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="font-bold text-sm">No disbursement records found</p>
+              <p className="text-xs mt-1">There are currently no records under this filter.</p>
+            </div>
+          )}
+        </div>
+
+        {/* DESKTOP VIEW: DATA TABLE (hidden md:block) */}
+        <div className={`hidden md:block overflow-x-auto border rounded-xl ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className={`border-b text-[10px] font-extrabold uppercase tracking-wider ${
@@ -373,37 +534,9 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
                   const payoutDate = schedInfo?.date || (app as any).scheduledPayoutDate || (app as any).scheduled_payout_date;
                   const payoutTime = schedInfo?.time || (app as any).scheduledPayoutTime || (app as any).scheduled_payout_time;
                   const hasSchedule = !!(payoutDate && payoutTime);
-
-                  let benefitText = 'Hospital Guarantee Letter (GL)';
-                  let locationText = 'Quezon City General Hospital (QCGH)';
-
-                  const s = app.serviceName.toLowerCase();
-                  const cat = (app.category || '').toLowerCase();
-                  const isEdu = s.includes('educational') || s.includes('indigent') || app.referenceNo.startsWith('QC-SP-EDU') || app.referenceNo.startsWith('QC-EDU') || app.referenceNo.startsWith('CW-');
-                  if (s.includes('medicine')) {
-                    benefitText = 'Pharmacy Voucher / Reseta Authorization';
-                    locationText = 'Accredited Partner Pharmacy';
-                  } else if (s.includes('funeral') || s.includes('burial')) {
-                    benefitText = 'Up to ₱25,000 Funeral Guarantee';
-                    locationText = 'Partner Funeral Parlor';
-                  } else if (s.includes('pwd') || cat.includes('pwd')) {
-                    benefitText = '₱1,500.00 Quarterly Pension & Financial Aid';
-                    locationText = 'Quezon City Hall PDAO Room 102';
-                  } else if (s.includes('senior') || cat.includes('senior')) {
-                    benefitText = '₱3,000 Quarterly Social Pension';
-                    locationText = 'OSCA Distribution Desk';
-                  } else if (s.includes('livelihood') || cat.includes('livelihood') || app.referenceNo.startsWith('LVH-')) {
-                    benefitText = '₱15,000.00 Livelihood Capital Grant';
-                    locationText = 'Quezon City Hall Cashier / SSDD Office';
-                  } else if (isEdu) {
-                    benefitText = '₱5,000.00 Fixed Educational Grant';
-                    locationText = 'Quezon City Hall Cashier / SSDD Office';
-                  } else if (s.includes('solo') || s.includes('parent') || cat.includes('solo')) {
-                    benefitText = '₱3,000.00 Fixed Cash Subsidy';
-                    locationText = 'Quezon City Hall Cashier / SSDD Office';
-                  }
-
+                  const { benefitText, locationText } = getDisbursementInfo(app);
                   const isUnmasked = unmaskedRefNos.has(app.referenceNo);
+
                   return (
                     <tr key={app.referenceNo} className={`transition-colors ${darkMode ? 'hover:bg-[#142036]' : 'hover:bg-slate-50'}`}>
                       <td className="py-3 px-4 font-mono font-bold text-blue-400">
@@ -488,10 +621,10 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
         </div>
       </div>
 
-      {/* CONFIRMATION & PAYOUT DATE MODAL */}
+      {/* CONFIRMATION & PAYOUT DATE MODAL - MOBILE-SAFE OVERLAY */}
       {releasingRecord && createPortal(
-        <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className={`border rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-5 font-sans ${
+        <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md overflow-y-auto overscroll-contain p-4 flex items-center justify-center">
+          <div className={`border rounded-2xl w-full max-w-lg p-5 sm:p-6 shadow-2xl space-y-5 font-sans my-auto max-h-[92vh] overflow-y-auto ${
             darkMode ? 'bg-[#0e1726] border-slate-700/80 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
           }`}>
             <div className={`flex items-center justify-between border-b pb-3 ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
@@ -502,7 +635,7 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
               <button
                 type="button"
                 onClick={() => setReleasingRecord(null)}
-                className={`transition-colors cursor-pointer ${darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
+                className={`transition-colors cursor-pointer text-lg p-1 leading-none ${darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'}`}
               >
                 ✕
               </button>
@@ -561,33 +694,33 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
               </div>
             </div>
 
-            <div className={`p-4 border-t flex items-center justify-between gap-2 flex-wrap rounded-b-2xl ${
+            <div className={`p-4 border-t flex flex-col sm:flex-row items-center justify-between gap-2.5 rounded-b-2xl ${
               darkMode ? 'bg-[#0a1120] border-slate-800' : 'bg-slate-50 border-slate-200'
             }`}>
               <button
                 type="button"
                 onClick={() => setReleasingRecord(null)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                className={`w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-bold transition-all text-center cursor-pointer ${
                   darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
                 }`}
               >
                 Cancel
               </button>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
                   onClick={() => handleConfirmRelease(true)}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer"
+                  className="flex-1 sm:flex-initial px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all text-center whitespace-nowrap cursor-pointer"
                   title="Force Release Immediately Now"
                 >
-                  Release Immediately
+                  Release Now
                 </button>
                 <button
                   type="button"
                   onClick={() => handleConfirmRelease(false)}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-lg transition-all whitespace-nowrap cursor-pointer"
+                  className="flex-1 sm:flex-initial px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-lg transition-all text-center whitespace-nowrap cursor-pointer"
                 >
-                  Save Payout Schedule
+                  Save Schedule
                 </button>
               </div>
             </div>

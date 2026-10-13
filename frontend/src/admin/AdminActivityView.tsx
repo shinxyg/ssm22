@@ -200,37 +200,37 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
   if (isRecentlyDeletedView) {
     return (
       <div className={`space-y-6 select-none font-['Plus_Jakarta_Sans',sans-serif] animate-in fade-in duration-300 ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
-        <div className="flex items-center justify-between pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
           <div>
-            <h1 className={`text-3xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>Recently Deleted</h1>
+            <h1 className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>Recently Deleted</h1>
             <p className={`text-xs mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Archived audit logs soft-deleted from main record. You can restore or permanently delete them.</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
             <button 
               type="button" 
               onClick={handleEmptyTrash}
               disabled={deletedLogs.length === 0}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer ${
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer whitespace-nowrap ${
                 deletedLogs.length === 0
                   ? 'opacity-40 pointer-events-none bg-rose-950/40 border border-rose-900 text-rose-300'
                   : 'bg-rose-600 hover:bg-rose-500 text-white border border-rose-400/40'
               }`}
               title="Permanently delete all logs in Recently Deleted"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-4 h-4 shrink-0" />
               <span>Permanent Delete All</span>
             </button>
 
             <button 
               type="button" 
               onClick={() => setIsRecentlyDeletedView(false)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer ${
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl sm:rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer whitespace-nowrap ${
                 darkMode 
                   ? 'bg-[#0e1726] hover:bg-[#142036] text-slate-200 border border-slate-700/80' 
                   : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300'
               }`}
             >
-              <RotateCcw className={`w-4 h-4 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`} />
+              <RotateCcw className={`w-4 h-4 shrink-0 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`} />
               <span>Back to Activity Log</span>
             </button>
           </div>
@@ -245,66 +245,133 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
             <p className={`text-xs mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Deleted records and logs will appear here for audit tracking before permanent cleanup.</p>
           </div>
         ) : (
-          <div className={`${filterBoxClass} border rounded-2xl overflow-hidden`}>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className={`border-b uppercase tracking-wider text-[10px] font-extrabold ${
-                  darkMode ? 'bg-[#0b1220] border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
-                }`}>
-                  <tr>
-                    <th className="px-5 py-3.5">Date & Time</th>
-                    <th className="px-5 py-3.5">Staff Name</th>
-                    <th className="px-5 py-3.5">Module</th>
-                    <th className="px-5 py-3.5">Action</th>
-                    <th className="px-5 py-3.5">Details</th>
-                    <th className="px-5 py-3.5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className={`divide-y font-medium ${
-                  darkMode ? 'divide-slate-800/60 text-slate-300' : 'divide-slate-200 text-slate-700'
-                }`}>
-                  {filteredLogs.map(log => (
-                    <tr key={log.id} className={`transition-colors ${darkMode ? 'hover:bg-[#121d30]/60' : 'hover:bg-slate-50'}`}>
-                      <td className={`px-5 py-3.5 whitespace-nowrap font-mono text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{formatDate(log.timestamp)}</td>
-                      <td className={`px-5 py-3.5 font-bold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>{log.staff_name}</td>
-                      <td className="px-5 py-3.5">
-                        <span className={`px-2.5 py-1 rounded-lg border font-semibold text-[11px] ${
-                          darkMode ? 'bg-slate-800 text-slate-300 border-slate-700/60' : 'bg-slate-100 text-slate-700 border-slate-200'
-                        }`}>{log.module}</span>
-                      </td>
-                      <td className="px-5 py-3.5">{getActionBadge(log.action)}</td>
-                      <td className="px-5 py-3.5 max-w-xs">
-                        {log.details}
-                        {log.reference_no && <span className={`ml-2 font-mono text-[11px] font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>({log.reference_no})</span>}
-                      </td>
-                      <td className="px-5 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleRestore(log.id)}
-                            className="inline-flex items-center gap-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3 py-1.5 rounded-xl font-bold transition-all text-[11px] cursor-pointer"
-                            title="Restore log entry"
-                          >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                            <span>Restore</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handlePermanentDeleteSingle(log.id)}
-                            className="inline-flex items-center gap-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl font-bold transition-all text-[11px] cursor-pointer"
-                            title="Permanently delete log entry"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                            <span>Permanent Delete</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <>
+            {/* MOBILE VIEW: RECENTLY DELETED CARDS (md:hidden) */}
+            <div className="md:hidden space-y-3.5">
+              {filteredLogs.map(log => (
+                <div
+                  key={log.id}
+                  className={`border rounded-2xl p-4 space-y-3 transition-all ${
+                    darkMode
+                      ? 'bg-[#0e1726] border-slate-800/90 hover:border-slate-700'
+                      : 'bg-white border-slate-200 shadow-sm hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <span className={`font-mono text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                      {formatDate(log.timestamp)}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-lg border font-semibold text-[10px] ${
+                      darkMode ? 'bg-slate-800 text-slate-300 border-slate-700/60' : 'bg-slate-100 text-slate-700 border-slate-200'
+                    }`}>
+                      {log.module}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`font-bold text-xs ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                      {log.staff_name}
+                    </span>
+                    {getActionBadge(log.action)}
+                  </div>
+
+                  <div className={`p-2.5 rounded-xl border text-xs ${
+                    darkMode ? 'bg-[#080f1e] border-slate-800/80 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                  }`}>
+                    <p>{log.details}</p>
+                    {log.reference_no && (
+                      <span className={`mt-1 inline-block font-mono text-[11px] font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                        Ref: {log.reference_no}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={() => handleRestore(log.id)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 py-2 px-3 rounded-xl font-bold transition-all text-xs cursor-pointer active:scale-[0.98]"
+                      title="Restore log entry"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Restore</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePermanentDeleteSingle(log.id)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 border border-rose-500/30 py-2 px-3 rounded-xl font-bold transition-all text-xs cursor-pointer active:scale-[0.98]"
+                      title="Permanently delete log entry"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+
+            {/* DESKTOP VIEW: RECENTLY DELETED TABLE (hidden md:block) */}
+            <div className={`${filterBoxClass} hidden md:block border rounded-2xl overflow-hidden`}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className={`border-b uppercase tracking-wider text-[10px] font-extrabold ${
+                    darkMode ? 'bg-[#0b1220] border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+                  }`}>
+                    <tr>
+                      <th className="px-5 py-3.5">Date & Time</th>
+                      <th className="px-5 py-3.5">Staff Name</th>
+                      <th className="px-5 py-3.5">Module</th>
+                      <th className="px-5 py-3.5">Action</th>
+                      <th className="px-5 py-3.5">Details</th>
+                      <th className="px-5 py-3.5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className={`divide-y font-medium ${
+                    darkMode ? 'divide-slate-800/60 text-slate-300' : 'divide-slate-200 text-slate-700'
+                  }`}>
+                    {filteredLogs.map(log => (
+                      <tr key={log.id} className={`transition-colors ${darkMode ? 'hover:bg-[#121d30]/60' : 'hover:bg-slate-50'}`}>
+                        <td className={`px-5 py-3.5 whitespace-nowrap font-mono text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{formatDate(log.timestamp)}</td>
+                        <td className={`px-5 py-3.5 font-bold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>{log.staff_name}</td>
+                        <td className="px-5 py-3.5">
+                          <span className={`px-2.5 py-1 rounded-lg border font-semibold text-[11px] ${
+                            darkMode ? 'bg-slate-800 text-slate-300 border-slate-700/60' : 'bg-slate-100 text-slate-700 border-slate-200'
+                          }`}>{log.module}</span>
+                        </td>
+                        <td className="px-5 py-3.5">{getActionBadge(log.action)}</td>
+                        <td className="px-5 py-3.5 max-w-xs">
+                          {log.details}
+                          {log.reference_no && <span className={`ml-2 font-mono text-[11px] font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>({log.reference_no})</span>}
+                        </td>
+                        <td className="px-5 py-3.5 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleRestore(log.id)}
+                              className="inline-flex items-center gap-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 px-3 py-1.5 rounded-xl font-bold transition-all text-[11px] cursor-pointer"
+                              title="Restore log entry"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" />
+                              <span>Restore</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handlePermanentDeleteSingle(log.id)}
+                              className="inline-flex items-center gap-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl font-bold transition-all text-[11px] cursor-pointer"
+                              title="Permanently delete log entry"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                              <span>Permanent Delete</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
         )}
       </div>
     );
@@ -312,73 +379,74 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
 
   return (
     <div className={`space-y-6 select-none font-['Plus_Jakarta_Sans',sans-serif] ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className={`text-2xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>System Security & Activity Log</h1>
+          <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>System Security & Activity Log</h1>
           <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Track system actions, staff audits, and status logs in real-time.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
           <button 
             type="button" 
             onClick={handleDeleteAll}
             disabled={logs.length === 0}
-            className={`flex items-center gap-2 border px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 border px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               logs.length === 0
                 ? 'opacity-40 pointer-events-none bg-rose-950/40 border-rose-900 text-rose-300'
                 : 'bg-rose-950/50 hover:bg-rose-900/80 text-rose-300 border-rose-800/80'
             }`}
             title="Move all active logs to Recently Deleted"
           >
-            <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+            <Trash2 className="w-3.5 h-3.5 text-rose-400 shrink-0" />
             <span>Delete All Logs</span>
           </button>
 
           <button 
             type="button" 
             onClick={() => setIsRecentlyDeletedView(true)}
-            className={`flex items-center gap-2 border px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 border px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               darkMode 
                 ? 'bg-[#0e1726] hover:bg-[#142036] text-slate-300 border-slate-700/80' 
                 : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-300 shadow-sm'
             }`}
           >
-            <Trash2 className="w-3.5 h-3.5 text-slate-400" />
+            <Trash2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             <span>Recently Deleted</span>
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className={`${cardClass} border rounded-2xl p-5`}>
+      {/* TOP 4 SUMMARY METRIC CARDS - 2 COLUMNS ON MOBILE */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className={`${cardClass} border rounded-2xl p-3.5 sm:p-5`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL ENTRIES</span>
-            <div className={`text-3xl font-extrabold tracking-tight mt-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{totalEntries}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL ENTRIES</span>
+            <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 sm:mt-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{totalEntries}</div>
           </div>
         </div>
 
-        <div className={`${cardClass} border rounded-2xl p-5`}>
+        <div className={`${cardClass} border rounded-2xl p-3.5 sm:p-5`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>APPROVED</span>
-            <div className="text-3xl font-extrabold text-emerald-500 tracking-tight mt-2">{approvedCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>APPROVED</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-500 tracking-tight mt-1 sm:mt-2">{approvedCount}</div>
           </div>
         </div>
 
-        <div className={`${cardClass} border rounded-2xl p-5`}>
+        <div className={`${cardClass} border rounded-2xl p-3.5 sm:p-5`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>REJECTED</span>
-            <div className="text-3xl font-extrabold text-rose-500 tracking-tight mt-2">{rejectedCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>REJECTED</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-rose-500 tracking-tight mt-1 sm:mt-2">{rejectedCount}</div>
           </div>
         </div>
 
-        <div className={`${cardClass} border rounded-2xl p-5`}>
+        <div className={`${cardClass} border rounded-2xl p-3.5 sm:p-5`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TODAY</span>
-            <div className={`text-3xl font-extrabold tracking-tight mt-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{todayCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TODAY</span>
+            <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 sm:mt-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{todayCount}</div>
           </div>
         </div>
       </div>
 
-      <div className={`${filterBoxClass} border rounded-2xl p-5 space-y-4`}>
+      <div className={`${filterBoxClass} border rounded-2xl p-4 sm:p-5 space-y-4`}>
         <div className="relative w-full">
           <Search className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
           <input
@@ -442,56 +510,116 @@ export const AdminActivityView: React.FC<{ darkMode?: boolean }> = ({ darkMode =
           <p className={`text-xs mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>System audit logs will appear here when actions are recorded.</p>
         </div>
       ) : (
-        <div className={`${filterBoxClass} border rounded-2xl overflow-hidden`}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className={`border-b uppercase tracking-wider text-[10px] font-extrabold ${
-                darkMode ? 'bg-[#0b1220] border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
-              }`}>
-                <tr>
-                  <th className="px-5 py-3.5">Date & Time</th>
-                  <th className="px-5 py-3.5">Staff Name</th>
-                  <th className="px-5 py-3.5">Module</th>
-                  <th className="px-5 py-3.5">Action</th>
-                  <th className="px-5 py-3.5">Details / Reference</th>
-                  <th className="px-5 py-3.5 text-right">Options</th>
-                </tr>
-              </thead>
-              <tbody className={`divide-y font-medium ${
-                darkMode ? 'divide-slate-800/60 text-slate-300' : 'divide-slate-200 text-slate-700'
-              }`}>
-                {filteredLogs.map(log => (
-                  <tr key={log.id} className={`transition-colors ${darkMode ? 'hover:bg-[#121d30]/60' : 'hover:bg-slate-50'}`}>
-                    <td className={`px-5 py-3.5 whitespace-nowrap font-mono text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{formatDate(log.timestamp)}</td>
-                    <td className={`px-5 py-3.5 font-bold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>{log.staff_name}</td>
-                    <td className="px-5 py-3.5">
-                      <span className={`px-2.5 py-1 rounded-lg border font-semibold text-[11px] ${
-                        darkMode ? 'bg-slate-800 text-slate-300 border-slate-700/60' : 'bg-slate-100 text-slate-700 border-slate-200'
-                      }`}>{log.module}</span>
-                    </td>
-                    <td className="px-5 py-3.5">{getActionBadge(log.action)}</td>
-                    <td className="px-5 py-3.5 max-w-xs">
-                      {log.details}
-                      {log.reference_no && <span className={`ml-2 font-mono text-[11px] font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>({log.reference_no})</span>}
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(log.id)}
-                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
-                          darkMode ? 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10' : 'text-slate-500 hover:text-rose-600 hover:bg-rose-100'
-                        }`}
-                        title="Delete log"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+          {/* MOBILE VIEW: ACTIVE ACTIVITY LOG CARDS (md:hidden) */}
+          <div className="md:hidden space-y-3.5">
+            {filteredLogs.map(log => (
+              <div
+                key={log.id}
+                className={`border rounded-2xl p-4 space-y-3 transition-all ${
+                  darkMode
+                    ? 'bg-[#0e1726] border-slate-800/90 hover:border-slate-700'
+                    : 'bg-white border-slate-200 shadow-sm hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className={`font-mono text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {formatDate(log.timestamp)}
+                  </span>
+                  <span className={`px-2 py-0.5 rounded-lg border font-semibold text-[10px] ${
+                    darkMode ? 'bg-slate-800 text-slate-300 border-slate-700/60' : 'bg-slate-100 text-slate-700 border-slate-200'
+                  }`}>
+                    {log.module}
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`font-bold text-xs ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>
+                    {log.staff_name}
+                  </span>
+                  {getActionBadge(log.action)}
+                </div>
+
+                <div className={`p-2.5 rounded-xl border text-xs ${
+                  darkMode ? 'bg-[#080f1e] border-slate-800/80 text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
+                }`}>
+                  <p>{log.details}</p>
+                  {log.reference_no && (
+                    <span className={`mt-1 inline-block font-mono text-[11px] font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                      Ref: {log.reference_no}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(log.id)}
+                    className={`w-full py-2 px-3 rounded-xl flex items-center justify-center gap-1.5 text-xs font-semibold border transition-all cursor-pointer ${
+                      darkMode ? 'bg-rose-950/30 border-rose-900/60 text-rose-300 hover:bg-rose-900/50' : 'bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100'
+                    }`}
+                    title="Delete log"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Log</span>
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* DESKTOP VIEW: DATA TABLE (hidden md:block) */}
+          <div className={`${filterBoxClass} hidden md:block border rounded-2xl overflow-hidden`}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className={`border-b uppercase tracking-wider text-[10px] font-extrabold ${
+                  darkMode ? 'bg-[#0b1220] border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+                }`}>
+                  <tr>
+                    <th className="px-5 py-3.5">Date & Time</th>
+                    <th className="px-5 py-3.5">Staff Name</th>
+                    <th className="px-5 py-3.5">Module</th>
+                    <th className="px-5 py-3.5">Action</th>
+                    <th className="px-5 py-3.5">Details / Reference</th>
+                    <th className="px-5 py-3.5 text-right">Options</th>
+                  </tr>
+                </thead>
+                <tbody className={`divide-y font-medium ${
+                  darkMode ? 'divide-slate-800/60 text-slate-300' : 'divide-slate-200 text-slate-700'
+                }`}>
+                  {filteredLogs.map(log => (
+                    <tr key={log.id} className={`transition-colors ${darkMode ? 'hover:bg-[#121d30]/60' : 'hover:bg-slate-50'}`}>
+                      <td className={`px-5 py-3.5 whitespace-nowrap font-mono text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{formatDate(log.timestamp)}</td>
+                      <td className={`px-5 py-3.5 font-bold ${darkMode ? 'text-slate-200' : 'text-slate-900'}`}>{log.staff_name}</td>
+                      <td className="px-5 py-3.5">
+                        <span className={`px-2.5 py-1 rounded-lg border font-semibold text-[11px] ${
+                          darkMode ? 'bg-slate-800 text-slate-300 border-slate-700/60' : 'bg-slate-100 text-slate-700 border-slate-200'
+                        }`}>{log.module}</span>
+                      </td>
+                      <td className="px-5 py-3.5">{getActionBadge(log.action)}</td>
+                      <td className="px-5 py-3.5 max-w-xs">
+                        {log.details}
+                        {log.reference_no && <span className={`ml-2 font-mono text-[11px] font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>({log.reference_no})</span>}
+                      </td>
+                      <td className="px-5 py-3.5 text-right">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(log.id)}
+                          className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                            darkMode ? 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10' : 'text-slate-500 hover:text-rose-600 hover:bg-rose-100'
+                          }`}
+                          title="Delete log"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

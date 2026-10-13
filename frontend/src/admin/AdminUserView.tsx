@@ -128,47 +128,47 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
         </div>
       </div>
 
-      {/* Top 4 Summary Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className={`border rounded-2xl p-5 shadow-lg ${
+      {/* Top 4 Summary Metric Cards - 2 COLUMNS ON MOBILE */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL USERS</span>
-            <div className={`text-3xl font-extrabold tracking-tight mt-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{totalCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL USERS</span>
+            <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 sm:mt-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{totalCount}</div>
           </div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg ${
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ONLINE USERS</span>
-            <div className="text-3xl font-extrabold text-emerald-400 tracking-tight mt-2">{onlineCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ONLINE USERS</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 tracking-tight mt-1 sm:mt-2">{onlineCount}</div>
           </div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg ${
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>OFFLINE USERS</span>
-            <div className={`text-3xl font-extrabold tracking-tight mt-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{offlineCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>OFFLINE USERS</span>
+            <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 sm:mt-2 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{offlineCount}</div>
           </div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg ${
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ADMINISTRATORS</span>
-            <div className="text-3xl font-extrabold text-purple-400 tracking-tight mt-2">{adminCount}</div>
+            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ADMINISTRATORS</span>
+            <div className="text-2xl sm:text-3xl font-extrabold text-purple-400 tracking-tight mt-1 sm:mt-2">{adminCount}</div>
           </div>
         </div>
       </div>
 
       {/* Search & Filter Controls */}
-      <div className={`border rounded-2xl p-5 space-y-4 shadow-xl ${
+      <div className={`border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl ${
         darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'
       }`}>
         <div className="relative w-full">
@@ -230,7 +230,7 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
         </div>
       </div>
 
-      {/* Registered Accounts List Table */}
+      {/* Registered Accounts List */}
       <div className="space-y-3">
         <h3 className={`text-sm font-bold tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>
           Registered Accounts <span className={`font-mono text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>({filteredUsers.length})</span>
@@ -247,110 +247,211 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
             <p className={`text-xs mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Try adjusting your search query or role filters.</p>
           </div>
         ) : (
-          <div className={`border rounded-2xl shadow-xl overflow-hidden ${
-            darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200'
-          }`}>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className={`border-b text-[10px] font-extrabold uppercase tracking-wider ${
-                  darkMode ? 'bg-[#0b1220] border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
-                }`}>
-                  <tr>
-                    <th className="px-5 py-3.5">USER ID</th>
-                    <th className="px-5 py-3.5">FULL NAME</th>
-                    <th className="px-5 py-3.5">EMAIL & CONTACT</th>
-                    <th className="px-5 py-3.5">ROLE</th>
-                    <th className="px-5 py-3.5">PRESENCE STATUS</th>
-                    <th className="px-5 py-3.5 text-right">ACCESS CONTROL</th>
-                  </tr>
-                </thead>
-                <tbody className={`divide-y font-medium ${
-                  darkMode ? 'divide-slate-800/60 text-slate-300' : 'divide-slate-200 text-slate-700'
-                }`}>
-                  {filteredUsers.map((u) => (
-                    <tr key={u.id} className={`transition-colors ${
-                      darkMode ? 'hover:bg-[#121c2e]/60' : 'hover:bg-slate-50'
-                    }`}>
-                      <td className="px-5 py-4 font-mono font-bold text-blue-400 whitespace-nowrap">
+          <>
+            {/* MOBILE VIEW: DEDICATED CARDS (md:hidden) */}
+            <div className="md:hidden space-y-3.5">
+              {filteredUsers.map((u) => {
+                const isUnmasked = unmaskedUserIds.has(u.id);
+                const isAdmin = u.rawRole === 'admin';
+                return (
+                  <div
+                    key={u.id}
+                    className={`border rounded-2xl p-4 space-y-3 transition-all ${
+                      darkMode
+                        ? 'bg-[#0e1726] border-slate-800/90 hover:border-slate-700'
+                        : 'bg-white border-slate-200 shadow-sm hover:border-slate-300'
+                    }`}
+                  >
+                    {/* Top Row: User ID & Badges */}
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <span className="font-mono font-bold text-blue-400 text-xs">
                         {u.userId}
-                      </td>
-                      <td className={`px-5 py-4 font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                        <div>{u.name}</div>
-                        {u.barangay && u.barangay !== 'N/A' && (
-                          <span className={`text-[10px] font-normal ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Brgy. {u.barangay}</span>
-                        )}
-                      </td>
-                      <td className={`px-5 py-4 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                        {(() => {
-                          const isUnmasked = unmaskedUserIds.has(u.id);
-                          const isAdmin = u.rawRole === 'admin';
-                          return (
-                            <div className="flex items-center gap-2">
-                              <div>
-                                <div className={`font-mono ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
-                                  {isAdmin || isUnmasked ? u.email : maskEmail(u.email, true)}
-                                </div>
-                                <div className={`text-[10px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                  {isAdmin || isUnmasked ? u.phoneNumber : maskPhoneNumber(u.phoneNumber, true)}
-                                </div>
-                              </div>
-                              {!isAdmin && (
-                                <button
-                                  type="button"
-                                  onClick={() => toggleUnmaskUser(u)}
-                                  className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
-                                    isUnmasked
-                                      ? 'bg-blue-950/60 border-blue-700/80 text-blue-400 hover:bg-blue-900/80'
-                                      : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
-                                  }`}
-                                  title={isUnmasked ? 'Click to mask citizen data' : 'Click to unmask citizen data'}
-                                >
-                                  {isUnmasked ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                                </button>
-                              )}
-                            </div>
-                          );
-                        })()}
-                      </td>
-                      <td className="px-5 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wide uppercase ${
-                          u.rawRole === 'admin'
+                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase ${
+                          isAdmin
                             ? 'bg-purple-950/80 border border-purple-500/40 text-purple-300'
                             : 'bg-blue-950/80 border border-blue-500/40 text-blue-300'
                         }`}>
                           {u.role}
                         </span>
-                      </td>
-                      <td className="px-5 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold uppercase ${
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
                           u.isOnline
                             ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300'
                             : 'bg-slate-900 border border-slate-700/80 text-slate-400'
                         }`}>
                           {u.isOnline ? 'Online' : 'Offline'}
                         </span>
-                      </td>
-                      <td className="px-5 py-4 text-right whitespace-nowrap">
+                      </div>
+                    </div>
+
+                    {/* Full Name & Barangay */}
+                    <div>
+                      <h4 className={`font-bold text-sm leading-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                        {u.name}
+                      </h4>
+                      {u.barangay && u.barangay !== 'N/A' && (
+                        <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                          Brgy. {u.barangay}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Email & Phone Contact Box */}
+                    <div className={`p-2.5 rounded-xl border flex items-center justify-between gap-2 text-xs ${
+                      darkMode ? 'bg-[#0b1220] border-slate-800' : 'bg-slate-50 border-slate-200'
+                    }`}>
+                      <div className="min-w-0 flex-1">
+                        <p className={`font-mono truncate ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+                          {isAdmin || isUnmasked ? u.email : maskEmail(u.email, true)}
+                        </p>
+                        <p className={`text-[10px] font-mono mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                          {isAdmin || isUnmasked ? u.phoneNumber : maskPhoneNumber(u.phoneNumber, true)}
+                        </p>
+                      </div>
+                      {!isAdmin && (
                         <button
-                          onClick={() => handleToggleStatus(u)}
-                          disabled={updatingId === u.id}
-                          title={u.status === 'Active' ? 'Deactivate Account' : 'Activate Account'}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                            u.status === 'Active'
-                              ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60'
-                              : 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60'
-                          } ${updatingId === u.id ? 'opacity-50 pointer-events-none' : ''}`}
+                          type="button"
+                          onClick={() => toggleUnmaskUser(u)}
+                          className={`p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
+                            isUnmasked
+                              ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
+                              : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                          }`}
+                          title={isUnmasked ? 'Click to mask citizen data' : 'Click to unmask citizen data'}
                         >
-                          <Power className="w-3.5 h-3.5" />
-                          <span>{u.status === 'Active' ? 'Deactivate' : 'Activate'}</span>
+                          {isUnmasked ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                         </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      )}
+                    </div>
+
+                    {/* Access Control Action Button */}
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleToggleStatus(u)}
+                        disabled={updatingId === u.id}
+                        className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
+                          u.status === 'Active'
+                            ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60 active:scale-[0.98]'
+                            : 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60 active:scale-[0.98]'
+                        } ${updatingId === u.id ? 'opacity-50 pointer-events-none' : ''}`}
+                      >
+                        <Power className="w-3.5 h-3.5" />
+                        <span>{u.status === 'Active' ? 'Deactivate Account' : 'Activate Account'}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
+
+            {/* DESKTOP VIEW: DATA TABLE (hidden md:block) */}
+            <div className={`hidden md:block border rounded-2xl shadow-xl overflow-hidden ${
+              darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200'
+            }`}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className={`border-b text-[10px] font-extrabold uppercase tracking-wider ${
+                    darkMode ? 'bg-[#0b1220] border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+                  }`}>
+                    <tr>
+                      <th className="px-5 py-3.5">USER ID</th>
+                      <th className="px-5 py-3.5">FULL NAME</th>
+                      <th className="px-5 py-3.5">EMAIL & CONTACT</th>
+                      <th className="px-5 py-3.5">ROLE</th>
+                      <th className="px-5 py-3.5">PRESENCE STATUS</th>
+                      <th className="px-5 py-3.5 text-right">ACCESS CONTROL</th>
+                    </tr>
+                  </thead>
+                  <tbody className={`divide-y font-medium ${
+                    darkMode ? 'divide-slate-800/60 text-slate-300' : 'divide-slate-200 text-slate-700'
+                  }`}>
+                    {filteredUsers.map((u) => (
+                      <tr key={u.id} className={`transition-colors ${
+                        darkMode ? 'hover:bg-[#121c2e]/60' : 'hover:bg-slate-50'
+                      }`}>
+                        <td className="px-5 py-4 font-mono font-bold text-blue-400 whitespace-nowrap">
+                          {u.userId}
+                        </td>
+                        <td className={`px-5 py-4 font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                          <div>{u.name}</div>
+                          {u.barangay && u.barangay !== 'N/A' && (
+                            <span className={`text-[10px] font-normal ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Brgy. {u.barangay}</span>
+                          )}
+                        </td>
+                        <td className={`px-5 py-4 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                          {(() => {
+                            const isUnmasked = unmaskedUserIds.has(u.id);
+                            const isAdmin = u.rawRole === 'admin';
+                            return (
+                              <div className="flex items-center gap-2">
+                                <div>
+                                  <div className={`font-mono ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+                                    {isAdmin || isUnmasked ? u.email : maskEmail(u.email, true)}
+                                  </div>
+                                  <div className={`text-[10px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                    {isAdmin || isUnmasked ? u.phoneNumber : maskPhoneNumber(u.phoneNumber, true)}
+                                  </div>
+                                </div>
+                                {!isAdmin && (
+                                  <button
+                                    type="button"
+                                    onClick={() => toggleUnmaskUser(u)}
+                                    className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                                      isUnmasked
+                                        ? 'bg-blue-950/60 border-blue-700/80 text-blue-400 hover:bg-blue-900/80'
+                                        : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+                                    }`}
+                                    title={isUnmasked ? 'Click to mask citizen data' : 'Click to unmask citizen data'}
+                                  >
+                                    {isUnmasked ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </td>
+                        <td className="px-5 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wide uppercase ${
+                            u.rawRole === 'admin'
+                              ? 'bg-purple-950/80 border border-purple-500/40 text-purple-300'
+                              : 'bg-blue-950/80 border border-blue-500/40 text-blue-300'
+                          }`}>
+                            {u.role}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold uppercase ${
+                            u.isOnline
+                              ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300'
+                              : 'bg-slate-900 border border-slate-700/80 text-slate-400'
+                          }`}>
+                            {u.isOnline ? 'Online' : 'Offline'}
+                          </span>
+                        </td>
+                        <td className="px-5 py-4 text-right whitespace-nowrap">
+                          <button
+                            onClick={() => handleToggleStatus(u)}
+                            disabled={updatingId === u.id}
+                            title={u.status === 'Active' ? 'Deactivate Account' : 'Activate Account'}
+                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
+                              u.status === 'Active'
+                                ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60'
+                                : 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60'
+                            } ${updatingId === u.id ? 'opacity-50 pointer-events-none' : ''}`}
+                          >
+                            <Power className="w-3.5 h-3.5" />
+                            <span>{u.status === 'Active' ? 'Deactivate' : 'Activate'}</span>
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
         )}
       </div>
     </div>
