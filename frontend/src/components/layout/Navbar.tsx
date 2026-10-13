@@ -425,9 +425,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className={`absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl p-4 z-50 border shadow-2xl animate-in fade-in zoom-in-95 ${
                 darkMode ? 'bg-[#0e172a] border-slate-700/80 text-white' : 'bg-white border-slate-200 text-slate-900'
               }`}>
-                <div className="flex items-center justify-between border-b border-slate-800/80 pb-2.5 mb-3">
+                <div className={`flex items-center justify-between border-b pb-2.5 mb-3 ${
+                  darkMode ? 'border-slate-800/80' : 'border-slate-200'
+                }`}>
                   <div className="flex items-center gap-2">
-                    <Bell className="w-4 h-4 text-blue-400" />
+                    <Bell className="w-4 h-4 text-blue-500" />
                     <h4 className="text-xs font-extrabold uppercase tracking-wider">Notifications</h4>
                   </div>
                   <div className="flex items-center gap-2">
@@ -435,14 +437,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <button
                         type="button"
                         onClick={handleClearAll}
-                        className="text-[10px] font-extrabold text-rose-400 hover:text-rose-300 hover:underline flex items-center gap-1 transition-colors px-2 py-0.5 rounded bg-rose-950/40 border border-rose-800/40 cursor-pointer"
+                        className={`text-[10px] font-extrabold flex items-center gap-1 transition-colors px-2 py-0.5 rounded border cursor-pointer ${
+                          darkMode
+                            ? 'text-rose-400 hover:text-rose-300 bg-rose-950/40 border-rose-800/40'
+                            : 'text-rose-700 hover:text-rose-800 bg-rose-50 border-rose-200 hover:bg-rose-100'
+                        }`}
                         title="Delete all notifications"
                       >
-                        <Trash2 className="w-3 h-3 text-rose-400" />
+                        <Trash2 className="w-3 h-3 text-rose-500" />
                         <span>Clear All</span>
                       </button>
                     )}
-                    <span className="text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-blue-950 text-blue-400 border border-blue-800/50">
+                    <span className={`text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full border ${
+                      darkMode
+                        ? 'bg-blue-950 text-blue-400 border-blue-800/50'
+                        : 'bg-blue-100 text-blue-800 border-blue-300'
+                    }`}>
                       {notificationsList.length} Updates
                     </span>
                   </div>
@@ -455,39 +465,55 @@ export const Navbar: React.FC<NavbarProps> = ({
                         key={notif.id} 
                         className={`p-3 rounded-xl border text-xs space-y-1 transition-all relative group ${
                           notif.type === 'success' 
-                            ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-200' 
+                            ? darkMode
+                              ? 'bg-emerald-950/40 border-emerald-800/50 text-emerald-200' 
+                              : 'bg-emerald-50 border-emerald-200 text-emerald-900'
                             : notif.type === 'info'
-                            ? 'bg-blue-950/40 border-blue-800/50 text-blue-200'
+                            ? darkMode
+                              ? 'bg-blue-950/40 border-blue-800/50 text-blue-200'
+                              : 'bg-blue-50 border-blue-200 text-blue-900'
                             : notif.type === 'warning'
-                            ? 'bg-amber-950/40 border-amber-800/50 text-amber-200'
-                            : 'bg-rose-950/40 border-rose-800/50 text-rose-200'
+                            ? darkMode
+                              ? 'bg-amber-950/40 border-amber-800/50 text-amber-200'
+                              : 'bg-amber-50 border-amber-200 text-amber-900'
+                            : darkMode
+                            ? 'bg-rose-950/40 border-rose-800/50 text-rose-200'
+                            : 'bg-rose-50 border-rose-200 text-rose-900'
                         }`}
                       >
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-1">
-                            {notif.type === 'success' && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
-                            {notif.type === 'info' && <Info className="w-3 h-3 text-blue-400" />}
-                            {notif.type === 'warning' && <AlertTriangle className="w-3 h-3 text-amber-400" />}
-                            {notif.type === 'error' && <XCircle className="w-3 h-3 text-rose-400" />}
+                          <span className={`text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 ${
+                            darkMode ? 'text-slate-300' : 'text-slate-700'
+                          }`}>
+                            {notif.type === 'success' && <CheckCircle2 className="w-3 h-3 text-emerald-500" />}
+                            {notif.type === 'info' && <Info className="w-3 h-3 text-blue-500" />}
+                            {notif.type === 'warning' && <AlertTriangle className="w-3 h-3 text-amber-500" />}
+                            {notif.type === 'error' && <XCircle className="w-3 h-3 text-rose-500" />}
                             <span>{notif.title ? notif.title.replace(/^Step\s+\d+:\s*/i, '') : ''}</span>
                           </span>
                           <div className="flex items-center gap-1.5">
-                            <span className="text-[9px] font-mono text-slate-400">{notif.time}</span>
+                            <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{notif.time}</span>
                             <button
                               type="button"
                               onClick={(e) => handleDismissSingle(notif.id, e)}
-                              className="p-1 rounded text-slate-400 hover:text-rose-400 hover:bg-rose-950/60 transition-colors cursor-pointer"
+                              className={`p-1 rounded transition-colors cursor-pointer ${
+                                darkMode 
+                                  ? 'text-slate-400 hover:text-rose-400 hover:bg-rose-950/60' 
+                                  : 'text-slate-500 hover:text-rose-600 hover:bg-rose-100'
+                              }`}
                               title="Delete notification"
                             >
                               <Trash2 className="w-3 h-3" />
                             </button>
                           </div>
                         </div>
-                        <p className="text-[11px] leading-snug font-medium text-slate-100 pr-4">{notif.message}</p>
+                        <p className={`text-[11px] leading-snug font-medium pr-4 ${
+                          darkMode ? 'text-slate-100' : 'text-slate-800'
+                        }`}>{notif.message}</p>
                       </div>
                     ))
                   ) : (
-                    <div className="text-center py-6 text-slate-400 text-xs">
+                    <div className={`text-center py-6 text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       No new notifications.
                     </div>
                   )}
