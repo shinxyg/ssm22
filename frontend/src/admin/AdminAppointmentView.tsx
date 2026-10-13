@@ -1177,7 +1177,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
 
       {/* PRINTABLE OFFICIAL GUARANTEE LETTER (GL) MODAL PORTAL */}
       {printingGL && createPortal(
-        <div id="printable-gl-portal" className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto">
+        <div id="printable-gl-portal" className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex flex-col items-center justify-start p-2 sm:p-4 pb-28 sm:pb-8 overflow-y-auto">
           <style>{`
             @media print {
               #root, nav, sidebar, header, .no-print {
@@ -1220,7 +1220,38 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
             }
           `}</style>
 
-          <div id="printable-gl-card" className="bg-white text-slate-900 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl p-4 sm:p-8 font-sans border border-slate-300 my-auto">
+          {/* Sticky Mobile/Desktop Top Action Bar (no-print) */}
+          <div className="w-full max-w-2xl bg-[#0f172a] border border-slate-700/80 rounded-2xl p-3 sm:p-4 mb-3 flex items-center justify-between shadow-xl shrink-0 no-print sticky top-0 z-10 backdrop-blur-md">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400 shrink-0">
+                <Printer className="w-4 h-4" />
+              </span>
+              <div className="min-w-0">
+                <h3 className="text-xs sm:text-sm font-extrabold text-white truncate">Official Guarantee Letter (GL)</h3>
+                <p className="text-[10px] text-slate-400 font-mono truncate">{printingGL.referenceNo}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-3 sm:px-4 py-1.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-extrabold text-xs rounded-xl flex items-center gap-1.5 shadow-md transition-colors cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPrintingGL(null)}
+                className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                title="Close Preview"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div id="printable-gl-card" className="bg-white text-slate-900 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl p-4 sm:p-8 font-sans border border-slate-300">
             {[
               printingGL.serviceName,
               printingGL.assistanceType,
@@ -1233,13 +1264,13 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
               <div>
                 {/* HEADER */}
                 <div className="text-center space-y-1 border-b pb-4 border-slate-300">
-                  <div className="relative flex items-center justify-center min-h-[56px] py-1">
-                    <img src="/Government Service Integrity Seal.png" alt="QC Seal" className="w-14 h-14 object-contain absolute left-0 top-1/2 -translate-y-1/2" />
-                    <div className="text-center w-full px-16">
-                      <h2 className="text-base font-black tracking-tight uppercase text-slate-900">REPUBLIC OF THE PHILIPPINES</h2>
-                      <h3 className="text-xs font-bold text-slate-700">QUEZON CITY GOVERNMENT</h3>
-                      <h4 className="text-[11px] font-extrabold text-blue-900 uppercase">SOCIAL SERVICES AND DEVELOPMENT DEPARTMENT (SSDD)</h4>
-                      <p className="text-[10px] text-slate-500 font-medium">City Hall Compound, Elliptical Road, Quezon City</p>
+                  <div className="relative flex flex-col sm:flex-row items-center justify-center min-h-[56px] py-1">
+                    <img src="/Government Service Integrity Seal.png" alt="QC Seal" className="w-12 h-12 sm:w-14 sm:h-14 object-contain sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 mx-auto sm:mx-0 mb-1 sm:mb-0" />
+                    <div className="text-center w-full px-2 sm:px-16">
+                      <h2 className="text-sm sm:text-base font-black tracking-tight uppercase text-slate-900">REPUBLIC OF THE PHILIPPINES</h2>
+                      <h3 className="text-[11px] sm:text-xs font-bold text-slate-700">QUEZON CITY GOVERNMENT</h3>
+                      <h4 className="text-[10px] sm:text-[11px] font-extrabold text-blue-900 uppercase">SOCIAL SERVICES AND DEVELOPMENT DEPARTMENT (SSDD)</h4>
+                      <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium">City Hall Compound, Elliptical Road, Quezon City</p>
                     </div>
                   </div>
                   <div className="pt-3">
@@ -1338,13 +1369,13 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
               <div>
                 {/* HEADER */}
                 <div className="text-center space-y-1 border-b pb-4 border-slate-300">
-                  <div className="relative flex items-center justify-center min-h-[56px] py-1">
-                    <img src="/Government Service Integrity Seal.png" alt="QC Seal" className="w-14 h-14 object-contain absolute left-0 top-1/2 -translate-y-1/2" />
-                    <div className="text-center w-full px-16">
-                      <h2 className="text-base font-black tracking-tight uppercase text-slate-900">REPUBLIC OF THE PHILIPPINES</h2>
-                      <h3 className="text-xs font-bold text-slate-700">QUEZON CITY GOVERNMENT</h3>
-                      <h4 className="text-[11px] font-extrabold text-blue-900 uppercase">SOCIAL SERVICES & DEVELOPMENT DEPARTMENT (SSDD)</h4>
-                      <p className="text-[10px] text-slate-500 font-medium">City Hall Compound, Elliptical Road, Quezon City</p>
+                  <div className="relative flex flex-col sm:flex-row items-center justify-center min-h-[56px] py-1">
+                    <img src="/Government Service Integrity Seal.png" alt="QC Seal" className="w-12 h-12 sm:w-14 sm:h-14 object-contain sm:absolute sm:left-0 sm:top-1/2 sm:-translate-y-1/2 mx-auto sm:mx-0 mb-1 sm:mb-0" />
+                    <div className="text-center w-full px-2 sm:px-16">
+                      <h2 className="text-sm sm:text-base font-black tracking-tight uppercase text-slate-900">REPUBLIC OF THE PHILIPPINES</h2>
+                      <h3 className="text-[11px] sm:text-xs font-bold text-slate-700">QUEZON CITY GOVERNMENT</h3>
+                      <h4 className="text-[10px] sm:text-[11px] font-extrabold text-blue-900 uppercase">SOCIAL SERVICES & DEVELOPMENT DEPARTMENT (SSDD)</h4>
+                      <p className="text-[9px] sm:text-[10px] text-slate-500 font-medium">City Hall Compound, Elliptical Road, Quezon City</p>
                     </div>
                   </div>
                   <div className="pt-2">
