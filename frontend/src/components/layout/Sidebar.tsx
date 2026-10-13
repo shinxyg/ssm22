@@ -134,8 +134,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpe
             </div>
             <div className="min-w-0 flex-1">
               <div className="font-extrabold text-sm text-white truncate">{citizenName}</div>
-              <div className="text-[11px] text-slate-400 truncate">QC Citizen • PhilSys Verified</div>
-              <span className="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[9px] font-bold tracking-wider uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+              <div className="text-[11px] text-slate-400 truncate select-none">QC Citizen</div>
+              <span className="inline-flex items-center px-2 py-0.5 mt-1 rounded text-[9px] font-bold tracking-wider uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 select-none">
                 Active Resident
               </span>
             </div>
