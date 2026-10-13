@@ -26,6 +26,7 @@ export interface ApplicationRecord {
   disapprovalReason?: string;
   appointmentDate?: string;
   appointmentTime?: string;
+  appointmentDetails?: any;
   scheduledPayoutDate?: string;
   scheduledPayoutTime?: string;
   qrCodeData?: string;
