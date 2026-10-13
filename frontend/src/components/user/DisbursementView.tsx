@@ -43,6 +43,276 @@ const formatTo12Hour = (timeStr: string) => {
   return `${hours}:${minutes} ${ampm}`;
 };
 
+const getDynamicDocumentsList = (app: ApplicationRecord): string[] => {
+  if (!app) return [];
+
+  const rawDocs = 
+    (app as any).uploadedDocuments ||
+    (app as any).uploaded_documents ||
+    (app as any).uploadedDocData ||
+    (app as any).uploadedFiles ||
+    app.details?.uploadedDocuments ||
+    app.details?.uploaded_documents ||
+    app.details?.uploadedDocData ||
+    app.details?.uploadedFiles;
+
+  const docKeyMap: Record<string, string> = {
+    // PWD
+    pwd_id: 'Original PWD ID Card / Valid Photo ID',
+    pwdId: 'Original PWD ID Card / Valid Photo ID',
+    indigency_cert: 'Barangay Certificate of Indigency',
+    medical_cert: 'Original Medical Certificate',
+    medicalCert: 'Original Medical Certificate',
+    disability_photo: 'Proof of Disability / Residency Document',
+    docResidency: 'Barangay Certificate of Residency',
+
+    // Senior
+    senior_id: 'Original Senior Citizen ID / OSCA Booklet',
+    seniorId: 'Original Senior Citizen ID / OSCA Booklet',
+    other_support: 'Supporting Document / Certificate of Non-Employment',
+    otherSupport: 'Supporting Document / Certificate of Non-Employment',
+
+    // Solo Parent
+    soloParentId: 'Original Solo Parent ID / Booklet',
+    solo_parent_id: 'Original Solo Parent ID / Booklet',
+    birthCert: 'PSA / Birth Certificate ng mga Anak',
+    birth_cert: 'PSA / Birth Certificate ng mga Anak',
+    affidavit: 'Sworn Affidavit of Solo Parent',
+    indigency: 'Barangay Certificate of Indigency',
+    incomeProof: 'Proof of Income / Certificate of Non-Employment',
+    income_proof: 'Proof of Income / Certificate of Non-Employment',
+    supportingDoc: 'Supporting Document',
+    supporting_doc: 'Supporting Document',
+
+    // Medical & Funeral (AICS)
+    'Doctor Prescription': 'Original Doctor\'s Prescription',
+    'Medical Certificate': 'Original Medical Certificate / Clinical Abstract',
+    'Indigency Certificate': 'Barangay Certificate of Indigency',
+    'PhilSys ID': 'Valid Government Photo ID (PhilSys / QC ID)',
+    clinicalAbstract: 'Clinical Abstract / Medical Certificate',
+    hospitalBill: 'Hospital Statement of Account / Billing Statement',
+    deathCert: 'Registered Death Certificate',
+    death_cert: 'Registered Death Certificate',
+    funeralContract: 'Notarized Funeral Contract mula sa partner funeral home',
+    funeral_contract: 'Notarized Funeral Contract mula sa partner funeral home',
+
+    // Livelihood
+    validId: 'Valid Government Issued Photo ID',
+    docValidId: 'Valid Government Issued Photo ID',
+    residencyCert: 'Barangay Certificate of Residency & Indigency',
+    businessProposal: 'Simple Business Proposal / Plan',
+    docOther: 'Livelihood Workshop Clearance / Supporting Document',
+
+    // Training
+    requestLetter: 'Original Request Letter / Letter of Intent',
+    request_letter: 'Original Request Letter / Letter of Intent',
+    highSchoolDiploma: 'High School Diploma / ALS Certificate',
+    idPhotos: '2x2 ID Photos (2 Copies)',
+
+    // Educational
+    enrollmentCert: 'Certificate of Enrollment / Registration Form',
+    reportCard: 'School Report Card / Form 138'
+  };
+
+  const detectedItems: string[] = [];
+
+  if (Array.isArray(rawDocs)) {
+    rawDocs.forEach((item) => {
+      if (typeof item === 'string') {
+        const cleanName = docKeyMap[item] || item;
+        if (!detectedItems.includes(cleanName)) detectedItems.push(cleanName);
+      } else if (item && typeof item === 'object') {
+        const title = item.name || item.label || item.key;
+        if (title) {
+          const cleanName = docKeyMap[title] || title;
+          if (!detectedItems.includes(cleanName)) detectedItems.push(cleanName);
+        }
+      }
+    });
+  } else if (rawDocs && typeof rawDocs === 'object') {
+    Object.entries(rawDocs).forEach(([key, val]) => {
+      if (val && (typeof val === 'string' ? val.trim() !== '' : (val as any).name || (val as any).url || (val as any).dataUrl)) {
+        const mappedName = docKeyMap[key] || (typeof (val as any).name === 'string' && !(val as any).name.startsWith('camera_capture_') ? (val as any).name : docKeyMap[key]) || key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ');
+        const cleanName = mappedName.charAt(0).toUpperCase() + mappedName.slice(1);
+        if (!detectedItems.includes(cleanName)) detectedItems.push(cleanName);
+      }
+    });
+  }
+
+  // Fallback defaults if application has no uploaded documents object
+  if (detectedItems.length === 0) {
+    const cat = (app.category || '').toLowerCase();
+    const serv = (app.serviceName || '').toLowerCase();
+    const ref = (app.referenceNo || '').toUpperCase();
+
+    if (ref.startsWith('TRN-') || cat.includes('training') || serv.includes('training')) {
+      detectedItems.push(
+        'Original Request Letter / Letter of Intent',
+        'Valid Photo ID / QC ID (Proof of Residency)',
+        'Barangay Certificate of Residency or Indigency'
+      );
+    } else if (ref.startsWith('QC-PWD-') || ref.startsWith('PWD-') || cat.includes('pwd')) {
+      detectedItems.push(
+        'Original PWD ID Card o Medical Certificate',
+        'Valid Government Photo ID',
+        'Barangay Certificate of Indigency'
+      );
+    } else if (ref.startsWith('SENIOR-') || cat.includes('senior')) {
+      detectedItems.push(
+        'Original Senior Citizen ID / OSCA Booklet',
+        'Barangay Certificate of Indigency',
+        'Valid Government Photo ID'
+      );
+    } else if (ref.startsWith('QC-AICS-') || ref.startsWith('AICS-') || serv.includes('medical') || serv.includes('funeral')) {
+      if (serv.includes('funeral') || serv.includes('burial')) {
+        detectedItems.push(
+          'Original Registered Death Certificate',
+          'Notarized Funeral Contract mula sa partner funeral home',
+          'Barangay Certificate of Indigency & Valid ID'
+        );
+      } else {
+        detectedItems.push(
+          'Original Medical Abstract / Doctor\'s Prescription',
+          'Hospital Statement of Account / Billing Statement',
+          'Barangay Certificate of Indigency & Valid ID'
+        );
+      }
+    } else if (ref.startsWith('LVH-') || cat.includes('livelihood')) {
+      detectedItems.push(
+        'Barangay Business Clearance / Endorsement',
+        'Simple Business Proposal / Plan',
+        'Valid Government Photo ID'
+      );
+    } else if (ref.startsWith('QC-EDU-') || ref.startsWith('QC-SP-EDU-') || serv.includes('educational')) {
+      detectedItems.push(
+        'Certificate of Enrollment / School Registration Form',
+        'Valid Photo ID ng Magulang o Guardian',
+        'Barangay Certificate of Indigency'
+      );
+    } else if (ref.startsWith('QC-CW-') || ref.startsWith('CW-PROT-') || serv.includes('child')) {
+      detectedItems.push(
+        'PSA / Barangay Birth Certificate ng Bata',
+        'Valid Photo ID ng Magulang o Guardian',
+        'Barangay Certificate of Residency'
+      );
+    } else {
+      detectedItems.push(
+        'Original Solo Parent ID / Booklet',
+        'Valid Photo ID (PhilSys / Comelec / UMID)',
+        'Barangay Certificate of Indigency'
+      );
+    }
+  }
+
+  const formattedDocs = detectedItems.map((doc) => {
+    if (doc.toLowerCase().startsWith('original') || doc.toLowerCase().startsWith('valid') || doc.toLowerCase().startsWith('barangay') || doc.toLowerCase().startsWith('proof') || doc.toLowerCase().startsWith('certificate')) {
+      return doc;
+    }
+    return `Original / Hardcopy ng ${doc}`;
+  });
+
+  formattedDocs.push('Printed Copy ng Official Slip na ito');
+  return formattedDocs;
+};
+
+const getSlipConfig = (app: ApplicationRecord) => {
+  const ref = (app.referenceNo || '').toUpperCase();
+  const cat = (app.category || '').toLowerCase();
+  const serv = (app.serviceName || '').toLowerCase();
+  const st = (app.status || '').toUpperCase();
+  const isPayout = st === 'PAYOUT SCHEDULED' || st === 'READY FOR PAYOUT';
+
+  let title = 'OFFICIAL APPOINTMENT SLIP';
+  let division = 'QC SOCIAL SERVICES & DEVELOPMENT DEPARTMENT';
+  let buttonLabel = 'Appointment Slip';
+  let refLabel = 'APPOINTMENT REF NO:';
+  let dateLabel = isPayout ? 'PETSA NG CLAIM / PAYOUT:' : 'PETSA NG INTERVIEW / ASSESSMENT:';
+  let venueLabel = isPayout ? 'LUGAR NG CLAIM / PAYOUT:' : 'LUGAR NG INTERVIEW / ASSESSMENT:';
+  let venue = 'Quezon City Hall SSDD Office, Assessment Desk 3';
+
+  if (ref.startsWith('TRN-') || cat.includes('training') || serv.includes('training')) {
+    title = 'OFFICIAL ORIENTATION SLIP';
+    division = 'QC SSDD SKILLS TRAINING DIVISION';
+    buttonLabel = 'Orientation Slip';
+    refLabel = 'ORIENTATION REF NO:';
+    dateLabel = 'PETSA NG ORIENTATION:';
+    venueLabel = 'LUGAR NG ORIENTATION:';
+    venue = 'Quezon City Skills Development Center, Kamuning Road, Diliman, QC';
+  } else if (ref.startsWith('QC-PWD-') || ref.startsWith('PWD-') || cat.includes('pwd')) {
+    title = isPayout ? 'OFFICIAL PWD PENSION CLAIM SLIP' : 'OFFICIAL PWD ASSESSMENT & CLAIM SLIP';
+    division = 'QC PERSONS WITH DISABILITY AFFAIRS OFFICE (PDAO)';
+    buttonLabel = 'PWD Claim / Appointment Slip';
+    refLabel = isPayout ? 'PENSION CLAIM REF NO:' : 'PWD APPOINTMENT REF NO:';
+    venue = 'PDAO Action Center, QC Hall Complex / Assessment Desk 4';
+  } else if (ref.startsWith('SENIOR-') || cat.includes('senior')) {
+    title = isPayout ? 'OFFICIAL SENIOR CITIZEN CASH GRANT CLAIM SLIP' : 'OFFICIAL SENIOR CITIZEN CLAIM SLIP';
+    division = 'OFFICE FOR THE SENIOR CITIZENS\' AFFAIRS (OSCA)';
+    buttonLabel = 'Senior Citizen Claim Slip';
+    refLabel = isPayout ? 'SENIOR CLAIM REF NO:' : 'OSCA APPOINTMENT REF NO:';
+    venue = 'OSCA Building / QC Hall Cashier & Assessment Center';
+  } else if (ref.startsWith('QC-AICS-') || ref.startsWith('AICS-') || serv.includes('medical') || serv.includes('funeral') || serv.includes('burial') || serv.includes('guarantee letter')) {
+    title = 'OFFICIAL GUARANTEE LETTER (GL) CLAIM SLIP';
+    division = 'QC SSDD CRISIS INTERVENTION & MEDICAL AID DIVISION';
+    buttonLabel = 'Guarantee Letter (GL) Claim Slip';
+    refLabel = 'GL TRANSACTION REF NO:';
+    dateLabel = 'PETSA NG RELEASING:';
+    venueLabel = 'LUGAR NG RELEASING:';
+    venue = 'SSDD Crisis Intervention Center, Ground Floor, QC Hall';
+  } else if (ref.startsWith('LVH-') || cat.includes('livelihood')) {
+    title = isPayout ? 'OFFICIAL LIVELIHOOD GRANT RELEASE SLIP' : 'OFFICIAL LIVELIHOOD EVALUATION SLIP';
+    division = 'QC SSDD LIVELIHOOD & ENTERPRISE DIVISION';
+    buttonLabel = 'Livelihood Evaluation Slip';
+    refLabel = 'LIVELIHOOD REF NO:';
+    venue = 'Quezon City Small Business & Livelihood Development Center';
+  } else if (ref.startsWith('QC-CW-') || ref.startsWith('CW-PROT-') || serv.includes('child welfare') || serv.includes('child protection')) {
+    title = 'OFFICIAL CASE INTAKE & ASSESSMENT SLIP';
+    division = 'QC SSDD CHILD & YOUTH WELFARE DIVISION';
+    buttonLabel = 'Case Assessment Slip';
+    refLabel = 'CASE INTAKE REF NO:';
+    venue = 'QC Social Services & Development Dept., Child Welfare Section';
+  } else if (ref.startsWith('QC-EDU-') || ref.startsWith('QC-SP-EDU-') || serv.includes('educational')) {
+    title = isPayout ? 'OFFICIAL EDUCATIONAL GRANT CLAIM SLIP' : 'OFFICIAL EDUCATIONAL ASSESSMENT SLIP';
+    division = ref.startsWith('QC-SP-EDU-') ? 'QC SSDD SOLO PARENT DIVISION' : 'QC SSDD EDUCATIONAL ASSISTANCE DIVISION';
+    buttonLabel = 'Educational Grant Claim Slip';
+    refLabel = 'GRANT REF NO:';
+    venue = 'Quezon City Hall SSDD Office, Assessment Desk 3';
+  } else if (ref.startsWith('SP-') || cat.includes('solo') || serv.includes('solo')) {
+    title = isPayout ? 'OFFICIAL SOLO PARENT SUBSIDY CLAIM SLIP' : 'OFFICIAL SOLO PARENT APPOINTMENT SLIP';
+    division = 'QC SSDD SOLO PARENT DIVISION';
+    buttonLabel = 'Solo Parent Appointment Slip';
+    refLabel = 'APPOINTMENT REF NO:';
+    venue = 'Quezon City Hall SSDD Office, Assessment Desk 3';
+  }
+
+  const schedDate = 
+    (app as any).appointmentDate || 
+    (app as any).appointment_date || 
+    (app as any).scheduledPayoutDate || 
+    (app as any).scheduled_payout_date || 
+    (app as any).payout_date || 
+    'Oct 8, 2026';
+
+  const schedTime = 
+    (app as any).appointmentTime || 
+    (app as any).appointment_time || 
+    (app as any).scheduledPayoutTime || 
+    (app as any).scheduled_payout_time || 
+    (app as any).payout_time || 
+    '09:00 AM';
+
+  return {
+    title,
+    division,
+    buttonLabel,
+    refLabel,
+    dateLabel,
+    venueLabel,
+    venue,
+    schedDate,
+    schedTime
+  };
+};
+
 export const DisbursementView: React.FC<DisbursementViewProps> = ({
   darkMode = true,
   onNavigateToModule,
@@ -548,16 +818,16 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
                   )}
 
                   {/* ACTION BUTTONS (IF ANY) */}
-                  {isInterviewScheduled && !isTrn && (
+                  {(isInterviewScheduled || isPayoutScheduled || (statusText || '').toUpperCase().includes('SCHEDULED') || !!rawInterviewDate || !!rawPayoutDate) && (
                     <div className="p-3.5 rounded-xl bg-[#091326] border border-slate-800/90 flex flex-wrap items-center justify-end gap-2">
-                      {/* Step 3: Appointment / Orientation Slip Button */}
+                      {/* Step 3: Appointment / Orientation / Claim Slip Button */}
                       <button
                         type="button"
                         onClick={() => setModalApptSlip(app)}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-extrabold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
                       >
                         <Download className="w-3.5 h-3.5" />
-                        <span>📥 I-download ang {isTrn ? 'Orientation Slip' : 'Appointment Slip'}</span>
+                        <span>📥 I-download ang {getSlipConfig(app).buttonLabel}</span>
                       </button>
                     </div>
                   )}
@@ -585,121 +855,111 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
       {/* ---------------------------------------------------- */}
       {/* MODAL 1: DOWNLOADABLE / PRINTABLE APPOINTMENT SLIP */}
       {/* ---------------------------------------------------- */}
-      {modalApptSlip && createPortal(
-        <div className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-[#0b1329] border border-blue-500/50 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl p-6 text-white space-y-5 relative">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-3">
-                <img src="/Government Service Integrity Seal.png" alt="QC Seal" className="w-9 h-9 object-contain" />
-                <div>
-                  <h3 className="text-base font-black text-white uppercase tracking-wider">
-                    {((modalApptSlip.category || '').toLowerCase() === 'training' || (modalApptSlip.serviceName || '').toLowerCase().includes('training') || modalApptSlip.referenceNo.startsWith('TRN-')) ? 'OFFICIAL ORIENTATION SLIP' : 'OFFICIAL APPOINTMENT SLIP'}
-                  </h3>
-                  <span className="text-[10px] text-blue-400 font-mono">
-                    {((modalApptSlip.category || '').toLowerCase() === 'training' || (modalApptSlip.serviceName || '').toLowerCase().includes('training') || modalApptSlip.referenceNo.startsWith('TRN-')) ? 'QC SSDD SKILLS TRAINING DIVISION' : 'QC SSDD SOLO PARENT DIVISION'}
-                  </span>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setModalApptSlip(null)}
-                className="p-1 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="bg-[#0e1b36] border border-blue-900/60 rounded-2xl p-4 space-y-3 text-xs">
-              <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                <span className="text-slate-400 font-bold uppercase text-[10px]">
-                  {((modalApptSlip.category || '').toLowerCase() === 'training' || (modalApptSlip.serviceName || '').toLowerCase().includes('training') || modalApptSlip.referenceNo.startsWith('TRN-')) ? 'ORIENTATION REF NO:' : 'APPOINTMENT REF NO:'}
-                </span>
-                <span className="font-mono font-extrabold text-blue-400 text-sm">{modalApptSlip.referenceNo}</span>
-              </div>
-
-              <div>
-                <span className="text-slate-400 font-bold uppercase text-[10px] block">APPLICANT NAME:</span>
-                <span className="font-extrabold text-white text-sm">{(modalApptSlip as any).applicantName || modalApptSlip.details?.applicantName || 'JEFFERSON FERNANDO LEE'}</span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 pt-1">
-                <div>
-                  <span className="text-slate-400 font-bold uppercase text-[10px] block">
-                    {((modalApptSlip.category || '').toLowerCase() === 'training' || (modalApptSlip.serviceName || '').toLowerCase().includes('training') || modalApptSlip.referenceNo.startsWith('TRN-')) ? 'PETSA NG ORIENTATION:' : 'PETSA NG INTERVIEW:'}
-                  </span>
-                  <span className="font-extrabold text-amber-400">
-                    {(modalApptSlip as any).appointmentDate || 'Oct 8, 2026'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-bold uppercase text-[10px] block">ORAS:</span>
-                  <span className="font-extrabold text-amber-400">
-                    {(modalApptSlip as any).appointmentTime || '09:00 AM'}
-                  </span>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-slate-400 font-bold uppercase text-[10px] block">
-                  {((modalApptSlip.category || '').toLowerCase() === 'training' || (modalApptSlip.serviceName || '').toLowerCase().includes('training') || modalApptSlip.referenceNo.startsWith('TRN-')) ? 'LUGAR NG ORIENTATION:' : 'LUGAR NG INTERVIEW:'}
-                </span>
-                <span className="font-bold text-slate-200">
-                  {((modalApptSlip.category || '').toLowerCase() === 'training' || (modalApptSlip.serviceName || '').toLowerCase().includes('training') || modalApptSlip.referenceNo.startsWith('TRN-')) ? 'Quezon City Skills Development Center, Kamuning Road, Diliman, QC' : 'Quezon City Hall SSDD Office, Assessment Desk 3'}
-                </span>
-              </div>
-
-              <div className="pt-2 border-t border-slate-800">
-                <span className="text-slate-400 font-bold uppercase text-[10px] block mb-1">MGA DADALHING DOKUMENTO:</span>
-                <ul className="list-disc list-inside text-[11px] text-slate-300 space-y-0.5">
-                  {((modalApptSlip.category || '').toLowerCase() === 'training' || (modalApptSlip.serviceName || '').toLowerCase().includes('training') || modalApptSlip.referenceNo.startsWith('TRN-')) ? (
-                    <>
-                      <li>Original Request Letter / Letter of Intent</li>
-                      <li>Valid Photo ID / QC ID (Proof of Residency)</li>
-                      <li>Barangay Certificate of Residency or Indigency</li>
-                      <li>Printed Copy ng Orientation Slip na ito</li>
-                    </>
-                  ) : (
-                    <>
-                      <li>Original Solo Parent ID / Booklet</li>
-                      <li>Valid Photo ID (PhilSys / Comelec / UMID)</li>
-                      <li>Barangay Certificate of Indigency</li>
-                      <li>Printed Copy ng Appointment Slip na ito</li>
-                    </>
-                  )}
-                </ul>
-              </div>
-
-              <div className="pt-2 text-center">
-                <div className="inline-block bg-white p-2 rounded-xl">
-                  <div className="w-48 h-10 bg-slate-900 flex items-center justify-center font-mono text-[10px] font-bold text-white tracking-widest">
-                    ||||| {modalApptSlip.referenceNo} |||||
+      {modalApptSlip && (() => {
+        const slipConfig = getSlipConfig(modalApptSlip);
+        const dynamicDocs = getDynamicDocumentsList(modalApptSlip);
+        return createPortal(
+          <div className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+            <div className="bg-[#0b1329] border border-blue-500/50 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl p-6 text-white space-y-5 relative">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-3">
+                  <img src="/Government Service Integrity Seal.png" alt="QC Seal" className="w-9 h-9 object-contain" />
+                  <div>
+                    <h3 className="text-base font-black text-white uppercase tracking-wider">
+                      {slipConfig.title}
+                    </h3>
+                    <span className="text-[10px] text-blue-400 font-mono">
+                      {slipConfig.division}
+                    </span>
                   </div>
                 </div>
-                <span className="text-[9px] text-slate-400 block mt-1">Official QC SSDD Barcode Verification</span>
+                <button
+                  type="button"
+                  onClick={() => setModalApptSlip(null)}
+                  className="p-1 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="bg-[#0e1b36] border border-blue-900/60 rounded-2xl p-4 space-y-3 text-xs">
+                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
+                  <span className="text-slate-400 font-bold uppercase text-[10px]">
+                    {slipConfig.refLabel}
+                  </span>
+                  <span className="font-mono font-extrabold text-blue-400 text-sm">{modalApptSlip.referenceNo}</span>
+                </div>
+
+                <div>
+                  <span className="text-slate-400 font-bold uppercase text-[10px] block">APPLICANT NAME:</span>
+                  <span className="font-extrabold text-white text-sm">{(modalApptSlip as any).applicantName || modalApptSlip.details?.applicantName || 'JEFFERSON FERNANDO LEE'}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[10px] block">
+                      {slipConfig.dateLabel}
+                    </span>
+                    <span className="font-extrabold text-amber-400">
+                      {slipConfig.schedDate}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold uppercase text-[10px] block">ORAS:</span>
+                    <span className="font-extrabold text-amber-400">
+                      {slipConfig.schedTime}
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="text-slate-400 font-bold uppercase text-[10px] block">
+                    {slipConfig.venueLabel}
+                  </span>
+                  <span className="font-bold text-slate-200">
+                    {slipConfig.venue}
+                  </span>
+                </div>
+
+                <div className="pt-2 border-t border-slate-800">
+                  <span className="text-slate-400 font-bold uppercase text-[10px] block mb-1">MGA DADALHING DOKUMENTO:</span>
+                  <ul className="list-disc list-inside text-[11px] text-slate-300 space-y-1">
+                    {dynamicDocs.map((doc, dIdx) => (
+                      <li key={dIdx} className="leading-relaxed">
+                        {doc}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400">
+                  <span>QC Social Services & Development Dept.</span>
+                  <span className="font-mono text-emerald-400 font-bold">OFFICIAL SLIP</span>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setModalApptSlip(null)}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrintModal}
+                  className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold rounded-xl shadow-lg flex items-center gap-1.5"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Print Slip</span>
+                </button>
               </div>
             </div>
-
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => setModalApptSlip(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={handlePrintModal}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-extrabold rounded-xl shadow-lg flex items-center gap-1.5"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Print Appointment Slip</span>
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body
+        );
+      })()}
 
       {/* ---------------------------------------------------- */}
       {/* MODAL 2: OFFICIAL SOLO PARENT ID CARD */}
