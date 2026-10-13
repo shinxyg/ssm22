@@ -1463,17 +1463,15 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                     </div>
                   </div>
 
-                  {/* SIGNATORIES */}
-                  <div className="grid grid-cols-2 gap-8 pt-10 text-center text-xs">
+                  {/* SIGNATORIES (BLANK FOR WET SIGNATURE) */}
+                  <div className="grid grid-cols-2 gap-8 pt-12 text-center text-xs">
                     <div>
                       <div className="border-b border-slate-800 w-full mb-1.5"></div>
-                      <div className="font-medium text-slate-800 text-xs">Maria Santos, RSW</div>
-                      <span className="text-[10px] text-slate-500 block mt-0.5">Prepared and Certified by (Social Worker)</span>
+                      <span className="text-[10px] text-slate-500 block mt-0.5 font-medium">Prepared and Certified by (Social Worker)</span>
                     </div>
                     <div>
                       <div className="border-b border-slate-800 w-full mb-1.5"></div>
-                      <div className="font-medium text-slate-800 text-xs">SSDD Department Head</div>
-                      <span className="text-[10px] text-slate-500 block mt-0.5">Approved by (Authorized Signatory)</span>
+                      <span className="text-[10px] text-slate-500 block mt-0.5 font-medium">Approved by (Authorized Signatory)</span>
                     </div>
                   </div>
                 </div>
