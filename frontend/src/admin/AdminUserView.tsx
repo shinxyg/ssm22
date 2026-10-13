@@ -268,10 +268,14 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                         {u.userId}
                       </span>
                       <div className="flex items-center gap-1.5">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase ${
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase border ${
                           isAdmin
-                            ? 'bg-purple-950/80 border border-purple-500/40 text-purple-300'
-                            : 'bg-blue-950/80 border border-blue-500/40 text-blue-300'
+                            ? darkMode
+                              ? 'bg-purple-950/80 border-purple-500/40 text-purple-300'
+                              : 'bg-purple-100 border-purple-300 text-purple-800'
+                            : darkMode
+                            ? 'bg-blue-950/80 border-blue-500/40 text-blue-300'
+                            : 'bg-blue-100 border-blue-300 text-blue-800'
                         }`}>
                           {u.role}
                         </span>
@@ -319,8 +323,12 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                           onClick={() => toggleUnmaskUser(u)}
                           className={`p-1.5 rounded-lg border transition-all cursor-pointer shrink-0 ${
                             isUnmasked
-                              ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
-                              : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                              ? darkMode
+                                ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
+                                : 'bg-blue-100 border-blue-300 text-blue-700'
+                              : darkMode
+                              ? 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                              : 'bg-slate-100 border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                           }`}
                           title={isUnmasked ? 'Click to mask citizen data' : 'Click to unmask citizen data'}
                         >
@@ -337,8 +345,12 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                         disabled={updatingId === u.id}
                         className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
                           u.status === 'Active'
-                            ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60 active:scale-[0.98]'
-                            : 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60 active:scale-[0.98]'
+                            ? darkMode
+                              ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60 active:scale-[0.98]'
+                              : 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 active:scale-[0.98]'
+                            : darkMode
+                            ? 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60 active:scale-[0.98]'
+                            : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100 active:scale-[0.98]'
                         } ${updatingId === u.id ? 'opacity-50 pointer-events-none' : ''}`}
                       >
                         <Power className="w-3.5 h-3.5" />
@@ -404,8 +416,12 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                                     onClick={() => toggleUnmaskUser(u)}
                                     className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
                                       isUnmasked
-                                        ? 'bg-blue-950/60 border-blue-700/80 text-blue-400 hover:bg-blue-900/80'
-                                        : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+                                        ? darkMode
+                                          ? 'bg-blue-950/60 border-blue-700/80 text-blue-400 hover:bg-blue-900/80'
+                                          : 'bg-blue-100 border-blue-300 text-blue-700 hover:bg-blue-200'
+                                        : darkMode
+                                        ? 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+                                        : 'bg-slate-100 border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                                     }`}
                                     title={isUnmasked ? 'Click to mask citizen data' : 'Click to unmask citizen data'}
                                   >
@@ -417,10 +433,14 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                           })()}
                         </td>
                         <td className="px-5 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wide uppercase ${
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold tracking-wide uppercase border ${
                             u.rawRole === 'admin'
-                              ? 'bg-purple-950/80 border border-purple-500/40 text-purple-300'
-                              : 'bg-blue-950/80 border border-blue-500/40 text-blue-300'
+                              ? darkMode
+                                ? 'bg-purple-950/80 border-purple-500/40 text-purple-300'
+                                : 'bg-purple-100 border-purple-300 text-purple-800'
+                              : darkMode
+                              ? 'bg-blue-950/80 border-blue-500/40 text-blue-300'
+                              : 'bg-blue-100 border-blue-300 text-blue-800'
                           }`}>
                             {u.role}
                           </span>
@@ -445,8 +465,12 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                             title={u.status === 'Active' ? 'Deactivate Account' : 'Activate Account'}
                             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
                               u.status === 'Active'
-                                ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60'
-                                : 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60'
+                                ? darkMode
+                                  ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60'
+                                  : 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100'
+                                : darkMode
+                                ? 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60'
+                                : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
                             } ${updatingId === u.id ? 'opacity-50 pointer-events-none' : ''}`}
                           >
                             <Power className="w-3.5 h-3.5" />

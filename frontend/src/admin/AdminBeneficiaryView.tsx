@@ -486,13 +486,17 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                         </div>
 
                         {b.verificationStatus === 'Verified' ? (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded-lg shrink-0">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-lg shrink-0 border ${
+                            darkMode ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800' : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                          }`}>
+                            <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                             Verified
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-950/60 border border-amber-800 px-2 py-0.5 rounded-lg shrink-0">
-                            <Clock className="w-3 h-3 text-amber-400" />
+                          <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-lg shrink-0 border ${
+                            darkMode ? 'text-amber-400 bg-amber-950/60 border-amber-800' : 'text-amber-800 bg-amber-100 border-amber-300'
+                          }`}>
+                            <Clock className="w-3 h-3 text-amber-500" />
                             Pending
                           </span>
                         )}
@@ -587,18 +591,24 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                             <div className="space-y-1">
                               <div className="flex items-center gap-1.5">
                                 {b.verificationStatus === 'Verified' ? (
-                                  <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-lg">
-                                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                                  <span className={`inline-flex items-center gap-1 text-[11px] font-extrabold px-2 py-0.5 rounded-lg border ${
+                                    darkMode ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800/80' : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                                  }`}>
+                                    <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                                     Verified
                                   </span>
                                 ) : b.verificationStatus === 'Pending' ? (
-                                  <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-amber-400 bg-amber-950/60 border border-amber-800/80 px-2 py-0.5 rounded-lg">
-                                    <Clock className="w-3 h-3 text-amber-400" />
+                                  <span className={`inline-flex items-center gap-1 text-[11px] font-extrabold px-2 py-0.5 rounded-lg border ${
+                                    darkMode ? 'text-amber-400 bg-amber-950/60 border-amber-800/80' : 'text-amber-800 bg-amber-100 border-amber-300'
+                                  }`}>
+                                    <Clock className="w-3 h-3 text-amber-500" />
                                     Pending Review
                                   </span>
                                 ) : (
-                                  <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-rose-400 bg-rose-950/60 border border-rose-800/80 px-2 py-0.5 rounded-lg">
-                                    <XCircle className="w-3 h-3 text-rose-400" />
+                                  <span className={`inline-flex items-center gap-1 text-[11px] font-extrabold px-2 py-0.5 rounded-lg border ${
+                                    darkMode ? 'text-rose-400 bg-rose-950/60 border-rose-800/80' : 'text-rose-800 bg-rose-100 border-rose-300'
+                                  }`}>
+                                    <XCircle className="w-3 h-3 text-rose-500" />
                                     Unverified
                                   </span>
                                 )}
@@ -618,8 +628,12 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                                       }}
                                       className={`p-1 rounded-lg border transition-all cursor-pointer ${
                                         isUnmasked
-                                          ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
-                                          : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+                                          ? darkMode
+                                            ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
+                                            : 'bg-blue-100 border-blue-300 text-blue-700'
+                                          : darkMode
+                                          ? 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+                                          : 'bg-slate-100 border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                                       }`}
                                       title={isUnmasked ? 'Click to mask beneficiary details' : 'Click to unmask beneficiary details'}
                                     >
@@ -713,13 +727,17 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                   <div className="flex items-center justify-between gap-2">
                     <h2 className="text-base font-extrabold truncate">{selectedBeneficiary.name}</h2>
                     {selectedBeneficiary.verificationStatus === 'Verified' ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded-lg shrink-0">
-                        <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                      <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg shrink-0 border ${
+                        darkMode ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800' : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                      }`}>
+                        <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                         Verified
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-400 bg-amber-950/60 border border-amber-800 px-2 py-0.5 rounded-lg shrink-0">
-                        <Clock className="w-3 h-3 text-amber-400" />
+                      <span className={`inline-flex items-center gap-1 text-[11px] font-bold px-2 py-0.5 rounded-lg shrink-0 border ${
+                        darkMode ? 'text-amber-400 bg-amber-950/60 border-amber-800' : 'text-amber-800 bg-amber-100 border-amber-300'
+                      }`}>
+                        <Clock className="w-3 h-3 text-amber-500" />
                         Pending
                       </span>
                     )}
