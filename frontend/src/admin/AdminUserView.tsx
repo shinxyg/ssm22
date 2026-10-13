@@ -277,8 +277,12 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                         </span>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${
                           u.isOnline
-                            ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300'
-                            : 'bg-slate-900 border border-slate-700/80 text-slate-400'
+                            ? darkMode
+                              ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300'
+                              : 'bg-emerald-100 border border-emerald-300 text-emerald-800'
+                            : darkMode
+                            ? 'bg-slate-900 border border-slate-700/80 text-slate-400'
+                            : 'bg-slate-100 border border-slate-300 text-slate-600'
                         }`}>
                           {u.isOnline ? 'Online' : 'Offline'}
                         </span>
@@ -424,8 +428,12 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                         <td className="px-5 py-4 whitespace-nowrap">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold uppercase ${
                             u.isOnline
-                              ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300'
-                              : 'bg-slate-900 border border-slate-700/80 text-slate-400'
+                              ? darkMode
+                                ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300'
+                                : 'bg-emerald-100 border border-emerald-300 text-emerald-800'
+                              : darkMode
+                              ? 'bg-slate-900 border border-slate-700/80 text-slate-400'
+                              : 'bg-slate-100 border border-slate-300 text-slate-600'
                           }`}>
                             {u.isOnline ? 'Online' : 'Offline'}
                           </span>

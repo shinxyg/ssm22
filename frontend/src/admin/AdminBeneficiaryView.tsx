@@ -872,8 +872,12 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
 
                         <span className={`text-[10px] font-extrabold px-2 py-0.5 rounded-lg border shrink-0 ${
                           h.isApproved 
-                            ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800' 
-                            : 'bg-amber-950/60 text-amber-400 border-amber-800'
+                            ? darkMode
+                              ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800' 
+                              : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                            : darkMode
+                            ? 'bg-amber-950/60 text-amber-400 border-amber-800'
+                            : 'bg-amber-100 text-amber-800 border-amber-300'
                         }`}>
                           {h.status}
                         </span>

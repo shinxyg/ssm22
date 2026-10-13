@@ -577,14 +577,24 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                       {/* Status Badge */}
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border shrink-0 ${
                         app.status === 'Rejected'
-                          ? 'bg-rose-950/60 text-rose-300 border-rose-800/40'
+                          ? darkMode
+                            ? 'bg-rose-950/60 text-rose-300 border-rose-800/40'
+                            : 'bg-rose-100 text-rose-800 border-rose-300'
                           : app.status === 'Referred to Partner Agency' || app.status === 'Referred'
-                          ? 'bg-amber-950/60 text-amber-300 border-amber-800/40'
+                          ? darkMode
+                            ? 'bg-amber-950/60 text-amber-300 border-amber-800/40'
+                            : 'bg-amber-100 text-amber-800 border-amber-300'
                           : isAppFinalApproved
-                          ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                          ? darkMode
+                            ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                            : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                           : isScheduled
-                          ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
-                          : 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                          ? darkMode
+                            ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
+                            : 'bg-blue-100 text-blue-800 border-blue-300'
+                          : darkMode
+                          ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                          : 'bg-amber-100 text-amber-800 border-amber-300'
                       }`}>
                         {app.status === 'Rejected'
                           ? 'Rejected'
@@ -765,14 +775,24 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                         <td className="py-4 px-6 whitespace-nowrap">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold border whitespace-nowrap ${
                             app.status === 'Rejected'
-                              ? 'bg-rose-950/60 text-rose-300 border-rose-800/40'
+                              ? darkMode
+                                ? 'bg-rose-950/60 text-rose-300 border-rose-800/40'
+                                : 'bg-rose-100 text-rose-800 border-rose-300'
                               : app.status === 'Referred to Partner Agency' || app.status === 'Referred'
-                              ? 'bg-amber-950/60 text-amber-300 border-amber-800/40'
+                              ? darkMode
+                                ? 'bg-amber-950/60 text-amber-300 border-amber-800/40'
+                                : 'bg-amber-100 text-amber-800 border-amber-300'
                               : isAppApproved(app.status) || isAppApproved(appt?.status)
-                              ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                              ? darkMode
+                                ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                                : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                               : isScheduled
-                              ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
-                              : 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                              ? darkMode
+                                ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
+                                : 'bg-blue-100 text-blue-800 border-blue-300'
+                              : darkMode
+                              ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                              : 'bg-amber-100 text-amber-800 border-amber-300'
                           }`}>
                             <span>
                               {app.status === 'Rejected'

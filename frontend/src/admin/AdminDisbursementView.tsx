@@ -428,10 +428,16 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
 
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black border whitespace-nowrap ${
                       isReleased
-                        ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                        ? darkMode
+                          ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                          : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                         : hasSchedule
-                        ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
-                        : 'bg-blue-950/60 text-blue-300 border-blue-500/30'
+                        ? darkMode
+                          ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                          : 'bg-amber-100 text-amber-800 border-amber-300'
+                        : darkMode
+                        ? 'bg-blue-950/60 text-blue-300 border-blue-500/30'
+                        : 'bg-blue-100 text-blue-800 border-blue-300'
                     }`}>
                       {isReleased
                         ? 'RELEASED / COMPLETED'
@@ -565,10 +571,16 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
                       <td className="py-3.5 px-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black border whitespace-nowrap ${
                           isReleased
-                            ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                            ? darkMode
+                              ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                              : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                             : hasSchedule
-                            ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
-                            : 'bg-blue-950/60 text-blue-300 border-blue-500/30'
+                            ? darkMode
+                              ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                              : 'bg-amber-100 text-amber-800 border-amber-300'
+                            : darkMode
+                            ? 'bg-blue-950/60 text-blue-300 border-blue-500/30'
+                            : 'bg-blue-100 text-blue-800 border-blue-300'
                         }`}>
                           <span>
                             {isReleased

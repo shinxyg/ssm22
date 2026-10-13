@@ -357,10 +357,16 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border whitespace-nowrap ${
                         isApproved
-                          ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                          ? darkMode
+                            ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                            : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                           : isRejected
-                          ? 'bg-rose-950/60 text-rose-300 border-rose-500/30'
-                          : 'bg-amber-950/60 text-amber-300 border-amber-500/30'
+                          ? darkMode
+                            ? 'bg-rose-950/60 text-rose-300 border-rose-500/30'
+                            : 'bg-rose-100 text-rose-800 border-rose-300'
+                          : darkMode
+                          ? 'bg-amber-950/60 text-amber-300 border-amber-500/30'
+                          : 'bg-amber-100 text-amber-800 border-amber-300'
                       }`}>
                         {app.status}
                       </span>
@@ -446,10 +452,16 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                           <td className="py-3.5 px-4">
                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-extrabold border ${
                               isApproved
-                                ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                                ? darkMode
+                                  ? 'bg-emerald-950/60 text-emerald-300 border-emerald-500/30'
+                                  : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                                 : isRejected
-                                ? 'bg-rose-950/60 text-rose-300 border-rose-500/30'
-                                : 'bg-amber-950/60 text-amber-300 border-amber-500/30'
+                                ? darkMode
+                                  ? 'bg-rose-950/60 text-rose-300 border-rose-500/30'
+                                  : 'bg-rose-100 text-rose-800 border-rose-300'
+                                : darkMode
+                                ? 'bg-amber-950/60 text-amber-300 border-amber-500/30'
+                                : 'bg-amber-100 text-amber-800 border-amber-300'
                             }`}>
                               <span>{app.status}</span>
                             </span>

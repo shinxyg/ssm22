@@ -289,12 +289,20 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border whitespace-nowrap ${
                         isApproved
-                          ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                          ? darkMode
+                            ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                            : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                           : isPending
-                          ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                          ? darkMode
+                            ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                            : 'bg-amber-100 text-amber-800 border-amber-300'
                           : isAppt
-                          ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
-                          : 'bg-rose-950/60 text-rose-400 border-rose-500/30'
+                          ? darkMode
+                            ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
+                            : 'bg-blue-100 text-blue-800 border-blue-300'
+                          : darkMode
+                          ? 'bg-rose-950/60 text-rose-400 border-rose-500/30'
+                          : 'bg-rose-100 text-rose-800 border-rose-300'
                       }`}>
                         {app.status}
                       </span>
@@ -373,12 +381,20 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                         <td className="py-4 px-6">
                           <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold border ${
                             app.status === 'Ready for Payout' || app.status === 'Approved' || app.status === 'RELEASED / COMPLETED' || (app.status as string) === 'Completed'
-                              ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                              ? darkMode
+                                ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                                : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                               : app.status === 'Under Review' || app.status === 'Pending Documents'
-                              ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                              ? darkMode
+                                ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                                : 'bg-amber-100 text-amber-800 border-amber-300'
                               : app.status === 'Pending Appointment' || app.status === 'Interview Scheduled'
-                              ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
-                              : 'bg-rose-950/60 text-rose-400 border-rose-500/30'
+                              ? darkMode
+                                ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
+                                : 'bg-blue-100 text-blue-800 border-blue-300'
+                              : darkMode
+                              ? 'bg-rose-950/60 text-rose-400 border-rose-500/30'
+                              : 'bg-rose-100 text-rose-800 border-rose-300'
                           }`}>
                             {app.status}
                           </span>

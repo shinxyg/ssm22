@@ -527,13 +527,17 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                         {app.reference_no}
                       </span>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black border whitespace-nowrap ${
-                        isReleased
-                          ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/30'
-                          : isApproved
-                          ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/30'
+                        isReleased || isApproved
+                          ? darkMode
+                            ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/30'
+                            : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                           : isRejected
-                          ? 'bg-rose-950/80 text-rose-400 border-rose-500/30'
-                          : 'bg-amber-950/80 text-amber-400 border-amber-500/30'
+                          ? darkMode
+                            ? 'bg-rose-950/80 text-rose-400 border-rose-500/30'
+                            : 'bg-rose-100 text-rose-800 border-rose-300'
+                          : darkMode
+                          ? 'bg-amber-950/80 text-amber-400 border-amber-500/30'
+                          : 'bg-amber-100 text-amber-800 border-amber-300'
                       }`}>
                         {isReleased
                           ? ((app.reference_no || '').startsWith('QC-CW') ? 'APPROVED / COMPLETED' : 'RELEASED / COMPLETED')
@@ -638,13 +642,17 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                           </td>
                           <td className="py-4 px-6 whitespace-nowrap">
                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-black border whitespace-nowrap ${
-                              isReleased
-                                ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/30'
-                                : isApproved
-                                ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/30'
+                              isReleased || isApproved
+                                ? darkMode
+                                  ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/30'
+                                  : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                                 : isRejected
-                                ? 'bg-rose-950/80 text-rose-400 border-rose-500/30'
-                                : 'bg-amber-950/80 text-amber-400 border-amber-500/30'
+                                ? darkMode
+                                  ? 'bg-rose-950/80 text-rose-400 border-rose-500/30'
+                                  : 'bg-rose-100 text-rose-800 border-rose-300'
+                                : darkMode
+                                ? 'bg-amber-950/80 text-amber-400 border-amber-500/30'
+                                : 'bg-amber-100 text-amber-800 border-amber-300'
                             }`}>
                               <span>
                                 {isReleased
