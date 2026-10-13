@@ -417,8 +417,12 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
                         onClick={() => toggleUnmaskDisbursement(app.referenceNo, name)}
                         className={`p-1 rounded-lg border transition-all cursor-pointer ${
                           isUnmasked
-                            ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
-                            : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                            ? darkMode
+                              ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
+                              : 'bg-blue-100 border-blue-300 text-blue-700'
+                            : darkMode
+                            ? 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200'
+                            : 'bg-slate-100 border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                         }`}
                         title={isUnmasked ? 'Click to mask payout details' : 'Click to unmask payout details'}
                       >
@@ -498,7 +502,9 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
                         </button>
                       )
                     ) : (
-                      <div className="w-full text-center py-2 text-xs font-semibold text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 rounded-xl">
+                      <div className={`w-full text-center py-2 text-xs font-semibold rounded-xl border ${
+                        darkMode ? 'text-emerald-400 bg-emerald-950/40 border-emerald-500/30' : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                      }`}>
                         ✓ Released & Archived to History
                       </div>
                     )}
@@ -553,8 +559,12 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
                             onClick={() => toggleUnmaskDisbursement(app.referenceNo, name)}
                             className={`p-1 rounded-lg border transition-all cursor-pointer ${
                               isUnmasked
-                                ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
-                                : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+                                ? darkMode
+                                  ? 'bg-blue-950/60 border-blue-700/80 text-blue-400'
+                                  : 'bg-blue-100 border-blue-300 text-blue-700'
+                                : darkMode
+                                ? 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-200 hover:bg-slate-700'
+                                : 'bg-slate-100 border-slate-300 text-slate-600 hover:text-slate-900 hover:bg-slate-200'
                             }`}
                             title={isUnmasked ? 'Click to mask payout details' : 'Click to unmask payout details'}
                           >
