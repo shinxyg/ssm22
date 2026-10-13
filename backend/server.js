@@ -2147,6 +2147,56 @@ app.put('/api/livelihood/applications/:id/status', async (req, res) => {
   }
 });
 
+// DELETE Livelihood application from DB to allow re-applying
+app.delete('/api/livelihood/applications/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('DELETE FROM livelihood_applications WHERE reference_no = $1 OR id::text = $1 RETURNING *', [id]);
+    await pool.query('DELETE FROM appointments WHERE reference_no = $1', [id]).catch(() => null);
+    await pool.query('DELETE FROM financial_disbursements WHERE reference_no = $1', [id]).catch(() => null);
+    res.json({ success: true, message: `Livelihood application ${id} deleted successfully.`, deletedCount: result.rowCount });
+  } catch (err) {
+    console.error('DELETE livelihood application error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE clear all Livelihood and Training program applications and their linked appointments
+app.delete('/api/clear-livelihood-training', async (req, res) => {
+  try {
+    const livRes = await pool.query('DELETE FROM livelihood_applications RETURNING reference_no;');
+    const trnRes = await pool.query('DELETE FROM training_applications RETURNING reference_no;');
+    const apptRes = await pool.query(`
+      DELETE FROM appointments 
+      WHERE reference_no LIKE 'LVH-%' 
+         OR reference_no LIKE 'TRN-%' 
+         OR LOWER(module_name) LIKE '%livelihood%' 
+         OR LOWER(module_name) LIKE '%training%'
+      RETURNING reference_no;
+    `).catch(() => ({ rowCount: 0 }));
+    const disbRes = await pool.query(`
+      DELETE FROM financial_disbursements 
+      WHERE reference_no LIKE 'LVH-%' 
+         OR reference_no LIKE 'TRN-%' 
+         OR LOWER(module_name) LIKE '%livelihood%' 
+         OR LOWER(module_name) LIKE '%training%'
+      RETURNING reference_no;
+    `).catch(() => ({ rowCount: 0 }));
+
+    res.json({
+      success: true,
+      message: 'Successfully cleared Livelihood and Training program records.',
+      livelihoodDeleted: livRes.rowCount,
+      trainingDeleted: trnRes.rowCount,
+      appointmentsDeleted: apptRes.rowCount,
+      disbursementsDeleted: disbRes.rowCount
+    });
+  } catch (err) {
+    console.error('Error clearing livelihood and training data:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET all Skills Training Program applications from PostgreSQL DB
 app.get('/api/training/applications', async (req, res) => {
   try {
