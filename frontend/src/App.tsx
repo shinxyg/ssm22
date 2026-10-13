@@ -1022,8 +1022,8 @@ export default function App() {
             applications={applications}
           />
 
-          {/* Admin Main Content Area */}
-          <main className={`flex-1 p-3 sm:p-6 overflow-y-auto transition-colors duration-200 ${
+          {/* Admin Main Content Area (With bottom safe-scroll clearance for mobile browser navigation bars) */}
+          <main className={`flex-1 px-3 sm:px-6 pt-3 sm:pt-6 pb-28 sm:pb-8 overflow-y-auto transition-colors duration-200 ${
             darkMode ? 'bg-[#070e1b] text-slate-100' : 'bg-slate-100 text-slate-900'
           }`}>
             {adminTab === 'profile' ? (
@@ -1091,8 +1091,8 @@ export default function App() {
           applications={applications}
         />
 
-        {/* Main Content Area (Independent Viewport Scroll with GPU Acceleration) */}
-        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 [transform:translateZ(0)]">
+        {/* Main Content Area (Independent Viewport Scroll with GPU Acceleration and mobile safe bottom padding) */}
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-6 lg:pt-8 pb-28 sm:pb-12 space-y-6 sm:space-y-8 [transform:translateZ(0)]">
           {activeTab === 'help-guide' ? (
             /* Help & Service Guide Main Overview Page */
             <>

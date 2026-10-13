@@ -526,10 +526,9 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
         </h3>
 
         {filteredList.length > 0 ? (
-          <div className={`border rounded-2xl overflow-hidden shadow-xl ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200'}`}>
-            
-            {/* Mobile Appointment Cards View (Visible ONLY on mobile md:hidden) */}
-            <div className="md:hidden divide-y divide-slate-800/60">
+          <div>
+            {/* Mobile Appointment Cards View: Distinct floating cards with clean margins (md:hidden) */}
+            <div className="md:hidden space-y-3.5">
               {filteredList.map((app) => {
                 const name = (app as any).applicantName || app.details?.applicantName || 'Juan Dela Cruz';
                 const appt = app.appointmentDetails;
@@ -558,7 +557,12 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                 const isGLPrintable = (app.serviceName.toLowerCase().includes('medical bill') || app.serviceName.toLowerCase().includes('hospital') || app.assistanceType?.toLowerCase().includes('medical bill') || app.serviceName.toLowerCase().includes('funeral') || app.serviceName.toLowerCase().includes('burial') || app.referenceNo.includes('FUN')) && !app.serviceName.toLowerCase().includes('medicine') && !(app.assistanceType || '').toLowerCase().includes('medicine');
 
                 return (
-                  <div key={app.referenceNo} className="p-4 space-y-3 transition-colors hover:bg-slate-800/40">
+                  <div 
+                    key={app.referenceNo} 
+                    className={`p-4 space-y-3 rounded-2xl border shadow-lg transition-all ${
+                      darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200 shadow-sm'
+                    }`}
+                  >
                     {/* Top Row: Ref No + Status Badge */}
                     <div className="flex items-start justify-between gap-2">
                       <div>
@@ -684,8 +688,9 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
             </div>
 
             {/* Desktop Data Table (Visible ONLY on desktop md:block) */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <div className={`hidden md:block border rounded-2xl overflow-hidden shadow-xl ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200'}`}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className={`border-b text-[11px] font-extrabold uppercase tracking-wider ${
                     darkMode ? 'border-slate-800/80 bg-[#121c2e] text-slate-400' : 'border-slate-200 bg-slate-100 text-slate-600'
@@ -845,6 +850,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
               </table>
             </div>
           </div>
+        </div>
         ) : (
           <div className="bg-[#0e1726] border border-slate-800/90 rounded-2xl p-16 text-center shadow-xl flex flex-col items-center justify-center">
             <div className="p-3.5 rounded-2xl bg-[#121c2e] border border-slate-800 text-slate-400 mb-3">

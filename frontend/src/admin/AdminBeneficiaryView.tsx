@@ -456,19 +456,17 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                 <p className={`text-xs mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Try adjusting your search query or verification filter.</p>
               </div>
             ) : (
-              <div className={`border rounded-2xl overflow-hidden shadow-xl ${
-                darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90 shadow-sm'
-              }`}>
+              <div>
                 {/* Mobile Cards View (Visible ONLY on mobile screens md:hidden) */}
-                <div className="md:hidden divide-y divide-slate-800/60">
+                <div className="md:hidden space-y-3.5">
                   {filteredBeneficiaries.map((b) => (
                     <div
                       key={b.citizenKey}
                       onClick={() => setSelectedBeneficiary(b)}
-                      className={`p-4 transition-all cursor-pointer space-y-3 ${
+                      className={`p-4 transition-all cursor-pointer space-y-3 rounded-2xl border shadow-lg ${
                         selectedBeneficiary?.citizenKey === b.citizenKey
-                          ? darkMode ? 'bg-blue-950/40' : 'bg-blue-50/70'
-                          : darkMode ? 'hover:bg-[#121c2e]/70 active:bg-slate-800/60' : 'hover:bg-slate-50 active:bg-slate-100'
+                          ? darkMode ? 'bg-blue-950/40 border-blue-600/60' : 'bg-blue-50/70 border-blue-400'
+                          : darkMode ? 'bg-[#0e1726] border-slate-800/90 hover:bg-[#121c2e]/70 active:bg-slate-800/60' : 'bg-white border-slate-200/90 shadow-sm hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -526,8 +524,11 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                 </div>
 
                 {/* Desktop Data Table (Visible ONLY on desktop md:block) */}
-                <div className="hidden md:block overflow-x-auto">
-                  <table className="w-full text-left text-xs border-collapse">
+                <div className={`hidden md:block border rounded-2xl overflow-hidden shadow-xl ${
+                  darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90 shadow-sm'
+                }`}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
                     <thead>
                       <tr className={`border-b text-[10px] uppercase tracking-wider font-extrabold ${
                         darkMode ? 'bg-[#0b1324]/80 text-slate-400 border-slate-800' : 'bg-slate-50 text-slate-500 border-slate-200'
@@ -647,6 +648,7 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                   </table>
                 </div>
               </div>
+            </div>
             )}
           </div>
         </div>
