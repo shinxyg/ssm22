@@ -2449,7 +2449,20 @@ app.put('/api/appointments/:id/status', async (req, res) => {
       status === 'Qualified / Enrolled';
 
     const isRejectedStatus = status === 'REJECTED' || status === 'Rejected' || status === 'Unqualified';
-    const targetStatus = isApprovedStatus ? (status === 'Approved' || status === 'APPROVED' ? 'Released & Archived' : status) : status;
+    const isFinancialAidRef = 
+      refNo.startsWith('QC-EDU') || 
+      refNo.startsWith('QC-SP-EDU') || 
+      refNo.startsWith('SP-') || 
+      refNo.startsWith('QC-PWD') || 
+      refNo.startsWith('PWD-') || 
+      refNo.startsWith('SENIOR-') || 
+      refNo.startsWith('LVH-');
+
+    const targetStatus = isApprovedStatus 
+      ? (status === 'Approved' || status === 'APPROVED' 
+          ? (isFinancialAidRef ? 'Approved & Ready for Payout' : 'Released & Archived') 
+          : status) 
+      : status;
 
     if (isApprovedStatus || isRejectedStatus) {
       await pool.query(`UPDATE solo_parent_applications SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE reference_no = $2;`, [targetStatus, refNo]).catch(() => null);

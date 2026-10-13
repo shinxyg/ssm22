@@ -126,6 +126,18 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
     });
   }, [applications]);
 
+  const checkIsDisbursementReleased = (status?: string): boolean => {
+    const st = (status || '').toUpperCase();
+    return (
+      st === 'RELEASED / COMPLETED' ||
+      st === 'RELEASED & ARCHIVED' ||
+      st === 'APPROVED / COMPLETED' ||
+      st === 'COMPLETED' ||
+      st.includes('RELEASED') ||
+      st.includes('ARCHIVED')
+    );
+  };
+
   // Real-time interval check: Auto-release when set Date & Time is reached
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -136,7 +148,7 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
       const currentTimeStr = `${currentHours}:${currentMins}`;
 
       disbursementRecords.forEach((app) => {
-        if (app.status !== 'RELEASED / COMPLETED' && (app.status as string) !== 'Completed') {
+        if (!checkIsDisbursementReleased(app.status)) {
           const rawDate = (app as any).scheduledPayoutDate || scheduledPayoutTimes[app.referenceNo]?.date;
           const rawTime = (app as any).scheduledPayoutTime || scheduledPayoutTimes[app.referenceNo]?.time;
           const schedDate = rawDate ? String(rawDate).split('T')[0] : null;
@@ -160,8 +172,8 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
   const filteredRecords = useMemo(() => {
     return disbursementRecords.filter((app) => {
       // Tab Filter
-      if (tabFilter === 'PENDING' && (app.status === 'RELEASED / COMPLETED' || (app.status as string) === 'Completed')) return false;
-      if (tabFilter === 'RELEASED' && !(app.status === 'RELEASED / COMPLETED' || (app.status as string) === 'Completed')) return false;
+      if (tabFilter === 'PENDING' && checkIsDisbursementReleased(app.status)) return false;
+      if (tabFilter === 'RELEASED' && !checkIsDisbursementReleased(app.status)) return false;
 
       // Search Query
       if (searchQuery.trim() !== '') {
@@ -177,8 +189,8 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
   }, [disbursementRecords, tabFilter, searchQuery]);
 
   // Summary Metrics
-  const pendingCount = disbursementRecords.filter((a) => a.status !== 'RELEASED / COMPLETED' && a.status !== 'RELEASED & ARCHIVED' && (a.status as string) !== 'Completed').length;
-  const releasedCount = disbursementRecords.filter((a) => a.status === 'RELEASED / COMPLETED' || a.status === 'RELEASED & ARCHIVED' || (a.status as string) === 'Completed').length;
+  const pendingCount = disbursementRecords.filter((a) => !checkIsDisbursementReleased(a.status)).length;
+  const releasedCount = disbursementRecords.filter((a) => checkIsDisbursementReleased(a.status)).length;
 
   const handleConfirmRelease = (immediate = false) => {
     if (releasingRecord && onUpdateStatus) {
@@ -353,7 +365,7 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
             <tbody className={`divide-y text-xs font-medium ${darkMode ? 'divide-slate-800/60' : 'divide-slate-200'}`}>
               {filteredRecords.length > 0 ? (
                 filteredRecords.map((app) => {
-                  const isReleased = app.status === 'RELEASED / COMPLETED' || (app.status as string) === 'Completed';
+                  const isReleased = checkIsDisbursementReleased(app.status);
                   const name = (app as any).applicantName || app.details?.applicantName || 'Juan Dela Cruz';
                   const schedInfo = scheduledPayoutTimes[app.referenceNo];
                   const payoutDate = schedInfo?.date || (app as any).scheduledPayoutDate || (app as any).scheduled_payout_date;

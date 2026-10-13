@@ -386,10 +386,11 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
       const filter = selectedModuleFilter.toLowerCase();
 
       if (filter === 'aics') return cat.includes('aics') || serv.includes('aics') || serv.includes('medical') || serv.includes('funeral');
-      if (filter === 'pwd') return cat.includes('pwd') || serv.includes('pwd');
-      if (filter === 'senior') return cat.includes('senior') || serv.includes('senior');
-      if (filter === 'soloparent') return cat.includes('solo') || serv.includes('solo');
-      if (filter === 'livelihood') return cat.includes('livelihood') || serv.includes('livelihood');
+      if (filter === 'pwd') return cat.includes('pwd') || serv.includes('pwd') || (app.referenceNo || '').startsWith('QC-PWD') || (app.referenceNo || '').startsWith('PWD-');
+      if (filter === 'senior') return cat.includes('senior') || serv.includes('senior') || (app.referenceNo || '').startsWith('SENIOR-');
+      if (filter === 'educational') return cat.includes('educational') || serv.includes('educational') || serv.includes('indigent') || (app.referenceNo || '').startsWith('QC-EDU') || (app.referenceNo || '').startsWith('QC-SP-EDU');
+      if (filter === 'soloparent') return (cat.includes('solo') || serv.includes('solo')) && !(app.referenceNo || '').startsWith('QC-EDU');
+      if (filter === 'livelihood') return cat.includes('livelihood') || serv.includes('livelihood') || (app.referenceNo || '').startsWith('LVH-');
       return true;
     });
   }, [currentList, selectedModuleFilter]);
@@ -457,6 +458,28 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
           }`}
         >
           SOLO PARENT SUBSIDY
+        </button>
+        <button
+          type="button"
+          onClick={() => setSelectedModuleFilter('educational')}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+            selectedModuleFilter === 'educational'
+              ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
+              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+          }`}
+        >
+          EDUCATIONAL GRANT
+        </button>
+        <button
+          type="button"
+          onClick={() => setSelectedModuleFilter('pwd')}
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+            selectedModuleFilter === 'pwd'
+              ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
+              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+          }`}
+        >
+          PWD ASSISTANCE
         </button>
         <button
           type="button"

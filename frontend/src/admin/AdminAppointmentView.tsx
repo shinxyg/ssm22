@@ -618,7 +618,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                                 : app.status === 'Referred to Partner Agency' || app.status === 'Referred'
                                 ? 'Referred to Partner Agency'
                                 : isAppApproved(app.status) || isAppApproved(appt?.status)
-                                ? (app.status === 'RELEASED / COMPLETED' || app.status === 'APPROVED / COMPLETED' || (app.status as string) === 'Completed' ? (isCwProtection ? 'Approved / Completed' : 'Released & Archived') : isTrn ? 'Qualified / Enrolled' : isCwProtection ? 'Approved / Completed' : 'Approved & Ready for Payout')
+                                ? (app.status === 'RELEASED / COMPLETED' || app.status === 'RELEASED & ARCHIVED' || app.status === 'APPROVED / COMPLETED' || (app.status as string) === 'Completed' ? (isCwProtection ? 'Approved / Completed' : 'Released & Archived') : isTrn ? 'Qualified / Enrolled' : isCwProtection ? 'Approved / Completed' : 'Approved & Ready for Payout')
                                 : isScheduled
                                 ? (isTrn ? 'Orientation Scheduled' : 'Interview Scheduled')
                                 : 'Pending Schedule'}

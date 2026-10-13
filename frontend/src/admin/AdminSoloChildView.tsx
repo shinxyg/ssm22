@@ -550,7 +550,11 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                               ? 'bg-rose-950/80 text-rose-400 border-rose-500/30'
                               : 'bg-amber-950/80 text-amber-400 border-amber-500/30'
                           }`}>
-                            <span>{app.status.toUpperCase()}</span>
+                            <span>
+                              {isReleased
+                                ? ((app.reference_no || '').startsWith('QC-CW') ? 'APPROVED / COMPLETED' : 'RELEASED / COMPLETED')
+                                : (app.status || '').toUpperCase()}
+                            </span>
                           </span>
                         </td>
                       </tr>
