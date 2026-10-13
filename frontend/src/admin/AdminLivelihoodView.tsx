@@ -25,8 +25,7 @@ import {
   Award,
   FileCheck2,
   Image as ImageIcon,
-  Download,
-  Trash2
+  Download
 } from 'lucide-react';
 
 export interface LivelihoodApplication {
@@ -192,29 +191,6 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
       setShowRejectModal(false);
       setRejectReason('');
       setAppToReject(null);
-    }
-  };
-
-  const handleDeleteApplication = async (app: LivelihoodApplication) => {
-    if (!window.confirm(`Are you sure you want to permanently delete application ${app.reference_no} (${app.applicant_name}) from the system?`)) {
-      return;
-    }
-    try {
-      const isTrn = app.reference_no.startsWith('TRN-') || app.sector === 'Skills Training';
-      const endpoint = isTrn 
-        ? `${API_BASE_URL}/api/training/applications/${encodeURIComponent(app.reference_no)}`
-        : `${API_BASE_URL}/api/livelihood/applications/${encodeURIComponent(app.reference_no)}`;
-
-      const res = await fetch(endpoint, { method: 'DELETE' });
-      if (res.ok) {
-        setApplications(prev => prev.filter(a => a.reference_no !== app.reference_no));
-        setSelectedApp(null);
-      } else {
-        alert('Failed to delete application record.');
-      }
-    } catch (err) {
-      console.error('Error deleting application:', err);
-      alert('Error connecting to server.');
     }
   };
 
@@ -1135,70 +1111,58 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             </div>
 
             {/* Modal Footer Controls */}
-            <div className="p-5 bg-[#121e36] border-t border-slate-800 flex items-center justify-between gap-3 shrink-0">
-              <button
-                type="button"
-                onClick={() => handleDeleteApplication(selectedApp)}
-                className="px-3.5 py-2.5 bg-rose-600/15 hover:bg-rose-600/25 text-rose-300 hover:text-white border border-rose-500/40 rounded-xl text-xs font-bold transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-[0.98]"
-                title="Permanently remove application from system"
-              >
-                <Trash2 className="w-4 h-4 text-rose-400" />
-                <span>Delete Application</span>
-              </button>
+            <div className="p-5 bg-[#121e36] border-t border-slate-800 flex items-center justify-end gap-3 shrink-0">
+              {(() => {
+                const st = (selectedApp.status || '').toUpperCase();
+                const isApproved = st.includes('APPROV') || st.includes('SCHEDULED') || st.includes('RELEASED') || st.includes('COMPLETED') || st.includes('QUALIFIED') || st.includes('ENROLLED') || st.includes('ORIENT');
+                const isRejected = st.includes('REJECT') || st.includes('DISAPPROV') || st.includes('UNQUALIFIED');
 
-              <div className="flex items-center gap-2">
-                {(() => {
-                  const st = (selectedApp.status || '').toUpperCase();
-                  const isApproved = st.includes('APPROV') || st.includes('SCHEDULED') || st.includes('RELEASED') || st.includes('COMPLETED') || st.includes('QUALIFIED') || st.includes('ENROLLED') || st.includes('ORIENT');
-                  const isRejected = st.includes('REJECT') || st.includes('DISAPPROV') || st.includes('UNQUALIFIED');
-
-                  if (isApproved) {
-                    return (
-                      <span className="px-4 py-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-extrabold text-xs rounded-xl inline-flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>Approved (Forwarded to Appointments Module)</span>
-                      </span>
-                    );
-                  }
-
-                  if (isRejected) {
-                    return (
-                      <span className="px-4 py-2 bg-rose-950/80 border border-rose-500/40 text-rose-300 font-extrabold text-xs rounded-xl inline-flex items-center gap-2">
-                        <XCircle className="w-4 h-4 text-rose-400" />
-                        <span>Application Disapproved</span>
-                      </span>
-                    );
-                  }
-
+                if (isApproved) {
                   return (
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setAppToReject(selectedApp);
-                          setShowRejectModal(true);
-                        }}
-                        className="px-4 py-2.5 bg-rose-950 hover:bg-rose-900 text-rose-300 text-xs font-bold rounded-xl border border-rose-800 transition-all inline-flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <XCircle className="w-4 h-4" />
-                        <span>Disapprove Application</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          handleUpdateStatus(selectedApp, 'APPROVED BY ADMIN');
-                          setSelectedApp(null);
-                        }}
-                        className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-md uppercase tracking-wider"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                        <span>Initial Approve & Schedule Interview</span>
-                      </button>
-                    </div>
+                    <span className="px-4 py-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-extrabold text-xs rounded-xl inline-flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <span>Approved (Forwarded to Appointments Module)</span>
+                    </span>
                   );
-                })()}
-              </div>
+                }
+
+                if (isRejected) {
+                  return (
+                    <span className="px-4 py-2 bg-rose-950/80 border border-rose-500/40 text-rose-300 font-extrabold text-xs rounded-xl inline-flex items-center gap-2">
+                      <XCircle className="w-4 h-4 text-rose-400" />
+                      <span>Application Disapproved</span>
+                    </span>
+                  );
+                }
+
+                return (
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAppToReject(selectedApp);
+                        setShowRejectModal(true);
+                      }}
+                      className="px-4 py-2.5 bg-rose-950 hover:bg-rose-900 text-rose-300 text-xs font-bold rounded-xl border border-rose-800 transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span>Disapprove Application</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleUpdateStatus(selectedApp, 'APPROVED BY ADMIN');
+                        setSelectedApp(null);
+                      }}
+                      className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold rounded-xl transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-md uppercase tracking-wider"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Initial Approve & Schedule Interview</span>
+                    </button>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>,
