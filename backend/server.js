@@ -95,17 +95,26 @@ app.get('/api/admin/clear-child-welfare', handleClearChildWelfare);
 const handleClearEducational = async (req, res) => {
   try {
     const delRes = await pool.query('DELETE FROM educational_applications;');
-    res.json({ success: true, message: `Successfully cleared ${delRes.rowCount} educational records.` });
+    const apptDel = await pool.query("DELETE FROM appointments WHERE reference_no LIKE 'QC-EDU-%';").catch(() => ({ rowCount: 0 }));
+    const disbDel = await pool.query("DELETE FROM financial_disbursements WHERE reference_no LIKE 'QC-EDU-%';").catch(() => ({ rowCount: 0 }));
+    res.json({ 
+      success: true, 
+      message: `Successfully cleared ${delRes.rowCount} educational records, ${apptDel.rowCount} appointments, and ${disbDel.rowCount} disbursements.`,
+      deleted: delRes.rowCount
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 app.post('/api/admin/clear-educational', handleClearEducational);
 app.get('/api/admin/clear-educational', handleClearEducational);
+app.delete('/api/educational/applications', handleClearEducational);
 app.delete('/api/educational/applications/:refNo', async (req, res) => {
   try {
     const { refNo } = req.params;
     const delRes = await pool.query('DELETE FROM educational_applications WHERE reference_no = $1;', [refNo]);
+    await pool.query('DELETE FROM appointments WHERE reference_no = $1;', [refNo]).catch(() => null);
+    await pool.query('DELETE FROM financial_disbursements WHERE reference_no = $1;', [refNo]).catch(() => null);
     res.json({ success: true, deleted: delRes.rowCount });
   } catch (err) {
     res.status(500).json({ error: err.message });
