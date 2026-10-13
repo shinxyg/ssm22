@@ -437,27 +437,27 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
         </h1>
       </div>
 
-      {/* METRICS CARDS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-        <div className={`border rounded-2xl p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+      {/* METRICS CARDS (Responsive 2-col on mobile, 5-col on desktop) */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3">
+        <div className={`border rounded-2xl p-3 sm:p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
           <span className={`text-[10px] font-bold tracking-wider uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL REQUESTS</span>
-          <div className={`text-2xl font-extrabold tracking-tight mt-1.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{totalCount}</div>
+          <div className={`text-xl sm:text-2xl font-extrabold tracking-tight mt-1 sm:mt-1.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{totalCount}</div>
         </div>
-        <div className={`border rounded-2xl p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+        <div className={`border rounded-2xl p-3 sm:p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
           <span className={`text-[10px] font-bold tracking-wider uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>PENDING SCHEDULE</span>
-          <div className="text-2xl font-extrabold text-amber-400 tracking-tight mt-1.5">{pendingSchedCount}</div>
+          <div className="text-xl sm:text-2xl font-extrabold text-amber-400 tracking-tight mt-1 sm:mt-1.5">{pendingSchedCount}</div>
         </div>
-        <div className={`border rounded-2xl p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+        <div className={`border rounded-2xl p-3 sm:p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
           <span className={`text-[10px] font-bold tracking-wider uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>SCHEDULED</span>
-          <div className="text-2xl font-extrabold text-blue-400 tracking-tight mt-1.5">{scheduledCount}</div>
+          <div className="text-xl sm:text-2xl font-extrabold text-blue-400 tracking-tight mt-1 sm:mt-1.5">{scheduledCount}</div>
         </div>
-        <div className={`border rounded-2xl p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+        <div className={`border rounded-2xl p-3 sm:p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
           <span className={`text-[10px] font-bold tracking-wider uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>APPROVED / ISSUED</span>
-          <div className="text-2xl font-extrabold text-emerald-400 tracking-tight mt-1.5">{approvedCount}</div>
+          <div className="text-xl sm:text-2xl font-extrabold text-emerald-400 tracking-tight mt-1 sm:mt-1.5">{approvedCount}</div>
         </div>
-        <div className={`border rounded-2xl p-4 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+        <div className={`border rounded-2xl p-3 sm:p-4 shadow-lg col-span-2 sm:col-span-1 ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
           <span className={`text-[10px] font-bold tracking-wider uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>REJECTED</span>
-          <div className="text-2xl font-extrabold text-rose-400 tracking-tight mt-1.5">{rejectedCount}</div>
+          <div className="text-xl sm:text-2xl font-extrabold text-rose-400 tracking-tight mt-1 sm:mt-1.5">{rejectedCount}</div>
         </div>
       </div>
 
@@ -527,7 +527,164 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
 
         {filteredList.length > 0 ? (
           <div className={`border rounded-2xl overflow-hidden shadow-xl ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200'}`}>
-            <div className="overflow-x-auto">
+            
+            {/* Mobile Appointment Cards View (Visible ONLY on mobile md:hidden) */}
+            <div className="md:hidden divide-y divide-slate-800/60">
+              {filteredList.map((app) => {
+                const name = (app as any).applicantName || app.details?.applicantName || 'Juan Dela Cruz';
+                const appt = app.appointmentDetails;
+
+                const isTrn = (app.referenceNo || '').startsWith('TRN-') || app.category === 'training' || (app.serviceName || '').toLowerCase().includes('training') || (app.serviceName || '').toLowerCase().includes('barista') || (app.serviceName || '').toLowerCase().includes('hairdressing') || (app.serviceName || '').toLowerCase().includes('pastry');
+                const isCwProtection = (app.referenceNo || '').startsWith('QC-CW-') || (app.referenceNo || '').startsWith('CW-PROT-') || (app.serviceName || '').toLowerCase() === 'child welfare services' || (app.serviceName || '').toLowerCase().includes('child protection');
+
+                const rawDate = isTrn 
+                  ? ((app as any).orientation_date || (app as any).orientationDate || app.appointmentDate || (app as any).appointment_date || appt?.appointmentDate || '')
+                  : (appt?.appointmentDate || (app as any).appointmentDate || (app as any).appointment_date || (app as any).scheduledPayoutDate || (app as any).payout_date || '');
+
+                const rawTime = isTrn 
+                  ? ((app as any).orientation_time || (app as any).orientationTime || app.appointmentTime || (app as any).appointment_time || appt?.appointmentTime || '')
+                  : (appt?.appointmentTime || (app as any).appointmentTime || (app as any).appointment_time || (app as any).scheduledPayoutTime || (app as any).payout_time || '');
+
+                const schedDate = rawDate ? formatDateDisplay(rawDate) : '';
+                const schedTime = rawTime ? formatTo12Hour(rawTime) : '';
+
+                const isAppFinalApproved = isAppApproved(app.status) || isAppApproved(appt?.status);
+                const isScheduled = Boolean(
+                  schedDate && 
+                  schedDate !== 'Awaiting Schedule' && 
+                  appt?.status !== 'Pending Schedule' && 
+                  ((app.status || '').toUpperCase().includes('SCHEDULED') || appt?.status === 'Interview Scheduled' || appt?.status === 'Orientation Scheduled' || isAppFinalApproved)
+                );
+                const isGLPrintable = (app.serviceName.toLowerCase().includes('medical bill') || app.serviceName.toLowerCase().includes('hospital') || app.assistanceType?.toLowerCase().includes('medical bill') || app.serviceName.toLowerCase().includes('funeral') || app.serviceName.toLowerCase().includes('burial') || app.referenceNo.includes('FUN')) && !app.serviceName.toLowerCase().includes('medicine') && !(app.assistanceType || '').toLowerCase().includes('medicine');
+
+                return (
+                  <div key={app.referenceNo} className="p-4 space-y-3 transition-colors hover:bg-slate-800/40">
+                    {/* Top Row: Ref No + Status Badge */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <span className="font-mono font-bold text-xs text-blue-400 block">
+                          {app.referenceNo}
+                        </span>
+                        <h4 className={`text-sm font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                          {name}
+                        </h4>
+                      </div>
+
+                      {/* Status Badge */}
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border shrink-0 ${
+                        app.status === 'Rejected'
+                          ? 'bg-rose-950/60 text-rose-300 border-rose-800/40'
+                          : app.status === 'Referred to Partner Agency' || app.status === 'Referred'
+                          ? 'bg-amber-950/60 text-amber-300 border-amber-800/40'
+                          : isAppFinalApproved
+                          ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                          : isScheduled
+                          ? 'bg-blue-950/60 text-blue-400 border-blue-500/30'
+                          : 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                      }`}>
+                        {app.status === 'Rejected'
+                          ? 'Rejected'
+                          : app.status === 'Referred to Partner Agency' || app.status === 'Referred'
+                          ? 'Referred'
+                          : isAppFinalApproved
+                          ? (isCwProtection ? 'Approved' : isTrn ? 'Enrolled' : 'Approved')
+                          : isScheduled
+                          ? (isTrn ? 'Orientation Set' : 'Interview Set')
+                          : 'Pending Schedule'}
+                      </span>
+                    </div>
+
+                    {/* Middle Info: Program & Schedule Details */}
+                    <div className="bg-[#0b1220] p-3 rounded-xl border border-slate-800/80 space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between text-slate-300 font-semibold">
+                        <span className="text-[10px] uppercase tracking-wider text-slate-500">Service</span>
+                        <span className="text-right truncate max-w-[200px]">
+                          {(app.referenceNo || '').startsWith('QC-CW') ? 'Child Welfare Services' : app.serviceName}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-1 border-t border-slate-800/60">
+                        <span className="text-[10px] uppercase tracking-wider text-slate-500">Schedule</span>
+                        {isScheduled ? (
+                          <div className="text-right space-y-0.5">
+                            <div className="flex items-center gap-1 font-bold text-slate-200 justify-end">
+                              <Calendar className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                              <span>{schedDate}</span>
+                            </div>
+                            {schedTime && (
+                              <div className="flex items-center gap-1 text-slate-400 text-[10px] justify-end">
+                                <Clock className="w-3 h-3 text-amber-400 shrink-0" />
+                                <span>{formatTo12Hour(schedTime)}</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-amber-400/90 italic text-[11px]">Pending Schedule</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Bottom Action Buttons: Full Width on Mobile */}
+                    <div className="pt-1">
+                      {app.status === 'Rejected' ? (
+                        <div className="w-full text-center text-rose-300 font-extrabold text-xs py-2 bg-rose-950/60 border border-rose-800/50 rounded-xl">
+                          Rejected
+                        </div>
+                      ) : app.status === 'Referred to Partner Agency' || app.status === 'Referred' ? (
+                        <div className="w-full text-center text-amber-300 font-extrabold text-xs py-2 bg-amber-950/60 border border-amber-800/50 rounded-xl">
+                          Referred to Partner Agency
+                        </div>
+                      ) : isAppFinalApproved ? (
+                        <div className="flex items-center gap-2">
+                          <span className="flex-1 text-center text-emerald-400 font-extrabold text-xs py-2 bg-emerald-950/60 border border-emerald-700/40 rounded-xl inline-flex items-center justify-center gap-1">
+                            <Check className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Approved</span>
+                          </span>
+                          {isGLPrintable && (
+                            <button
+                              type="button"
+                              onClick={() => setPrintingGL(app)}
+                              className="px-4 py-2 bg-blue-950/80 hover:bg-blue-900 text-blue-300 rounded-xl text-xs font-bold border border-blue-800 transition-colors inline-flex items-center gap-1.5 shadow-md cursor-pointer"
+                            >
+                              <Printer className="w-3.5 h-3.5 text-blue-400" />
+                              <span>Print GL</span>
+                            </button>
+                          )}
+                        </div>
+                      ) : !isScheduled ? (
+                        <button
+                          type="button"
+                          onClick={() => handleOpenScheduleModal(app)}
+                          className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md transition-all text-center cursor-pointer"
+                        >
+                          Set Schedule
+                        </button>
+                      ) : (
+                        <>
+                          {isScheduleTimeReached(schedDate, schedTime) ? (
+                            <button
+                              type="button"
+                              onClick={() => setAssessmentApp(app)}
+                              className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition-all animate-pulse text-center cursor-pointer"
+                            >
+                              Conduct Assessment
+                            </button>
+                          ) : (
+                            <div className="w-full text-center text-[11px] text-amber-300/90 font-mono font-semibold py-2 bg-amber-950/40 rounded-xl border border-amber-800/40 flex items-center justify-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-amber-400" />
+                              <span>Awaiting Schedule Time</span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Data Table (Visible ONLY on desktop md:block) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className={`border-b text-[11px] font-extrabold uppercase tracking-wider ${
@@ -701,12 +858,12 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
 
       {/* SCHEDULING MODAL */}
       {schedulingApp && createPortal(
-        <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0f172a] border border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans">
-            <div className="p-5 border-b border-slate-800 flex justify-between items-center bg-[#131f37]">
+        <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-[#0f172a] border border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col">
+            <div className="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center bg-[#131f37] shrink-0">
               <div>
                 <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider">{schedulingApp.referenceNo}</span>
-                <h3 className="text-base font-extrabold text-white mt-0.5">
+                <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
                   {((schedulingApp as any)?.category === 'training' || schedulingApp.referenceNo.startsWith('TRN') || schedulingApp.serviceName.toLowerCase().includes('training') || schedulingApp.serviceName.toLowerCase().includes('pastry') || schedulingApp.serviceName.toLowerCase().includes('welding') || schedulingApp.serviceName.toLowerCase().includes('barista')) ? 'Schedule Training Orientation' : 'Set Appointment Schedule'}
                 </h3>
               </div>
@@ -719,7 +876,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
               </button>
             </div>
 
-            <div className="p-6 space-y-4 text-xs">
+            <div className="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
               <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex justify-between items-center">
                 <div>
                   <span className="text-slate-400 text-[10px] block font-semibold uppercase">APPLICANT</span>
@@ -731,7 +888,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">
                     {((schedulingApp as any)?.category === 'training' || schedulingApp.referenceNo.startsWith('TRN') || schedulingApp.serviceName.toLowerCase().includes('training') || schedulingApp.serviceName.toLowerCase().includes('pastry') || schedulingApp.serviceName.toLowerCase().includes('welding') || schedulingApp.serviceName.toLowerCase().includes('barista')) ? 'Orientation Date' : 'Appointment Date'}
@@ -817,12 +974,12 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
 
       {/* SOCIAL WORKER PHYSICAL ASSESSMENT & DECISION MODAL */}
       {assessmentApp && createPortal(
-        <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0f172a] border border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans">
-            <div className="p-5 border-b border-slate-800 flex justify-between items-center bg-[#131f37]">
+        <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className="bg-[#0f172a] border border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col">
+            <div className="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center bg-[#131f37] shrink-0">
               <div>
                 <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider">{assessmentApp.referenceNo}</span>
-                <h3 className="text-base font-extrabold text-white mt-0.5">
+                <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
                   {((assessmentApp as any)?.category === 'training' || assessmentApp.referenceNo.startsWith('TRN') || assessmentApp.serviceName.toLowerCase().includes('training') || assessmentApp.serviceName.toLowerCase().includes('pastry') || assessmentApp.serviceName.toLowerCase().includes('welding') || assessmentApp.serviceName.toLowerCase().includes('barista'))
                     ? 'Vocational Training Assessment & Enrollment'
                     : ((assessmentApp as any)?.category === 'soloparent' || assessmentApp.referenceNo.startsWith('SP') || assessmentApp.serviceName.toLowerCase().includes('solo'))
@@ -841,7 +998,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
               </button>
             </div>
 
-            <div className="p-6 space-y-4 text-xs">
+            <div className="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
               <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex justify-between items-center">
                 <div>
                   <span className="text-slate-400 text-[10px] block font-semibold uppercase">APPLICANT NAME</span>
@@ -1014,7 +1171,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
 
       {/* PRINTABLE OFFICIAL GUARANTEE LETTER (GL) MODAL PORTAL */}
       {printingGL && createPortal(
-        <div id="printable-gl-portal" className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div id="printable-gl-portal" className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-start sm:items-center justify-center p-2 sm:p-4 overflow-y-auto">
           <style>{`
             @media print {
               #root, nav, sidebar, header, .no-print {
@@ -1057,7 +1214,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
             }
           `}</style>
 
-          <div id="printable-gl-card" className="bg-white text-slate-900 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl p-8 font-sans border border-slate-300">
+          <div id="printable-gl-card" className="bg-white text-slate-900 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl p-4 sm:p-8 font-sans border border-slate-300 my-auto">
             {[
               printingGL.serviceName,
               printingGL.assistanceType,
