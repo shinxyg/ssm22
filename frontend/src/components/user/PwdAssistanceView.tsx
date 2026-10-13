@@ -103,7 +103,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
   const [email, setEmail] = useState<string>('jeffersonlee1234@gmail.com');
 
   // Section 2: OCCUPATION / EMPLOYMENT
-  const [employmentStatus, setEmploymentStatus] = useState<string>('Unemployed / Jobless');
+  const [employmentStatus, setEmploymentStatus] = useState<string>('');
   const [occupation, setOccupation] = useState<string>('');
   const [sourceOfIncome, setSourceOfIncome] = useState<string>('');
   const [approxMonthlyIncome, setApproxMonthlyIncome] = useState<string>('No Regular Income');
@@ -821,6 +821,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   onChange={(e) => setEmploymentStatus(e.target.value)}
                   className={inputClass}
                 >
+                  <option value="">{isTagalog ? 'Pumili ng Katayuan sa Trabaho...' : 'Select Employment Status...'}</option>
                   <option value="Unemployed / Jobless">{isTagalog ? 'Walang Trabaho (Unemployed)' : 'Unemployed / Jobless'}</option>
                   <option value="Employed (Private)">{isTagalog ? 'Nagtatrabaho (Pribado)' : 'Employed (Private)'}</option>
                   <option value="Employed (Government)">{isTagalog ? 'Nagtatrabaho (Gobyerno)' : 'Employed (Government)'}</option>
@@ -1068,8 +1069,13 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                 </span>
                 <input
                   type="text"
+                  inputMode="numeric"
+                  maxLength={5}
                   value={monthlyExpenses}
-                  onChange={(e) => setMonthlyExpenses(e.target.value)}
+                  onChange={(e) => {
+                    const onlyNums = e.target.value.replace(/\D/g, '').slice(0, 5);
+                    setMonthlyExpenses(onlyNums);
+                  }}
                   placeholder="5000"
                   className={`w-full px-3.5 py-2.5 text-xs font-semibold outline-none border-none ${
                     darkMode ? 'bg-slate-900 text-white placeholder-slate-500' : 'bg-white text-slate-900 placeholder-slate-400'
@@ -1102,12 +1108,13 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
               <input
                 type="text"
                 value={swaCategory || ''}
+                disabled
                 readOnly
                 placeholder={isTagalog ? "Kusang lalabas mula sa Hakbang 1" : "Auto-filled upon selecting SWA Category in Step 1"}
-                className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold border select-none ${
+                className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold border select-none opacity-80 pointer-events-none cursor-not-allowed ${
                   darkMode 
-                    ? 'bg-slate-900/90 border-slate-700 text-blue-400 cursor-not-allowed' 
-                    : 'bg-slate-100 border-slate-300 text-blue-700 cursor-not-allowed shadow-sm'
+                    ? 'bg-slate-900/90 border-slate-700 text-blue-400' 
+                    : 'bg-slate-100 border-slate-300 text-blue-700 shadow-sm'
                 }`}
               />
             </div>
