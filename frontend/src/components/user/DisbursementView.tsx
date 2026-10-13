@@ -840,20 +840,6 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
                     </div>
                   )}
 
-                  {/* ACTION BUTTONS (IF ANY) */}
-                  {(isInterviewScheduled || isPayoutScheduled || (statusText || '').toUpperCase().includes('SCHEDULED') || !!rawInterviewDate || !!rawPayoutDate) && (
-                    <div className="p-3.5 rounded-xl bg-[#091326] border border-slate-800/90 flex flex-wrap items-center justify-end gap-2">
-                      {/* Step 3: Appointment / Orientation / Claim Slip Button */}
-                      <button
-                        type="button"
-                        onClick={() => setModalApptSlip(app)}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-extrabold shadow-md transition-all flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>📥 I-download ang {getSlipConfig(app).buttonLabel}</span>
-                      </button>
-                    </div>
-                  )}
                 </div>
               );
             })}
