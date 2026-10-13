@@ -261,31 +261,31 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
         </h1>
       </div>
 
-      {/* KPI Stats Cards Grid (Matching AICS Layout) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className={`border rounded-2xl p-5 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
-          <span className={`text-[11px] font-bold tracking-wider uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL APPLICATIONS</span>
-          <div className={`text-3xl font-extrabold tracking-tight mt-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{totalCount}</div>
+      {/* KPI Stats Cards Grid (2-COLUMNS ON MOBILE) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+          <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>TOTAL APPLICATIONS</span>
+          <div className={`text-2xl sm:text-3xl font-extrabold tracking-tight mt-1 sm:mt-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{totalCount}</div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
-          <span className="text-[11px] font-bold tracking-wider text-amber-400 uppercase">PENDING REVIEW</span>
-          <div className="text-3xl font-extrabold text-amber-400 tracking-tight mt-2">{pendingCount}</div>
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+          <span className="text-[9px] sm:text-[11px] font-bold tracking-wider text-amber-400 uppercase block">PENDING REVIEW</span>
+          <div className="text-2xl sm:text-3xl font-extrabold text-amber-400 tracking-tight mt-1 sm:mt-2">{pendingCount}</div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
-          <span className="text-[11px] font-bold tracking-wider text-emerald-400 uppercase">APPROVED</span>
-          <div className="text-3xl font-extrabold text-emerald-400 tracking-tight mt-2">{approvedCount}</div>
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+          <span className="text-[9px] sm:text-[11px] font-bold tracking-wider text-emerald-400 uppercase block">APPROVED</span>
+          <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 tracking-tight mt-1 sm:mt-2">{approvedCount}</div>
         </div>
 
-        <div className={`border rounded-2xl p-5 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
-          <span className="text-[11px] font-bold tracking-wider text-rose-400 uppercase">REJECTED</span>
-          <div className="text-3xl font-extrabold text-rose-400 tracking-tight mt-2">{rejectedCount}</div>
+        <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+          <span className="text-[9px] sm:text-[11px] font-bold tracking-wider text-rose-400 uppercase block">REJECTED</span>
+          <div className="text-2xl sm:text-3xl font-extrabold text-rose-400 tracking-tight mt-1 sm:mt-2">{rejectedCount}</div>
         </div>
       </div>
 
-      {/* Filter and Search Bar (Matching AICS Layout) */}
-      <div className={`border rounded-2xl p-5 space-y-4 shadow-xl ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
+      {/* Filter and Search Bar */}
+      <div className={`border rounded-2xl p-4 sm:p-5 space-y-4 shadow-xl ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90'}`}>
         <div className="relative w-full">
           <Search className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
           <input
@@ -299,13 +299,13 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
           />
         </div>
 
-        <div className="flex flex-row items-center gap-4 flex-nowrap overflow-x-auto pt-1 text-xs">
+        <div className="flex flex-row items-center gap-4 flex-nowrap overflow-x-auto no-scrollbar pb-1 sm:pb-0 pt-1 text-xs">
           <div className="flex items-center gap-2 flex-shrink-0">
             <span className={`text-[10px] font-extrabold tracking-wider uppercase mr-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>CATEGORY</span>
             <button
               type="button"
               onClick={() => setCategoryFilter('ALL')}
-              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 categoryFilter === 'ALL'
                   ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40'
                   : darkMode ? 'bg-[#121c2e] text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 shadow-sm'
@@ -316,7 +316,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             <button
               type="button"
               onClick={() => setCategoryFilter('TRAINING')}
-              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 categoryFilter === 'TRAINING'
                   ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40'
                   : darkMode ? 'bg-[#121c2e] text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 shadow-sm'
@@ -327,7 +327,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             <button
               type="button"
               onClick={() => setCategoryFilter('FINANCIAL')}
-              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 categoryFilter === 'FINANCIAL'
                   ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40'
                   : darkMode ? 'bg-[#121c2e] text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 shadow-sm'
@@ -338,7 +338,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             <button
               type="button"
               onClick={() => setCategoryFilter('MATERIALS')}
-              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 categoryFilter === 'MATERIALS'
                   ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40'
                   : darkMode ? 'bg-[#121c2e] text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 shadow-sm'
@@ -353,7 +353,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             <button
               type="button"
               onClick={() => setStatusFilter('all')}
-              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 statusFilter === 'all'
                   ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40'
                   : darkMode ? 'bg-[#121c2e] text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 shadow-sm'
@@ -364,7 +364,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             <button
               type="button"
               onClick={() => setStatusFilter('pending')}
-              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 statusFilter === 'pending'
                   ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40'
                   : darkMode ? 'bg-[#121c2e] text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 shadow-sm'
@@ -375,7 +375,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             <button
               type="button"
               onClick={() => setStatusFilter('approved')}
-              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 statusFilter === 'approved'
                   ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40'
                   : darkMode ? 'bg-[#121c2e] text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 shadow-sm'
@@ -386,7 +386,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             <button
               type="button"
               onClick={() => setStatusFilter('rejected')}
-              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl font-extrabold transition-all text-xs cursor-pointer whitespace-nowrap shrink-0 ${
                 statusFilter === 'rejected'
                   ? 'bg-[#1d4ed8] text-white shadow-md border border-blue-400/40'
                   : darkMode ? 'bg-[#121c2e] text-slate-400 hover:text-slate-200 border border-slate-800' : 'bg-white text-slate-600 hover:text-slate-900 border border-slate-300 hover:bg-slate-50 shadow-sm'
@@ -398,7 +398,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
         </div>
       </div>
 
-      {/* Applications Table View (Matching AICS Table Layout) */}
+      {/* Applications List */}
       <div className="space-y-3">
         <h3 className={`text-sm font-bold tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>
           Applications <span className={`font-mono text-xs ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>({filteredApps.length})</span>
@@ -409,71 +409,170 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
             Loading Livelihood records from PostgreSQL database...
           </div>
         ) : filteredApps.length > 0 ? (
-          <div className={`border rounded-2xl overflow-hidden shadow-xl ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90 shadow-sm'}`}>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className={`border-b text-[11px] font-extrabold uppercase tracking-wider ${
-                    darkMode ? 'border-slate-800/80 bg-[#121c2e] text-slate-400' : 'border-slate-200 bg-slate-50 text-slate-700'
-                  }`}>
-                    <th className="py-4 px-6">REFERENCE NO.</th>
-                    <th className="py-4 px-6">APPLICANT NAME</th>
-                    <th className="py-4 px-6">ASSISTANCE TYPE</th>
-                    <th className="py-4 px-6">DATE FILED</th>
-                    <th className="py-4 px-6">CURRENT STATUS</th>
-                  </tr>
-                </thead>
-                <tbody className={`divide-y text-xs font-medium ${darkMode ? 'divide-slate-800/60' : 'divide-slate-200'}`}>
-                  {filteredApps.map((app) => {
-                    const st = (app.status || '').toUpperCase();
-                    const isApproved = st.includes('APPROV') || st.includes('RELEASED') || st.includes('COMPLETED') || st.includes('PAYOUT') || st.includes('SCHEDULED') || st.includes('QUALIFIED') || st.includes('ENROLLED') || st.includes('VALIDATED') || st.includes('ORIENT');
-                    const isPending = st.includes('PENDING') || st.includes('EVALUATION') || st === 'SUBMITTED';
+          <>
+            {/* MOBILE VIEW: DEDICATED APPLICATION CARDS (md:hidden) */}
+            <div className="md:hidden space-y-3.5">
+              {filteredApps.map((app) => {
+                const st = (app.status || '').toUpperCase();
+                const isApproved = st.includes('APPROV') || st.includes('RELEASED') || st.includes('COMPLETED') || st.includes('PAYOUT') || st.includes('SCHEDULED') || st.includes('QUALIFIED') || st.includes('ENROLLED') || st.includes('VALIDATED') || st.includes('ORIENT');
+                const isPending = st.includes('PENDING') || st.includes('EVALUATION') || st === 'SUBMITTED';
+                const isTrn = app.sector === 'Skills Training' || app.reference_no.startsWith('TRN-');
 
-                    return (
-                      <tr 
-                        key={app.reference_no}
-                        className={`transition-colors group cursor-pointer ${darkMode ? 'hover:bg-[#142036]' : 'hover:bg-slate-50'}`}
-                        onClick={() => setSelectedApp(app)}
-                      >
-                        <td className="py-4 px-6 font-mono font-bold text-blue-400">{app.reference_no}</td>
-                        <td className={`py-4 px-6 font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                          {app.applicant_name}
-                        </td>
-                        <td className="py-4 px-6 font-bold">
-                          <span className={app.sector === 'Skills Training' || app.reference_no.startsWith('TRN-') ? (darkMode ? 'text-white font-extrabold' : 'text-slate-900 font-extrabold') : app.assistance_type === 'Materials / Supplies' ? (darkMode ? 'text-slate-200' : 'text-slate-700') : (darkMode ? 'text-white' : 'text-slate-900')}>
-                            {app.assistance_type || 'Financial / Capital Assistance'}
+                return (
+                  <div
+                    key={app.reference_no}
+                    onClick={() => setSelectedApp(app)}
+                    className={`border rounded-2xl p-4 space-y-3 transition-all cursor-pointer ${
+                      darkMode
+                        ? 'bg-[#0e1726] border-slate-800/90 hover:border-slate-700 active:bg-[#121c2e]'
+                        : 'bg-white border-slate-200 shadow-sm hover:border-slate-300 active:bg-slate-50'
+                    }`}
+                  >
+                    {/* Top Row: Ref No & Status Badge */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono font-bold text-blue-400 text-xs">
+                        {app.reference_no}
+                      </span>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border whitespace-nowrap ${
+                        isApproved
+                          ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                          : isPending
+                          ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                          : 'bg-rose-950/60 text-rose-400 border-rose-500/30'
+                      }`}>
+                        {app.status || 'Pending Validation'}
+                      </span>
+                    </div>
+
+                    {/* Applicant Name */}
+                    <div>
+                      <h4 className={`font-bold text-sm leading-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                        {app.applicant_name}
+                      </h4>
+                      {app.barangay && (
+                        <p className={`text-[11px] mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                          Brgy. {app.barangay}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Assistance Info Box */}
+                    <div className={`p-2.5 rounded-xl border text-xs space-y-1 ${
+                      darkMode ? 'bg-[#080f1e] border-slate-800' : 'bg-slate-50 border-slate-200'
+                    }`}>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Type:</span>
+                        <span className={`font-bold text-[11px] text-right ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                          {app.assistance_type || 'Financial / Capital Assistance'}
+                        </span>
+                      </div>
+                      {isTrn ? (
+                        <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-800/40">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Program:</span>
+                          <span className="text-[11px] font-semibold text-blue-400 text-right">Free Skills Training</span>
+                        </div>
+                      ) : app.assistance_type !== 'Materials / Supplies' ? (
+                        <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-800/40">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Grant Amount:</span>
+                          <span className="font-mono font-bold text-amber-400 text-[11px] text-right">
+                            ₱{(app.amount || 15000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
                           </span>
-                          {(app.reference_no.startsWith('TRN-') || app.sector === 'Skills Training') ? (
-                            <span className={`block text-[10px] ${darkMode ? 'text-slate-200' : 'text-slate-600'} font-medium`}>
-                              Free Skills Training Program
-                            </span>
-                          ) : app.assistance_type !== 'Materials / Supplies' && (
-                            <span className={`block text-[10px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                              ₱{(app.amount || 15000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                            </span>
-                          )}
-                        </td>
-                        <td className={`py-4 px-6 font-mono text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                        </div>
+                      ) : null}
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-800/40">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date Filed:</span>
+                        <span className={`font-mono text-[10px] text-right ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                           {app.date_submitted ? new Date(app.date_submitted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold border ${
-                            isApproved
-                              ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
-                              : isPending
-                              ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
-                              : 'bg-rose-950/60 text-rose-400 border-rose-500/30'
-                          }`}>
-                            {app.status || 'Pending Document Validation'}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bottom Action Button */}
+                    <div className="pt-1">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedApp(app);
+                        }}
+                        className="w-full py-2 px-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-[0.98]"
+                      >
+                        <Eye className="w-3.5 h-3.5 shrink-0" />
+                        <span>Review & Manage Application</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
+
+            {/* DESKTOP VIEW: DATA TABLE (hidden md:block) */}
+            <div className={`hidden md:block border rounded-2xl overflow-hidden shadow-xl ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90 shadow-sm'}`}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className={`border-b text-[11px] font-extrabold uppercase tracking-wider ${
+                      darkMode ? 'border-slate-800/80 bg-[#121c2e] text-slate-400' : 'border-slate-200 bg-slate-50 text-slate-700'
+                    }`}>
+                      <th className="py-4 px-6">REFERENCE NO.</th>
+                      <th className="py-4 px-6">APPLICANT NAME</th>
+                      <th className="py-4 px-6">ASSISTANCE TYPE</th>
+                      <th className="py-4 px-6">DATE FILED</th>
+                      <th className="py-4 px-6">CURRENT STATUS</th>
+                    </tr>
+                  </thead>
+                  <tbody className={`divide-y text-xs font-medium ${darkMode ? 'divide-slate-800/60' : 'divide-slate-200'}`}>
+                    {filteredApps.map((app) => {
+                      const st = (app.status || '').toUpperCase();
+                      const isApproved = st.includes('APPROV') || st.includes('RELEASED') || st.includes('COMPLETED') || st.includes('PAYOUT') || st.includes('SCHEDULED') || st.includes('QUALIFIED') || st.includes('ENROLLED') || st.includes('VALIDATED') || st.includes('ORIENT');
+                      const isPending = st.includes('PENDING') || st.includes('EVALUATION') || st === 'SUBMITTED';
+
+                      return (
+                        <tr 
+                          key={app.reference_no}
+                          className={`transition-colors group cursor-pointer ${darkMode ? 'hover:bg-[#142036]' : 'hover:bg-slate-50'}`}
+                          onClick={() => setSelectedApp(app)}
+                        >
+                          <td className="py-4 px-6 font-mono font-bold text-blue-400">{app.reference_no}</td>
+                          <td className={`py-4 px-6 font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                            {app.applicant_name}
+                          </td>
+                          <td className="py-4 px-6 font-bold">
+                            <span className={app.sector === 'Skills Training' || app.reference_no.startsWith('TRN-') ? (darkMode ? 'text-white font-extrabold' : 'text-slate-900 font-extrabold') : app.assistance_type === 'Materials / Supplies' ? (darkMode ? 'text-slate-200' : 'text-slate-700') : (darkMode ? 'text-white' : 'text-slate-900')}>
+                              {app.assistance_type || 'Financial / Capital Assistance'}
+                            </span>
+                            {(app.reference_no.startsWith('TRN-') || app.sector === 'Skills Training') ? (
+                              <span className={`block text-[10px] ${darkMode ? 'text-slate-200' : 'text-slate-600'} font-medium`}>
+                                Free Skills Training Program
+                              </span>
+                            ) : app.assistance_type !== 'Materials / Supplies' && (
+                              <span className={`block text-[10px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                ₱{(app.amount || 15000).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                              </span>
+                            )}
+                          </td>
+                          <td className={`py-4 px-6 font-mono text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                            {app.date_submitted ? new Date(app.date_submitted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent'}
+                          </td>
+                          <td className="py-4 px-6">
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-extrabold border ${
+                              isApproved
+                                ? 'bg-emerald-950/60 text-emerald-400 border-emerald-500/30'
+                                : isPending
+                                ? 'bg-amber-950/60 text-amber-400 border-amber-500/30'
+                                : 'bg-rose-950/60 text-rose-400 border-rose-500/30'
+                            }`}>
+                              {app.status || 'Pending Document Validation'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
         ) : (
           <div className={`border rounded-2xl p-16 text-center shadow-xl flex flex-col items-center justify-center ${
             darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200/90 shadow-sm'
