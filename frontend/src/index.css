@@ -16,6 +16,15 @@ body.modal-open aside {
   overflow: hidden !important;
 }
 
+/* Utility to hide scrollbar for mobile horizontal swipeable filter pills */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
 body.modal-open main::-webkit-scrollbar-thumb,
 body.modal-open aside::-webkit-scrollbar-thumb {
   background: transparent !important;

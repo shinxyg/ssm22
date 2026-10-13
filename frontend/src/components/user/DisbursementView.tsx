@@ -400,24 +400,24 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
   };
 
   return (
-    <div className={`space-y-8 select-none font-['Plus_Jakarta_Sans',sans-serif] ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
+    <div className={`space-y-6 sm:space-y-8 select-none font-['Plus_Jakarta_Sans',sans-serif] ${darkMode ? 'text-slate-100' : 'text-slate-900'}`}>
       {/* HEADER BANNER */}
-      <div className={`relative overflow-hidden rounded-3xl p-6 sm:p-8 border shadow-2xl transition-all ${
+      <div className={`relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 border shadow-xl transition-all ${
         darkMode 
           ? 'bg-gradient-to-r from-[#0d1d3a] via-[#0f2752] to-[#141d33] border-blue-900/50' 
           : 'bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white border-blue-800'
       }`}>
-        <div className="relative z-10 max-w-3xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-400/30">
-            <ShieldCheck className="w-4 h-4 text-blue-400" />
+        <div className="relative z-10 max-w-3xl space-y-2 sm:space-y-3">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-400/30">
+            <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
             <span>Active Financial Aid & Payout Tracking</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white">
             My Financial Aid & Subsidy Status
           </h1>
 
-          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium line-clamp-2 sm:line-clamp-none">
             Track real-time status updates for Solo Parent Cash Subsidies and Financial Aid, view appointment schedules, download official ID cards/slips, and monitor release schedules.
           </p>
         </div>
@@ -425,22 +425,22 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
 
       {/* VIEW TABS: ACTIVE FINANCIAL AID */}
       <div className="flex items-center gap-3 border-b border-slate-800 pb-2">
-        <div className="px-5 py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 bg-blue-600 text-white shadow-xl border border-blue-400/40">
+        <div className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 bg-blue-600 text-white shadow-xl border border-blue-400/40">
           <Clock className="w-4 h-4" />
           <span>Active Financial Aid ({activeApplications.length})</span>
         </div>
       </div>
 
-      {/* MODULE FILTER PILLS */}
-      <div className="flex flex-wrap items-center gap-2.5 pt-1">
-        <span className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mr-2 flex items-center gap-1">
+      {/* MODULE FILTER PILLS (Smooth horizontal swipe on mobile) */}
+      <div className="flex items-center gap-2 pt-1 overflow-x-auto no-scrollbar pb-1.5 -mx-1 px-1 flex-nowrap md:flex-wrap">
+        <span className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mr-1 flex items-center gap-1 shrink-0">
           <Filter className="w-3.5 h-3.5" />
-          Filter Module:
+          Filter:
         </span>
         <button
           type="button"
           onClick={() => setSelectedModuleFilter('ALL')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'ALL'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
               : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
@@ -451,7 +451,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
         <button
           type="button"
           onClick={() => setSelectedModuleFilter('soloparent')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'soloparent'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
               : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
@@ -462,7 +462,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
         <button
           type="button"
           onClick={() => setSelectedModuleFilter('educational')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'educational'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
               : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
@@ -473,7 +473,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
         <button
           type="button"
           onClick={() => setSelectedModuleFilter('pwd')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'pwd'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
               : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
@@ -484,7 +484,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
         <button
           type="button"
           onClick={() => setSelectedModuleFilter('aics')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'aics'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
               : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
@@ -495,7 +495,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
         <button
           type="button"
           onClick={() => setSelectedModuleFilter('senior')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'senior'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
               : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
@@ -506,7 +506,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
         <button
           type="button"
           onClick={() => setSelectedModuleFilter('livelihood')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all ${
+          className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'livelihood'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
               : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
@@ -732,7 +732,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
               return (
                 <div
                   key={`${app.referenceNo}-${idx}`}
-                  className="bg-[#0e1726] border border-slate-800/90 rounded-2xl p-6 shadow-xl space-y-4 hover:border-slate-700 transition-all"
+                  className="bg-[#0e1726] border border-slate-800/90 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4 hover:border-slate-700 transition-all"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
                     <div>

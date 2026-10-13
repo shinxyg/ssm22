@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Sun, Moon, Bell, User, LogOut, CheckCircle2, Clock, Info, AlertTriangle, XCircle, Trash2 } from 'lucide-react';
+import { Sun, Moon, Bell, User, LogOut, CheckCircle2, Clock, Info, AlertTriangle, XCircle, Trash2, Menu } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import type { ApplicationRecord } from '../../types';
 import { API_BASE_URL } from '../../config/api';
@@ -15,6 +15,8 @@ interface NavbarProps {
   userSubtitle?: string;
   userInitials?: string;
   applications?: ApplicationRecord[];
+  onToggleSidebar?: () => void;
+  isSidebarOpen?: boolean;
 }
 
 // Isolated ClockDisplay component so 1-second ticks DO NOT re-render Navbar or Main Page
@@ -56,6 +58,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   userSubtitle,
   userInitials,
   applications = [],
+  onToggleSidebar,
+  isSidebarOpen,
 }) => {
   const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
@@ -350,20 +354,35 @@ export const Navbar: React.FC<NavbarProps> = ({
   }, []);
 
   return (
-    <header className={`sticky top-0 z-40 h-16 shrink-0 border-b px-6 flex items-center justify-between shadow-sm transition-colors duration-200 ${
+    <header className={`sticky top-0 z-40 h-16 shrink-0 border-b px-3.5 sm:px-6 flex items-center justify-between shadow-sm transition-colors duration-200 ${
       darkMode 
         ? 'bg-[#070e1b] border-slate-800/80 text-white' 
         : 'bg-white border-slate-200 text-slate-900'
     }`}>
-      {/* Left Area: Active Page / Section Title */}
-      <div className="flex items-center h-full">
-        <h2 className={`text-base font-extrabold tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+      {/* Left Area: Hamburger on Mobile + Active Page / Section Title */}
+      <div className="flex items-center gap-2 sm:gap-3 h-full min-w-0">
+        {onToggleSidebar && (
+          <button
+            type="button"
+            onClick={onToggleSidebar}
+            className={`p-2 -ml-1 rounded-xl transition-colors cursor-pointer md:hidden shrink-0 ${
+              darkMode 
+                ? 'text-slate-300 hover:text-white hover:bg-slate-800/80 active:bg-slate-800' 
+                : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100 active:bg-slate-200'
+            }`}
+            title="Toggle Menu"
+            aria-label="Toggle navigation menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
+        <h2 className={`text-sm sm:text-base font-extrabold tracking-wide truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>
           {activeSection}
         </h2>
       </div>
 
       {/* Right Controls & User Profile Matching Reference Screenshot */}
-      <div className="flex items-center gap-4 pr-1">
+      <div className="flex items-center gap-2.5 sm:gap-4 pr-1 shrink-0">
         {/* Real-time Clock */}
         <ClockDisplay darkMode={darkMode} />
 

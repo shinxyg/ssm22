@@ -57,12 +57,18 @@ import {
   Calendar,
   UserCheck,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  X
 } from 'lucide-react';
 
 export default function App() {
   const { language, t } = useLanguage();
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 768;
+    }
+    return true;
+  });
   const [darkMode, setDarkMode] = useState<boolean>(true);
 
   // Tab & role state persisted in sessionStorage (retains on page refresh, resets on new tab/window)
@@ -688,8 +694,144 @@ export default function App() {
       <div className={`h-screen max-h-screen overflow-hidden flex flex-row font-['Plus_Jakarta_Sans',sans-serif] ${
         darkMode ? 'bg-[#070e1b] text-slate-100' : 'bg-slate-100 text-slate-900'
       }`}>
-        {/* Left Sidebar (Full Height from Top to Bottom with Collapse Support) */}
-        <aside className={`border-r border-slate-800/80 bg-[#070e1b] flex flex-col h-screen shrink-0 select-none transition-all duration-300 ${
+        {/* Mobile Backdrop for Admin */}
+        {sidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 md:hidden transition-opacity duration-300"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
+
+        {/* Mobile Slide-out Drawer for Admin */}
+        <aside className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 max-w-[85vw] border-r border-slate-800/80 bg-[#070e1b] flex flex-col shadow-2xl select-none md:hidden transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          {/* Header inside Mobile Admin Sidebar */}
+          <div className="h-16 px-4 flex items-center justify-between border-b border-slate-800/60 shrink-0">
+            <div className="flex items-center gap-2.5 overflow-hidden">
+              <img
+                src="/Government Service Integrity Seal.png"
+                alt="Government Service Integrity Seal"
+                className="w-8 h-8 object-contain shrink-0"
+              />
+              <div className="flex flex-col justify-center truncate">
+                <h1 className="font-extrabold text-sm tracking-tight leading-none text-white">GovServe</h1>
+                <span className="text-[10px] font-bold tracking-wide text-purple-400 uppercase mt-0.5">Admin Portal</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(false)}
+              className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-xl transition-colors shrink-0 cursor-pointer"
+              title="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Admin Navigation Menu for Mobile */}
+          <div className="p-3 space-y-4 overflow-y-auto flex-1 text-slate-100">
+            <div className="px-3 text-[10px] font-extrabold tracking-wider uppercase text-slate-500">
+              OPERATIONS
+            </div>
+            <div className="space-y-1">
+              {[
+                { id: 'reports', label: 'Reports & Analytics', icon: BarChart3 },
+                { id: 'aics', label: 'Assistance to Individuals in Crisis', icon: ShieldAlert },
+                { id: 'pwd-senior', label: 'PWD & Senior Citizens', icon: Users },
+                { id: 'solo-child', label: 'Solo Parent & Child Welfare', icon: Baby },
+                { id: 'livelihood', label: 'Livelihood & Training Grants', icon: GraduationCap },
+                { id: 'disbursement', label: 'Financial Aid Disbursement', icon: Wallet },
+              ].map((item) => {
+                const Icon = item.icon;
+                const isActive = adminTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setAdminTab(item.id);
+                      setSidebarOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3.5 px-4 py-3 justify-start rounded-2xl text-[13px] font-semibold transition-all border ${
+                      isActive
+                        ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                        : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
+                    <span className="truncate">{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="pt-2 border-t border-slate-800/60 space-y-1">
+              <div className="px-3 text-[10px] font-bold tracking-wider uppercase mb-1.5 text-slate-500">
+                BENEFICIARY & OTHERS
+              </div>
+              <button
+                onClick={() => {
+                  setAdminTab('beneficiaries');
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-3 justify-start rounded-2xl text-[13px] font-semibold transition-all border ${
+                  adminTab === 'beneficiaries'
+                    ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                    : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                }`}
+              >
+                <Contact2 className={`w-4 h-4 shrink-0 ${adminTab === 'beneficiaries' ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
+                <span className="truncate">Beneficiary Management</span>
+              </button>
+              <button
+                onClick={() => {
+                  setAdminTab('appointments');
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-3 justify-start rounded-2xl text-[13px] font-semibold transition-all border ${
+                  adminTab === 'appointments'
+                    ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                    : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                }`}
+              >
+                <Calendar className={`w-4 h-4 shrink-0 ${adminTab === 'appointments' ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
+                <span className="truncate">Appointments</span>
+              </button>
+              <button
+                onClick={() => {
+                  setAdminTab('activity');
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-3 justify-start rounded-2xl text-[13px] font-semibold transition-all border ${
+                  adminTab === 'activity'
+                    ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                    : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                }`}
+              >
+                <History className={`w-4 h-4 shrink-0 ${adminTab === 'activity' ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
+                <span className="truncate">Activity Log</span>
+              </button>
+              <button
+                onClick={() => {
+                  setAdminTab('users');
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-3 justify-start rounded-2xl text-[13px] font-semibold transition-all border ${
+                  adminTab === 'users'
+                    ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                    : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                }`}
+              >
+                <UserCheck className={`w-4 h-4 shrink-0 ${adminTab === 'users' ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
+                <span className="truncate">User Management</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* Desktop Left Sidebar (hidden on mobile, visible on md: and up) */}
+        <aside className={`border-r border-slate-800/80 bg-[#070e1b] flex-col h-screen shrink-0 select-none transition-all duration-300 hidden md:flex ${
           sidebarOpen ? 'w-64' : 'w-16'
         }`}>
           {/* Top Header inside Sidebar with Seal Logo & Collapse Button */}
@@ -866,6 +1008,8 @@ export default function App() {
             activeSection={adminTabTitles[adminTab] || 'Admin Management'}
             darkMode={darkMode}
             setDarkMode={setDarkMode}
+            onToggleSidebar={() => setSidebarOpen(prev => !prev)}
+            isSidebarOpen={sidebarOpen}
             onNavigateToProfile={() => setAdminTab('profile')}
             onNavigateToLogin={() => {
               setUserRole('user');
@@ -879,7 +1023,7 @@ export default function App() {
           />
 
           {/* Admin Main Content Area */}
-          <main className={`flex-1 p-6 overflow-y-auto transition-colors duration-200 ${
+          <main className={`flex-1 p-3 sm:p-6 overflow-y-auto transition-colors duration-200 ${
             darkMode ? 'bg-[#070e1b] text-slate-100' : 'bg-slate-100 text-slate-900'
           }`}>
             {adminTab === 'profile' ? (
@@ -939,6 +1083,8 @@ export default function App() {
           activeSection={sectionTitleMap[activeTab] || 'Help & Service Guide'}
           darkMode={darkMode}
           setDarkMode={setDarkMode}
+          onToggleSidebar={() => setSidebarOpen(prev => !prev)}
+          isSidebarOpen={sidebarOpen}
           onNavigateToProfile={() => setActiveTab('profile')}
           onNavigateToLogin={() => setActiveTab('login')}
           userRole="user"
@@ -946,7 +1092,7 @@ export default function App() {
         />
 
         {/* Main Content Area (Independent Viewport Scroll with GPU Acceleration) */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-8 [transform:translateZ(0)]">
+        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 [transform:translateZ(0)]">
           {activeTab === 'help-guide' ? (
             /* Help & Service Guide Main Overview Page */
             <>
