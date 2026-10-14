@@ -853,8 +853,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
       <div className={`w-full md:w-1/2 min-h-screen md:h-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto md:overflow-hidden relative transition-colors duration-300 ${
         darkMode ? 'bg-[#050a14]' : 'bg-slate-100/80'
       }`}>
-        {/* Mobile Top Header: Back to Home + Compact GovSeal Branding (Mobile ONLY) */}
-        <div className="w-full max-w-sm mb-4 flex items-center justify-between md:hidden shrink-0">
+        {/* Mobile Top Header: Back to Home (Mobile ONLY) */}
+        <div className="w-full max-w-sm mb-4 flex items-center md:hidden shrink-0">
           <button
             type="button"
             onClick={onBackToHome}
@@ -863,15 +863,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Home</span>
           </button>
-
-          <div className="flex items-center gap-2 select-none">
-            <img
-              src="/Government Service Integrity Seal.png"
-              alt="Government Service Integrity Seal"
-              className="w-7 h-7 object-contain"
-            />
-            <span className="font-extrabold text-xs tracking-tight text-white">GovServe</span>
-          </div>
         </div>
         {viewMode === 'reset_password' ? (
           /* STEP 3: SET NEW PASSWORD CARD */
