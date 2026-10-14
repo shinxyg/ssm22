@@ -17,7 +17,7 @@ interface LandingViewProps {
 
 export const LandingView: React.FC<LandingViewProps> = ({
   onAccessPortal,
-  darkMode = true,
+  darkMode = false,
   onToggleDarkMode,
 }) => {
   return (
@@ -84,7 +84,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
             <button
               type="button"
               onClick={onAccessPortal}
-              className="px-6 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] active:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-full shadow-[0_0_20px_rgba(26,115,232,0.5)] inline-flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer group"
+              className="px-6 py-2.5 bg-[#1a73e8] hover:bg-[#1557b0] active:bg-blue-700 text-white font-bold text-xs sm:text-sm rounded-full inline-flex items-center gap-2 transition-all duration-300 hover:scale-105 cursor-pointer group"
             >
               <span>Access the Portal</span>
               <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />

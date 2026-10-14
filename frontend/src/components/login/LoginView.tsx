@@ -59,7 +59,7 @@ const CHALLENGE_TOPICS = [
 export const LoginView: React.FC<LoginViewProps> = ({
   onLoginSuccess,
   onBackToHome,
-  darkMode = true,
+  darkMode = false,
 }) => {
   const [viewMode, setViewMode] = useState<'login' | 'forgot_password' | 'verify_code' | 'reset_password'>('login');
   

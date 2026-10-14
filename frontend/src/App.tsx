@@ -69,7 +69,17 @@ export default function App() {
     }
     return true;
   });
-  const [darkMode, setDarkMode] = useState<boolean>(true);
+  const [darkMode, setDarkMode] = useState<boolean>(() => {
+    try {
+      const savedTheme = localStorage.getItem('govserve_theme_mode');
+      if (savedTheme !== null) {
+        return savedTheme === 'dark';
+      }
+      return false; // Default to White / Light Mode on first visit
+    } catch {
+      return false;
+    }
+  });
 
   // Tab & role state persisted in sessionStorage (retains on page refresh, resets on new tab/window)
   const [activeTab, setActiveTab] = useState<string>(() => {
@@ -117,6 +127,13 @@ export default function App() {
       sessionStorage.setItem('adminTab', adminTab);
     } catch (e) {}
   }, [adminTab]);
+
+  // Persistent Theme Mode (White / Dark) via localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('govserve_theme_mode', darkMode ? 'dark' : 'light');
+    } catch (e) {}
+  }, [darkMode]);
 
   // Modals
   const [isTrackModalOpen, setIsTrackModalOpen] = useState<boolean>(false);
