@@ -538,7 +538,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
           house_no: '176',
           street_name: '23',
           barangay: 'BAGONG SILANGAN',
-          city: 'QUEZON CITY'
+          city: 'QUEZON CITY',
+          session_token: 'sess_current_active'
         }));
         onLoginSuccess('user');
       } else if (cleanEmail.includes('admin')) {

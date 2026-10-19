@@ -21,7 +21,10 @@ import {
   Clock,
   MapPin,
   Languages,
-  Check
+  Check,
+  Tablet,
+  Smartphone,
+  ShieldCheck
 } from 'lucide-react';
 
 interface UserProfileViewProps {
@@ -76,6 +79,142 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
 
   const [showQcidModal, setShowQcidModal] = useState<boolean>(false);
 
+  // Device Management & Sessions State
+  interface UserSession {
+    id: number;
+    user_id: string;
+    email: string;
+    session_token: string;
+    device_type: 'desktop' | 'tablet' | 'mobile';
+    os_name: string;
+    browser_name: string;
+    ip_address: string;
+    location: string;
+    signed_in_at: string;
+    last_active_at: string;
+    is_active: boolean;
+  }
+
+  const [sessions, setSessions] = useState<UserSession[]>([]);
+  const [loadingSessions, setLoadingSessions] = useState<boolean>(false);
+  const [currentSessionToken, setCurrentSessionToken] = useState<string>('');
+  const [sessionNotice, setSessionNotice] = useState<string | null>(null);
+
+  const maskIp = (ip: string) => {
+    if (!ip) return '120.28.•••.•••';
+    const parts = ip.split('.');
+    if (parts.length === 4) {
+      return `${parts[0]}.${parts[1]}.•••.•••`;
+    }
+    return `${ip.substring(0, 7)}•••.•••`;
+  };
+
+  const formatRelativeTime = (dateStr: string) => {
+    if (!dateStr) return 'Active recently';
+    try {
+      const diffMs = Date.now() - new Date(dateStr).getTime();
+      const mins = Math.floor(diffMs / 60000);
+      if (mins < 5) return 'Active now';
+      if (mins < 60) return `Active ${mins}m ago`;
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return `Active ${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      if (days === 1) return 'Active Yesterday';
+      return `Active ${days}d ago`;
+    } catch {
+      return 'Active recently';
+    }
+  };
+
+  const formatTimestamp = (dateStr: string) => {
+    if (!dateStr) return 'Sep 29, 2026, 9:10:45 AM';
+    try {
+      return new Date(dateStr).toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const renderDeviceIcon = (type: string, osName: string) => {
+    if (type === 'tablet' || /ipad|tablet/i.test(osName || '')) {
+      return <Tablet className="w-6 h-6" />;
+    }
+    if (type === 'mobile' || /iphone|android.*phone/i.test(osName || '')) {
+      return <Smartphone className="w-6 h-6" />;
+    }
+    if (/macbook|laptop/i.test(osName || '')) {
+      return <Laptop className="w-6 h-6" />;
+    }
+    return <Monitor className="w-6 h-6" />;
+  };
+
+  const fetchSessions = async (userEmail?: string) => {
+    const targetEmail = userEmail || email;
+    if (!targetEmail) return;
+    setLoadingSessions(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/user/sessions?email=${encodeURIComponent(targetEmail)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.sessions)) {
+          setSessions(data.sessions);
+        }
+      }
+    } catch (err) {
+      console.warn('Error fetching device sessions:', err);
+    } finally {
+      setLoadingSessions(false);
+    }
+  };
+
+  const handleLogoutDevice = async (session: UserSession) => {
+    if (!window.confirm(`Are you sure you want to log out ${session.os_name} (${session.browser_name})?`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/user/sessions/logout-device`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_token: session.session_token, id: session.id })
+      });
+      if (res.ok) {
+        setSessionNotice(`Successfully logged out ${session.os_name}.`);
+        setSessions(prev => prev.filter(s => s.id !== session.id && s.session_token !== session.session_token));
+        setTimeout(() => setSessionNotice(null), 4000);
+      }
+    } catch (err) {
+      console.error('Logout device error:', err);
+    }
+  };
+
+  const handleLogoutAllOtherDevices = async () => {
+    if (!window.confirm('Are you sure you want to log out all other devices? Only this current device will stay signed in.')) {
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/user/sessions/logout-all-others`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, current_session_token: currentSessionToken })
+      });
+      if (res.ok) {
+        setSessionNotice('Logged out of all other devices successfully.');
+        setSessions(prev => prev.filter(s => s.session_token === currentSessionToken));
+        setTimeout(() => setSessionNotice(null), 4000);
+      }
+    } catch (err) {
+      console.error('Logout all other devices error:', err);
+    }
+  };
+
   // Load user profile from localStorage on mount
   useEffect(() => {
     try {
@@ -111,12 +250,26 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
         if (u.sex) setSex(u.sex);
         if (u.phone_number || u.mobileNumber) setMobileNumber(u.phone_number || u.mobileNumber);
         if (u.working_in_qc !== undefined) setWorkingInQC(u.working_in_qc);
-        if (u.email) setEmail(u.email);
+        if (u.session_token) setCurrentSessionToken(u.session_token);
+        if (u.email) {
+          setEmail(u.email);
+          fetchSessions(u.email);
+        } else {
+          fetchSessions(userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
+        }
+      } else {
+        fetchSessions(userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
       }
     } catch (err) {
       console.warn('Error reading currentUser from localStorage:', err);
     }
   }, []);
+
+  useEffect(() => {
+    if (activeTab === 'devices') {
+      fetchSessions();
+    }
+  }, [activeTab]);
 
   const handlePasswordSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -901,8 +1054,8 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 </div>
                 <button
                   type="button"
-                  onClick={() => alert('Logged out of all other devices.')}
-                  className={`px-3.5 py-1.5 border font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all self-start sm:self-auto ${
+                  onClick={handleLogoutAllOtherDevices}
+                  className={`px-3.5 py-1.5 border font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all self-start sm:self-auto cursor-pointer ${
                     darkMode ? 'border-red-800/80 hover:bg-red-950/40 text-red-400' : 'border-red-300 hover:bg-red-50 text-red-600'
                   }`}
                 >
@@ -911,65 +1064,158 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 </button>
               </div>
 
-              {/* Active Current Device Card */}
-              <div className={`p-5 border rounded-2xl space-y-4 ${
-                darkMode ? 'bg-[#0e1933] border-slate-800' : 'bg-slate-50 border-slate-200'
-              }`}>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-start sm:items-center gap-3.5">
-                    <div className="w-12 h-12 rounded-xl bg-blue-600 border border-blue-400/40 text-white flex items-center justify-center shrink-0">
-                      <Monitor className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2.5 flex-wrap">
-                        <span className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>Windows PC • Google Chrome</span>
-                        <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/40 text-[10px] font-bold rounded-full inline-block">
-                          Active Now
-                        </span>
+              {sessionNotice && (
+                <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl text-xs font-semibold flex items-center gap-2 animate-in fade-in">
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>{sessionNotice}</span>
+                </div>
+              )}
+
+              {/* Active Current Device Card & Other Devices */}
+              {(() => {
+                const activeCurrent = sessions.find(s => currentSessionToken ? s.session_token === currentSessionToken : false) 
+                  || sessions[0] 
+                  || {
+                    id: 9999,
+                    user_id: 'USR-2026-002',
+                    email,
+                    session_token: currentSessionToken || 'current_local',
+                    device_type: 'desktop' as const,
+                    os_name: 'Windows 11 PC',
+                    browser_name: 'Google Chrome',
+                    ip_address: '120.28.144.151',
+                    location: 'Quezon City, PH',
+                    signed_in_at: new Date().toISOString(),
+                    last_active_at: new Date().toISOString(),
+                    is_active: true
+                  };
+
+                const otherSessions = sessions.filter(s => s.session_token !== activeCurrent.session_token && s.id !== activeCurrent.id);
+
+                return (
+                  <>
+                    {/* CURRENT DEVICE: Active Now, No Logout Button */}
+                    <div className={`p-5 border rounded-2xl space-y-3.5 transition-all ${
+                      darkMode ? 'bg-[#0e1933] border-slate-800' : 'bg-slate-50 border-slate-200 shadow-sm'
+                    }`}>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex items-start sm:items-center gap-3.5">
+                          <div className="w-12 h-12 rounded-xl bg-blue-600 border border-blue-400/40 text-white flex items-center justify-center shrink-0">
+                            {renderDeviceIcon(activeCurrent.device_type, activeCurrent.os_name)}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2.5 flex-wrap">
+                              <span className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                                {activeCurrent.os_name}
+                              </span>
+                              <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-extrabold rounded-full inline-flex items-center gap-1">
+                                Active Now • This Device
+                              </span>
+                            </div>
+                            <div className={`flex items-center gap-2 text-xs font-mono mt-1.5 flex-wrap ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                              <span>🌐 <strong>Browser:</strong> {activeCurrent.browser_name}</span>
+                              <span>•</span>
+                              <span>🛡️ <strong>Network IP:</strong> {maskIp(activeCurrent.ip_address)} <em className="text-[10px] font-sans text-emerald-400 not-italic">(Protected)</em></span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <p className={`text-xs font-mono mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                        OS: <strong className={darkMode ? 'text-slate-200' : 'text-slate-800'}>Windows</strong> • Browser: <strong className={darkMode ? 'text-slate-200' : 'text-slate-800'}>Google Chrome</strong> • IP: <strong className={darkMode ? 'text-slate-200' : 'text-slate-800'}>120.28.144.151</strong>
-                      </p>
+
+                      <div className={`pt-3 border-t flex flex-col sm:flex-row justify-between text-xs gap-2 ${
+                        darkMode ? 'border-slate-800/80 text-slate-400' : 'border-slate-200 text-slate-600'
+                      }`}>
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-blue-500" />
+                          <span>Signed in: <strong className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{formatTimestamp(activeCurrent.signed_in_at)}</strong></span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className={`w-3.5 h-3.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
+                          <span>Location: <strong className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{activeCurrent.location || 'Quezon City, PH'}</strong></span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => alert('Device session logged out.')}
-                    className={`px-3.5 py-1.5 border font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all self-start sm:self-auto ${
-                      darkMode ? 'border-red-800/80 hover:bg-red-950/40 text-red-400' : 'border-red-300 hover:bg-red-50 text-red-600'
-                    }`}
-                  >
-                    <LogOut className="w-3.5 h-3.5" />
-                    <span>Log Out Device</span>
-                  </button>
-                </div>
+                    {/* Sub-section: OTHER DEVICES & LOGIN HISTORY */}
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center justify-between">
+                        <h4 className={`text-xs font-extrabold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                          OTHER DEVICES & LOGIN HISTORY ({otherSessions.length})
+                        </h4>
+                      </div>
 
-                <div className={`pt-3 border-t flex flex-col sm:flex-row justify-between text-xs gap-2 ${
-                  darkMode ? 'border-slate-800/80 text-slate-400' : 'border-slate-200 text-slate-600'
-                }`}>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-blue-500" />
-                    <span>Signed in: <strong className={`font-normal ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>Sep 29, 2026, 9:10:45 AM</strong></span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className={`w-3.5 h-3.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
-                    <span>Location: <strong className={`font-normal ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>Quezon City, PH</strong></span>
-                  </div>
-                </div>
-              </div>
+                      {otherSessions.length === 0 ? (
+                        <div className={`p-8 border-2 border-dashed rounded-2xl text-center text-xs ${
+                          darkMode ? 'border-slate-800/80 text-slate-500' : 'border-slate-300 text-slate-500'
+                        }`}>
+                          No other login history recorded.
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {otherSessions.map((s) => (
+                            <div 
+                              key={s.id || s.session_token}
+                              className={`p-5 border rounded-2xl space-y-3.5 transition-all ${
+                                darkMode ? 'bg-[#091122] border-slate-800 hover:border-slate-700' : 'bg-white border-slate-200 shadow-sm'
+                              }`}
+                            >
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex items-start sm:items-center gap-3.5">
+                                  <div className={`w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 ${
+                                    darkMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700'
+                                  }`}>
+                                    {renderDeviceIcon(s.device_type, s.os_name)}
+                                  </div>
+                                  <div>
+                                    <div className="flex items-center gap-2.5 flex-wrap">
+                                      <span className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                                        {s.os_name}
+                                      </span>
+                                      <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full border ${
+                                        darkMode ? 'bg-slate-800 border-slate-700 text-slate-400' : 'bg-slate-100 border-slate-300 text-slate-600'
+                                      }`}>
+                                        {formatRelativeTime(s.last_active_at || s.signed_in_at)}
+                                      </span>
+                                    </div>
+                                    <div className={`flex items-center gap-2 text-xs font-mono mt-1.5 flex-wrap ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                                      <span>🌐 <strong>Browser:</strong> {s.browser_name}</span>
+                                      <span>•</span>
+                                      <span>🛡️ <strong>Network IP:</strong> {maskIp(s.ip_address)} <em className="text-[10px] font-sans text-emerald-400 not-italic">(Protected)</em></span>
+                                    </div>
+                                  </div>
+                                </div>
 
-              {/* Sub-section: OTHER DEVICES & LOGIN HISTORY */}
-              <div className="space-y-3 pt-2">
-                <h4 className={`text-xs font-extrabold uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                  OTHER DEVICES & LOGIN HISTORY
-                </h4>
-                <div className={`p-8 border-2 border-dashed rounded-2xl text-center text-xs ${
-                  darkMode ? 'border-slate-800/80 text-slate-500' : 'border-slate-300 text-slate-500'
-                }`}>
-                  No other login history recorded.
-                </div>
-              </div>
+                                <button
+                                  type="button"
+                                  onClick={() => handleLogoutDevice(s)}
+                                  className={`px-3.5 py-1.5 border font-bold text-xs rounded-xl flex items-center gap-1.5 transition-all self-start sm:self-auto cursor-pointer ${
+                                    darkMode ? 'border-red-800/80 hover:bg-red-950/40 text-red-400' : 'border-red-300 hover:bg-red-50 text-red-600'
+                                  }`}
+                                >
+                                  <LogOut className="w-3.5 h-3.5" />
+                                  <span>Log Out Device</span>
+                                </button>
+                              </div>
+
+                              <div className={`pt-3 border-t flex flex-col sm:flex-row justify-between text-xs gap-2 ${
+                                darkMode ? 'border-slate-800/80 text-slate-400' : 'border-slate-200 text-slate-600'
+                              }`}>
+                                <div className="flex items-center gap-1.5">
+                                  <Clock className="w-3.5 h-3.5 text-blue-500" />
+                                  <span>Signed in: <strong className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{formatTimestamp(s.signed_in_at)}</strong></span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <MapPin className={`w-3.5 h-3.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
+                                  <span>Location: <strong className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{s.location || 'Quezon City, PH'}</strong></span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
 
               {/* Danger Zone Box */}
               <div className={`p-6 rounded-2xl space-y-4 ${

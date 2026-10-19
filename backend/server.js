@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { pool, initDB } from './db.js';
 
 dotenv.config();
@@ -2634,6 +2635,54 @@ function getClientIp(req) {
   return req.socket?.remoteAddress || '127.0.0.1';
 }
 
+function parseDeviceInfo(userAgent = '', clientIp = '') {
+  const ua = userAgent || '';
+  let deviceType = 'desktop';
+  let osName = 'Windows 11 PC';
+  let browserName = 'Google Chrome';
+
+  // Device & OS detection
+  if (/iPad|iPadOS/i.test(ua)) {
+    deviceType = 'tablet';
+    osName = 'Apple iPad (iPadOS)';
+  } else if (/tablet|playbook|silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) {
+    deviceType = 'tablet';
+    osName = 'Android Tablet';
+  } else if (/iPhone/i.test(ua)) {
+    deviceType = 'mobile';
+    osName = 'Apple iPhone (iOS)';
+  } else if (/Android.*Mobile/i.test(ua)) {
+    deviceType = 'mobile';
+    osName = 'Samsung Galaxy (Android)';
+  } else if (/Windows/i.test(ua)) {
+    deviceType = 'desktop';
+    osName = 'Windows 11 PC';
+  } else if (/Macintosh|Mac OS X/i.test(ua)) {
+    deviceType = 'desktop';
+    osName = 'MacBook Pro (macOS)';
+  } else if (/Linux/i.test(ua)) {
+    deviceType = 'desktop';
+    osName = 'Linux Desktop';
+  }
+
+  // Browser detection
+  if (/Edg\//i.test(ua)) {
+    browserName = 'Microsoft Edge';
+  } else if (/OPR\/|Opera\//i.test(ua)) {
+    browserName = 'Opera';
+  } else if (/Chrome\//i.test(ua) && !/Edg\//i.test(ua)) {
+    browserName = deviceType === 'mobile' ? 'Chrome Mobile' : 'Google Chrome';
+  } else if (/Safari\//i.test(ua) && !/Chrome\//i.test(ua)) {
+    browserName = (deviceType === 'mobile' || deviceType === 'tablet') ? 'Mobile Safari' : 'Safari';
+  } else if (/Firefox\//i.test(ua)) {
+    browserName = 'Mozilla Firefox';
+  }
+
+  const location = 'Quezon City, PH';
+
+  return { deviceType, osName, browserName, location };
+}
+
 // GET /api/auth/lockout-status - Check if account or IP is currently locked
 app.get('/api/auth/lockout-status', async (req, res) => {
   const { email } = req.query;
@@ -2849,10 +2898,34 @@ app.post('/api/login', async (req, res) => {
         [user.id]
       );
 
+      // Generate unique session token and record in user_sessions
+      const sessionToken = `sess_${crypto.randomUUID()}`;
+      const userAgent = req.headers['user-agent'] || '';
+      const { deviceType, osName, browserName, location } = parseDeviceInfo(userAgent, clientIp);
+
+      try {
+        await pool.query(`
+          INSERT INTO user_sessions (user_id, email, session_token, device_type, os_name, browser_name, ip_address, location, signed_in_at, last_active_at, is_active)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, TRUE);
+        `, [
+          user.user_id || `USR-${user.id}`,
+          cleanEmail,
+          sessionToken,
+          deviceType,
+          osName,
+          browserName,
+          clientIp || '120.28.144.151',
+          location
+        ]);
+      } catch (sessErr) {
+        console.warn('Notice recording user_session on login:', sessErr.message);
+      }
+
       const { password: _, unlock_otp: __, unlock_otp_expires: ___, ...userData } = user;
       userData.is_online = true;
       userData.presence = 'Online';
-      return res.json({ success: true, user: userData });
+      userData.session_token = sessionToken;
+      return res.json({ success: true, user: userData, session_token: sessionToken });
     }
 
     // 5. Handle failed login attempt
@@ -3236,6 +3309,78 @@ app.put('/api/user/profile', async (req, res) => {
     res.json({ success: true, message: 'Profile updated successfully', user: result.rows[0] });
   } catch (err) {
     console.error('Error updating user profile:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET /api/user/sessions - Fetch active sessions for a user
+app.get('/api/user/sessions', async (req, res) => {
+  const { email } = req.query;
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'Email query parameter is required' });
+  }
+
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    const result = await pool.query(
+      `SELECT id, user_id, email, session_token, device_type, os_name, browser_name, ip_address, location, signed_in_at, last_active_at, is_active
+       FROM user_sessions 
+       WHERE LOWER(email) = $1 AND is_active = TRUE
+       ORDER BY last_active_at DESC;`,
+      [cleanEmail]
+    );
+
+    res.json({ success: true, sessions: result.rows });
+  } catch (err) {
+    console.error('Error fetching user sessions:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /api/user/sessions/logout-device - Revoke a specific device session
+app.post('/api/user/sessions/logout-device', async (req, res) => {
+  const { session_token, id } = req.body;
+  if (!session_token && !id) {
+    return res.status(400).json({ success: false, message: 'session_token or id is required' });
+  }
+
+  try {
+    await pool.query(
+      `UPDATE user_sessions 
+       SET is_active = FALSE 
+       WHERE session_token = $1 OR id = $2;`,
+      [session_token || null, id ? parseInt(id, 10) : -1]
+    );
+
+    res.json({ success: true, message: 'Device logged out successfully.' });
+  } catch (err) {
+    console.error('Error revoking device session:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /api/user/sessions/logout-all-others - Revoke all other active sessions for user except current
+app.post('/api/user/sessions/logout-all-others', async (req, res) => {
+  const { email, current_session_token } = req.body;
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'User email is required' });
+  }
+
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    let query = `UPDATE user_sessions SET is_active = FALSE WHERE LOWER(email) = $1 AND is_active = TRUE`;
+    const params = [cleanEmail];
+
+    if (current_session_token) {
+      query += ` AND session_token != $2`;
+      params.push(current_session_token);
+    }
+
+    await pool.query(query, params);
+
+    res.json({ success: true, message: 'All other devices logged out successfully.' });
+  } catch (err) {
+    console.error('Error logging out all other devices:', err);
     res.status(500).json({ success: false, message: err.message });
   }
 });
