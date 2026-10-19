@@ -2635,28 +2635,52 @@ function getClientIp(req) {
   return req.socket?.remoteAddress || '127.0.0.1';
 }
 
-function parseDeviceInfo(userAgent = '', clientIp = '') {
+async function parseDeviceInfo(userAgent = '', clientIp = '') {
   const ua = userAgent || '';
   let deviceType = 'desktop';
   let osName = 'Windows 11 PC';
   let browserName = 'Google Chrome';
 
-  // Device & OS detection
+  // 1. Tablet detection
   if (/iPad|iPadOS/i.test(ua)) {
     deviceType = 'tablet';
     osName = 'Apple iPad (iPadOS)';
-  } else if (/tablet|playbook|silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) {
+  } else if (/SM-T|SM-X|Samsung.*Tab/i.test(ua)) {
     deviceType = 'tablet';
-    osName = 'Android Tablet';
-  } else if (/iPhone/i.test(ua)) {
+    osName = 'Samsung Galaxy Tab (Android)';
+  } else if (/Pad|Tablet|PlayBook|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) {
+    deviceType = 'tablet';
+    osName = /Xiaomi|Redmi/i.test(ua) ? 'Xiaomi Pad (Android)' : 'Android Tablet';
+  }
+  // 2. Mobile Phone detection
+  else if (/iPhone/i.test(ua)) {
     deviceType = 'mobile';
     osName = 'Apple iPhone (iOS)';
-  } else if (/Android.*Mobile/i.test(ua)) {
+  } else if (/Android.*Mobile|Mobile.*Android/i.test(ua)) {
     deviceType = 'mobile';
-    osName = 'Samsung Galaxy (Android)';
-  } else if (/Windows/i.test(ua)) {
+    if (/Xiaomi|Redmi|POCO/i.test(ua) || /\b(21|22|23|24)[0-9A-Z]{4,}/i.test(ua)) {
+      osName = 'Xiaomi / Redmi (Android)';
+    } else if (/OPPO|CPH|PHT|PGEM/i.test(ua)) {
+      osName = 'OPPO (Android)';
+    } else if (/Realme|RMX/i.test(ua)) {
+      osName = 'Realme (Android)';
+    } else if (/vivo|V20|V21|V22|V23|V24/i.test(ua)) {
+      osName = 'Vivo (Android)';
+    } else if (/Infinix|TECNO|itel/i.test(ua)) {
+      osName = 'Infinix / Tecno (Android)';
+    } else if (/SM-|SAMSUNG|GT-|SCH-/i.test(ua)) {
+      osName = 'Samsung Galaxy (Android)';
+    } else {
+      osName = 'Samsung Galaxy (Android)';
+    }
+  }
+  // 3. Desktop & Laptop detection
+  else if (/Windows NT 10.0/i.test(ua)) {
     deviceType = 'desktop';
     osName = 'Windows 11 PC';
+  } else if (/Windows NT 6.3|Windows NT 6.2|Windows NT 6.1/i.test(ua)) {
+    deviceType = 'desktop';
+    osName = 'Windows 10 PC';
   } else if (/Macintosh|Mac OS X/i.test(ua)) {
     deviceType = 'desktop';
     osName = 'MacBook Pro (macOS)';
@@ -2678,7 +2702,35 @@ function parseDeviceInfo(userAgent = '', clientIp = '') {
     browserName = 'Mozilla Firefox';
   }
 
-  const location = 'Quezon City, PH';
+  // 4. Dynamic Real-World Location via fast Geo-IP lookup
+  let location = 'Quezon City, PH';
+  const cleanIp = (clientIp || '').trim();
+  const isPrivateOrLocal = !cleanIp || 
+    cleanIp === '127.0.0.1' || 
+    cleanIp === '::1' || 
+    cleanIp.startsWith('10.') || 
+    cleanIp.startsWith('192.168.') || 
+    cleanIp.startsWith('172.');
+
+  if (!isPrivateOrLocal) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const geoRes = await fetch(`http://ip-api.com/json/${cleanIp}?fields=status,city,regionName,countryCode`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (geoRes.ok) {
+        const geoData = await geoRes.json();
+        if (geoData && geoData.status === 'success' && geoData.city) {
+          location = `${geoData.city}, ${geoData.countryCode || 'PH'}`;
+        }
+      }
+    } catch (geoErr) {
+      location = 'Quezon City, PH';
+    }
+  }
 
   return { deviceType, osName, browserName, location };
 }
@@ -2901,7 +2953,7 @@ app.post('/api/login', async (req, res) => {
       // Generate unique session token and record in user_sessions
       const sessionToken = `sess_${crypto.randomUUID()}`;
       const userAgent = req.headers['user-agent'] || '';
-      const { deviceType, osName, browserName, location } = parseDeviceInfo(userAgent, clientIp);
+      const { deviceType, osName, browserName, location } = await parseDeviceInfo(userAgent, clientIp);
 
       try {
         await pool.query(`
@@ -3382,6 +3434,31 @@ app.post('/api/user/sessions/logout-all-others', async (req, res) => {
   } catch (err) {
     console.error('Error logging out all other devices:', err);
     res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// GET /api/user/sessions/verify - Check if a session token is still active (for instant auto-kickout)
+app.get('/api/user/sessions/verify', async (req, res) => {
+  const { session_token } = req.query;
+  if (!session_token) {
+    return res.json({ success: true, active: true });
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT is_active FROM user_sessions WHERE session_token = $1 LIMIT 1;',
+      [session_token]
+    );
+
+    if (result.rows.length === 0) {
+      return res.json({ success: true, active: true });
+    }
+
+    const isActive = result.rows[0].is_active;
+    res.json({ success: true, active: !!isActive });
+  } catch (err) {
+    console.error('Session verify error:', err);
+    res.status(500).json({ success: false, active: true });
   }
 });
 

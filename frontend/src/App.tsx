@@ -135,6 +135,43 @@ export default function App() {
     } catch (e) {}
   }, [darkMode]);
 
+  // Session Heartbeat Listener: Instant Auto-kickout if remote session is revoked
+  useEffect(() => {
+    if (activeTab === 'landing' || activeTab === 'login') return;
+
+    let token = '';
+    try {
+      const savedUserStr = localStorage.getItem('currentUser');
+      if (savedUserStr) {
+        const u = JSON.parse(savedUserStr);
+        token = u.session_token || '';
+      }
+    } catch {}
+
+    if (!token) return;
+
+    const checkSession = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/user/sessions/verify?session_token=${encodeURIComponent(token)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.active === false) {
+            localStorage.removeItem('currentUser');
+            sessionStorage.removeItem('activeTab');
+            sessionStorage.removeItem('userRole');
+            alert('Your session has been logged out from another device.');
+            setActiveTab('login');
+          }
+        }
+      } catch (err) {
+        // silent network error
+      }
+    };
+
+    const intervalId = setInterval(checkSession, 4000);
+    return () => clearInterval(intervalId);
+  }, [activeTab]);
+
   // Modals
   const [isTrackModalOpen, setIsTrackModalOpen] = useState<boolean>(false);
   const [isEligibilityModalOpen, setIsEligibilityModalOpen] = useState<boolean>(false);
