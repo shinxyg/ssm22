@@ -2965,6 +2965,12 @@ app.post('/api/login', async (req, res) => {
         : location;
 
       try {
+        // Clean up previous session for the same device/browser to prevent accumulating duplicate rows
+        await pool.query(
+          'DELETE FROM user_sessions WHERE LOWER(email) = $1 AND os_name = $2 AND browser_name = $3;',
+          [cleanEmail, osName, browserName]
+        );
+
         await pool.query(`
           INSERT INTO user_sessions (user_id, email, session_token, device_type, os_name, browser_name, ip_address, location, signed_in_at, last_active_at, is_active)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, TRUE);
@@ -3174,19 +3180,24 @@ app.post('/api/auth/verify-unlock-otp', async (req, res) => {
   }
 });
 
-// POST /api/logout - Mark user as offline upon logout
+// POST /api/logout - Mark user as offline upon logout and delete session
 app.post('/api/logout', async (req, res) => {
-  const { email } = req.body;
-  if (!email) {
-    return res.status(400).json({ success: false, message: 'Email is required' });
+  const { email, session_token } = req.body;
+  if (!email && !session_token) {
+    return res.status(400).json({ success: false, message: 'Email or session_token is required' });
   }
 
   try {
-    const cleanEmail = email.trim().toLowerCase();
-    await pool.query(
-      'UPDATE users SET is_online = FALSE, last_active = CURRENT_TIMESTAMP WHERE LOWER(email) = $1;',
-      [cleanEmail]
-    );
+    if (session_token) {
+      await pool.query('DELETE FROM user_sessions WHERE session_token = $1;', [session_token]);
+    }
+    if (email) {
+      const cleanEmail = email.trim().toLowerCase();
+      await pool.query(
+        'UPDATE users SET is_online = FALSE, last_active = CURRENT_TIMESTAMP WHERE LOWER(email) = $1;',
+        [cleanEmail]
+      );
+    }
     res.json({ success: true, message: 'User logged out successfully' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -3415,8 +3426,7 @@ app.post('/api/user/sessions/logout-device', async (req, res) => {
 
   try {
     await pool.query(
-      `UPDATE user_sessions 
-       SET is_active = FALSE 
+      `DELETE FROM user_sessions 
        WHERE session_token = $1 OR id = $2;`,
       [session_token || null, id ? parseInt(id, 10) : -1]
     );
@@ -3437,7 +3447,7 @@ app.post('/api/user/sessions/logout-all-others', async (req, res) => {
 
   try {
     const cleanEmail = email.trim().toLowerCase();
-    let query = `UPDATE user_sessions SET is_active = FALSE WHERE LOWER(email) = $1 AND is_active = TRUE`;
+    let query = `DELETE FROM user_sessions WHERE LOWER(email) = $1`;
     const params = [cleanEmail];
 
     if (current_session_token) {
