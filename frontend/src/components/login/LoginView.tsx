@@ -549,6 +549,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
         setLockoutStage(0);
         setRemainingAttempts(null);
         localStorage.removeItem('govserve_lockout_info');
+        localStorage.removeItem('govserve_session_expired');
+        localStorage.setItem('govserve_last_activity', Date.now().toString());
         localStorage.setItem('currentUser', JSON.stringify(data.user));
         setSuccessMessage('Login successful! Redirecting...');
         setTimeout(() => {

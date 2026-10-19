@@ -58,7 +58,9 @@ import {
   UserCheck,
   ChevronLeft,
   ChevronRight,
-  X
+  X,
+  AlertTriangle,
+  LogIn
 } from 'lucide-react';
 
 export default function App() {
@@ -84,11 +86,36 @@ export default function App() {
   // Tab & role state persisted in sessionStorage (retains on page refresh, resets on new tab/window)
   const [activeTab, setActiveTab] = useState<string>(() => {
     try {
+      if (localStorage.getItem('govserve_session_expired') === 'true') {
+        return 'login';
+      }
       return sessionStorage.getItem('activeTab') || 'landing';
     } catch {
       return 'landing';
     }
   });
+
+  // 5-Minute Inactivity Session Expired Modal State
+  const [isSessionExpiredModalOpen, setIsSessionExpiredModalOpen] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('govserve_session_expired') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const handleLogInAgain = () => {
+    setIsSessionExpiredModalOpen(false);
+    try {
+      localStorage.removeItem('govserve_session_expired');
+      localStorage.removeItem('govserve_last_activity');
+    } catch {}
+    setActiveTab('login');
+    setTimeout(() => {
+      const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement;
+      if (emailInput) emailInput.focus();
+    }, 150);
+  };
 
   const [userRole, setUserRole] = useState<'user' | 'admin'>(() => {
     try {
@@ -170,6 +197,78 @@ export default function App() {
 
     const intervalId = setInterval(checkSession, 4000);
     return () => clearInterval(intervalId);
+  }, [activeTab]);
+
+  // 5-Minute Inactivity Session Timeout Tracker (Persistent across page reloads)
+  useEffect(() => {
+    if (activeTab === 'landing' || activeTab === 'login') return;
+
+    const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+
+    // Initialize activity timestamp if not yet set
+    if (!localStorage.getItem('govserve_last_activity')) {
+      try {
+        localStorage.setItem('govserve_last_activity', Date.now().toString());
+      } catch {}
+    }
+
+    let throttleTimer = 0;
+    const handleUserActivity = () => {
+      const now = Date.now();
+      if (now - throttleTimer > 1500) {
+        throttleTimer = now;
+        try {
+          localStorage.setItem('govserve_last_activity', now.toString());
+        } catch {}
+      }
+    };
+
+    const activityEvents = ['mousemove', 'keydown', 'mousedown', 'touchstart', 'scroll'];
+    activityEvents.forEach((ev) => window.addEventListener(ev, handleUserActivity, { passive: true }));
+
+    const checkTimeoutInterval = setInterval(() => {
+      try {
+        const lastActiveStr = localStorage.getItem('govserve_last_activity');
+        if (!lastActiveStr) return;
+
+        const lastActive = parseInt(lastActiveStr, 10);
+        const elapsed = Date.now() - lastActive;
+
+        if (elapsed >= INACTIVITY_TIMEOUT_MS) {
+          // 5-minute timeout reached! Trigger secure kickout
+          let token = '';
+          try {
+            const savedUserStr = localStorage.getItem('currentUser');
+            if (savedUserStr) {
+              const u = JSON.parse(savedUserStr);
+              token = u.session_token || '';
+            }
+          } catch {}
+
+          if (token) {
+            fetch(`${API_BASE_URL}/api/user/sessions/logout-device`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ session_token: token })
+            }).catch(() => {});
+          }
+
+          localStorage.removeItem('currentUser');
+          sessionStorage.removeItem('activeTab');
+          sessionStorage.removeItem('userRole');
+          localStorage.setItem('govserve_session_expired', 'true');
+          localStorage.removeItem('govserve_last_activity');
+
+          setActiveTab('login');
+          setIsSessionExpiredModalOpen(true);
+        }
+      } catch {}
+    }, 1000);
+
+    return () => {
+      activityEvents.forEach((ev) => window.removeEventListener(ev, handleUserActivity));
+      clearInterval(checkTimeoutInterval);
+    };
   }, [activeTab]);
 
   // Modals
@@ -718,14 +817,59 @@ export default function App() {
 
   if (activeTab === 'login') {
     return (
-      <LoginView
-        onLoginSuccess={(role) => {
-          setUserRole(role);
-          setActiveTab('help-guide');
-        }}
-        onBackToHome={() => setActiveTab('landing')}
-        darkMode={darkMode}
-      />
+      <>
+        <LoginView
+          onLoginSuccess={(role) => {
+            setUserRole(role);
+            setActiveTab('help-guide');
+            try {
+              localStorage.removeItem('govserve_session_expired');
+              localStorage.setItem('govserve_last_activity', Date.now().toString());
+            } catch {}
+            setIsSessionExpiredModalOpen(false);
+          }}
+          onBackToHome={() => {
+            try {
+              localStorage.removeItem('govserve_session_expired');
+            } catch {}
+            setIsSessionExpiredModalOpen(false);
+            setActiveTab('landing');
+          }}
+          darkMode={darkMode}
+        />
+
+        {/* 5-Minute Inactivity Session Expired Dialog Box */}
+        {isSessionExpiredModalOpen && (
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className={`w-full max-w-md rounded-2xl p-6 sm:p-7 shadow-2xl border text-center transition-all scale-100 ${
+              darkMode 
+                ? 'bg-[#0f172a] border-slate-700/80 text-white shadow-black/80' 
+                : 'bg-white border-slate-200 text-slate-900 shadow-xl'
+            }`}>
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-500 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-7 h-7" />
+              </div>
+
+              <h3 className={`text-xl font-bold tracking-tight mb-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                Session Expired
+              </h3>
+
+              <p className={`text-sm leading-relaxed mb-6 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                Your session has expired due to inactivity. Please sign in again to continue.
+              </p>
+
+              <button
+                type="button"
+                onClick={handleLogInAgain}
+                className="w-full py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition-all duration-150 flex items-center justify-center gap-2 active:scale-[0.98]"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Log In Again</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </>
     );
   }
 
@@ -1366,6 +1510,38 @@ export default function App() {
         }}
         darkMode={darkMode}
       />
+
+      {/* 5-Minute Inactivity Session Expired Dialog Box */}
+      {isSessionExpiredModalOpen && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+          <div className={`w-full max-w-md rounded-2xl p-6 sm:p-7 shadow-2xl border text-center transition-all scale-100 ${
+            darkMode 
+              ? 'bg-[#0f172a] border-slate-700/80 text-white shadow-black/80' 
+              : 'bg-white border-slate-200 text-slate-900 shadow-xl'
+          }`}>
+            <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-500 flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="w-7 h-7" />
+            </div>
+
+            <h3 className={`text-xl font-bold tracking-tight mb-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              Session Expired
+            </h3>
+
+            <p className={`text-sm leading-relaxed mb-6 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+              Your session has expired due to inactivity. Please sign in again to continue.
+            </p>
+
+            <button
+              type="button"
+              onClick={handleLogInAgain}
+              className="w-full py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-lg shadow-blue-600/30 transition-all duration-150 flex items-center justify-center gap-2 active:scale-[0.98]"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Log In Again</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

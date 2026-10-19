@@ -3473,16 +3473,20 @@ app.get('/api/user/sessions/verify', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'SELECT is_active FROM user_sessions WHERE session_token = $1 LIMIT 1;',
+      'SELECT id, is_active FROM user_sessions WHERE session_token = $1 LIMIT 1;',
       [session_token]
     );
 
     if (result.rows.length === 0) {
-      return res.json({ success: true, active: true });
+      return res.json({ success: true, active: false });
     }
 
-    const isActive = result.rows[0].is_active;
-    res.json({ success: true, active: !!isActive });
+    const session = result.rows[0];
+    if (!session.is_active) {
+      return res.json({ success: true, active: false });
+    }
+
+    res.json({ success: true, active: true });
   } catch (err) {
     console.error('Session verify error:', err);
     res.status(500).json({ success: false, active: true });
