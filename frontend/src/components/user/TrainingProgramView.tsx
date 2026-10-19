@@ -128,7 +128,9 @@ export const getBatchTimelineInfo = (durationStr?: string, customDate?: Date) =>
     endDateObj = is30Days ? new Date(year, 11, 3) : new Date(year, 10, 20);
   }
 
+  const isRegistrationUpcoming = now < opensDateObj;
   const isRegistrationOpen = now >= opensDateObj && now <= deadlineDateObj;
+  const isRegistrationClosed = now > deadlineDateObj;
   const isTrainingInSession = now >= startDateObj && now <= endDateObj;
   const isTrainingFinished = now > endDateObj;
 
@@ -138,7 +140,9 @@ export const getBatchTimelineInfo = (durationStr?: string, customDate?: Date) =>
     deadlineDateStr,
     startsDateStr,
     endDateStr,
+    isRegistrationUpcoming,
     isRegistrationOpen,
+    isRegistrationClosed,
     isTrainingInSession,
     isTrainingFinished,
     startsFormatted: `${startsDateStr.split(',')[0]} - ${endDateStr}`
@@ -620,13 +624,18 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
               Choose a training program suited to your interest and schedule before applying.
             </p>
 
-            <span className={`text-xs font-bold px-3 py-1 rounded-full border ${
-              darkMode 
-                ? 'text-blue-300 bg-blue-950/80 border-blue-800' 
-                : 'text-blue-700 bg-blue-50 border-blue-200'
-            }`}>
-              10 Open Programs
-            </span>
+            {(() => {
+              const currentBatch = getBatchTimelineInfo();
+              return (
+                <span className={`text-xs font-bold px-3 py-1 rounded-full border transition-all ${
+                  currentBatch.isRegistrationOpen
+                    ? (darkMode ? 'text-blue-300 bg-blue-950/80 border-blue-800' : 'text-blue-700 bg-blue-50 border-blue-200')
+                    : (darkMode ? 'text-slate-400 bg-slate-900/80 border-slate-700' : 'text-slate-600 bg-slate-100 border-slate-300')
+                }`}>
+                  {currentBatch.isRegistrationOpen ? '10 Open Programs' : '10 Programs (Registration Closed)'}
+                </span>
+              );
+            })()}
           </div>
 
           {/* Training Courses Grid */}
@@ -790,7 +799,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                                 <Lock className="w-3.5 h-3.5 text-rose-400" />
                                 <span>Batch Full (0 Slots Left)</span>
                               </button>
-                            ) : !batchInfo.isRegistrationOpen ? (
+                            ) : batchInfo.isRegistrationUpcoming ? (
                               <button
                                 type="button"
                                 disabled
@@ -798,6 +807,19 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                               >
                                 <Clock className="w-3.5 h-3.5 text-amber-400" />
                                 <span>Waiting for Registration (Opens: {batchInfo.opensDateStr})</span>
+                              </button>
+                            ) : batchInfo.isRegistrationClosed ? (
+                              <button
+                                type="button"
+                                disabled
+                                className={`flex-1 py-2.5 text-[11px] font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5 border transition-all ${
+                                  darkMode 
+                                    ? 'bg-slate-900/80 border-slate-800 text-slate-400' 
+                                    : 'bg-slate-100 border-slate-200 text-slate-500'
+                                }`}
+                              >
+                                <Lock className="w-3.5 h-3.5 text-slate-400" />
+                                <span>Registration Closed (Wait for Next Batch)</span>
                               </button>
                             ) : (
                               <button
