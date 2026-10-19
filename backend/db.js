@@ -856,21 +856,11 @@ export const initDB = async () => {
       );
     `);
 
-    // Seed initial session history for Jefferson if empty
+    // Clean up any demo sessions so table is purely driven by actual user logins
     try {
-      const sessionCountCheck = await client.query('SELECT COUNT(*) FROM user_sessions;');
-      if (parseInt(sessionCountCheck.rows[0].count, 10) === 0) {
-        await client.query(`
-          INSERT INTO user_sessions (user_id, email, session_token, device_type, os_name, browser_name, ip_address, location, signed_in_at, last_active_at, is_active)
-          VALUES 
-          ('USR-2026-002', 'jeffersonlee1234@gmail.com', 'sess_demo_ipad_01', 'tablet', 'Apple iPad Pro (iPadOS 18)', 'Mobile Safari', '119.93.88.102', 'Quezon City, PH', NOW() - INTERVAL '1 day', NOW() - INTERVAL '1 day', TRUE),
-          ('USR-2026-002', 'jeffersonlee1234@gmail.com', 'sess_demo_phone_02', 'mobile', 'Samsung Galaxy S23 (Android 14)', 'Chrome Mobile', '112.198.174.45', 'Quezon City, PH', NOW() - INTERVAL '2 days', NOW() - INTERVAL '2 hours', TRUE),
-          ('USR-2026-002', 'jeffersonlee1234@gmail.com', 'sess_demo_mac_03', 'desktop', 'MacBook Pro (macOS)', 'Safari', '120.29.77.19', 'Pasig City, PH', NOW() - INTERVAL '4 days', NOW() - INTERVAL '3 days', TRUE);
-        `);
-        console.log('✅ Default demo device sessions seeded for Jefferson Lee!');
-      }
+      await client.query("DELETE FROM user_sessions WHERE session_token LIKE 'sess_demo_%';");
     } catch (e) {
-      console.warn('Notice seeding user_sessions:', e.message);
+      console.warn('Notice cleaning demo sessions:', e.message);
     }
 
     // Seed default admin and user accounts if not present
