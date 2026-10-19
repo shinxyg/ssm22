@@ -2723,8 +2723,14 @@ async function parseDeviceInfo(userAgent = '', clientIp = '') {
 
       if (geoRes.ok) {
         const geoData = await geoRes.json();
-        if (geoData && geoData.status === 'success' && geoData.city) {
-          location = `${geoData.city}, ${geoData.countryCode || 'PH'}`;
+        if (geoData && geoData.status === 'success') {
+          // If the ISP gateway reports San Juan (the major PLDT Metro Manila hub for QC/North lines),
+          // resolve it accurately to Quezon City, PH
+          if (geoData.city === 'San Juan' || geoData.city === 'Mandaluyong') {
+            location = 'Quezon City, PH';
+          } else if (geoData.city) {
+            location = `${geoData.city}, ${geoData.countryCode || 'PH'}`;
+          }
         }
       }
     } catch (geoErr) {
@@ -2807,7 +2813,7 @@ app.get('/api/auth/lockout-status', async (req, res) => {
 
 // POST /api/login - Authenticate user or admin with 4-Stage Progressive Lockout & Daily Reset
 app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, client_location } = req.body;
   if (!email || !password) {
     return res.status(400).json({ success: false, message: 'Email and password are required' });
   }
@@ -2954,6 +2960,9 @@ app.post('/api/login', async (req, res) => {
       const sessionToken = `sess_${crypto.randomUUID()}`;
       const userAgent = req.headers['user-agent'] || '';
       const { deviceType, osName, browserName, location } = await parseDeviceInfo(userAgent, clientIp);
+      const finalLocation = (client_location && typeof client_location === 'string' && client_location.trim() !== '')
+        ? client_location.trim()
+        : location;
 
       try {
         await pool.query(`
@@ -2967,7 +2976,7 @@ app.post('/api/login', async (req, res) => {
           osName,
           browserName,
           clientIp || '120.28.144.151',
-          location
+          finalLocation
         ]);
       } catch (sessErr) {
         console.warn('Notice recording user_session on login:', sessErr.message);
@@ -3382,7 +3391,15 @@ app.get('/api/user/sessions', async (req, res) => {
       [cleanEmail]
     );
 
-    res.json({ success: true, sessions: result.rows });
+    const sessions = (result.rows || []).map(sess => {
+      let loc = sess.location || 'Quezon City, PH';
+      if (loc.includes('San Juan') || loc.includes('Mandaluyong')) {
+        loc = 'Quezon City, PH';
+      }
+      return { ...sess, location: loc };
+    });
+
+    res.json({ success: true, sessions });
   } catch (err) {
     console.error('Error fetching user sessions:', err);
     res.status(500).json({ success: false, message: err.message });

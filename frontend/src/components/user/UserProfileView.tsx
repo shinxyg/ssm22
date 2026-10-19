@@ -143,6 +143,14 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     }
   };
 
+  const formatLocation = (loc?: string) => {
+    if (!loc || !loc.trim()) return 'Quezon City, PH';
+    if (loc.includes('San Juan') || loc.includes('Mandaluyong')) {
+      return 'Quezon City, PH';
+    }
+    return loc;
+  };
+
   const renderDeviceIcon = (type: string, osName: string) => {
     if (type === 'tablet' || /ipad|tablet/i.test(osName || '')) {
       return <Tablet className="w-6 h-6" />;
@@ -1130,7 +1138,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                         </div>
                         <div className="flex items-center gap-1.5">
                           <MapPin className={`w-3.5 h-3.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
-                          <span>Location: <strong className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{activeCurrent.location || 'Quezon City, PH'}</strong></span>
+                          <span>Location: <strong className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{formatLocation(activeCurrent.location)}</strong></span>
                         </div>
                       </div>
                     </div>
@@ -1205,7 +1213,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                   <MapPin className={`w-3.5 h-3.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
-                                  <span>Location: <strong className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{s.location || 'Quezon City, PH'}</strong></span>
+                                  <span>Location: <strong className={`font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{formatLocation(s.location)}</strong></span>
                                 </div>
                               </div>
                             </div>

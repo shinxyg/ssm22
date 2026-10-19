@@ -458,6 +458,43 @@ export const LoginView: React.FC<LoginViewProps> = ({
     }
   };
 
+  // Helper to detect device's physical/GPS location if permitted
+  const detectDeviceLocation = async (): Promise<string | null> => {
+    if (typeof window === 'undefined' || !navigator.geolocation) {
+      return null;
+    }
+
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => resolve(null), 1200);
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          clearTimeout(timer);
+          try {
+            const { latitude, longitude } = position.coords;
+            const res = await fetch(
+              `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
+            );
+            if (res.ok) {
+              const geo = await res.json();
+              const city = geo.city || geo.locality || geo.principalSubdivision || 'Quezon City';
+              const country = geo.countryCode || 'PH';
+              return resolve(`${city}, ${country}`);
+            }
+          } catch (e) {
+            // Geocoding fallback
+          }
+          resolve(null);
+        },
+        () => {
+          clearTimeout(timer);
+          resolve(null);
+        },
+        { enableHighAccuracy: false, timeout: 1000, maximumAge: 300000 }
+      );
+    });
+  };
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
@@ -472,10 +509,21 @@ export const LoginView: React.FC<LoginViewProps> = ({
     }
 
     try {
+      let clientLocation: string | null = null;
+      try {
+        clientLocation = await detectDeviceLocation();
+      } catch (locErr) {
+        // Fallback to server resolution
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, password: cleanPassword }),
+        body: JSON.stringify({
+          email: cleanEmail,
+          password: cleanPassword,
+          ...(clientLocation ? { client_location: clientLocation } : {})
+        }),
       });
 
       const data = await response.json();

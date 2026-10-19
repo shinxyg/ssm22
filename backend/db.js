@@ -859,8 +859,9 @@ export const initDB = async () => {
     // Clean up any demo sessions so table is purely driven by actual user logins
     try {
       await client.query("DELETE FROM user_sessions WHERE session_token LIKE 'sess_demo_%';");
+      await client.query("UPDATE user_sessions SET location = 'Quezon City, PH' WHERE location ILIKE '%San Juan%' OR location ILIKE '%Mandaluyong%';");
     } catch (e) {
-      console.warn('Notice cleaning demo sessions:', e.message);
+      console.warn('Notice cleaning demo sessions / normalizing locations:', e.message);
     }
 
     // Seed default admin and user accounts if not present
