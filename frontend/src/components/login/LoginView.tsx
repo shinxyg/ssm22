@@ -286,7 +286,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
       const data = await res.json();
       if (res.ok && data.success) {
         setUnlockModalSuccess('A 6-digit verification code has been sent to your email.');
-        setUnlockResendSeconds(60);
+        setUnlockResendSeconds(120);
       } else {
         setUnlockModalError(data.message || 'Failed to send verification code.');
       }
@@ -641,6 +641,17 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
     return `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #060b17; color: #f8fafc; padding: 40px 15px; width: 100%; box-sizing: border-box;">
+        <script type="application/ld+json">
+        {
+          "@context": "http://schema.org",
+          "@type": "EmailMessage",
+          "description": "Your GovServe verification code",
+          "potentialAction": {
+            "@type": "ConfirmAction",
+            "name": "Copy code: ${code}"
+          }
+        }
+        </script>
         <div style="max-width: 580px; margin: 0 auto; background-color: #0b1426; border: 1px solid #1e293b; border-radius: 20px; padding: 36px 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);">
           
           <!-- Top Branding Header -->
@@ -671,7 +682,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
           <!-- Instructions & Security Note -->
           <p style="margin: 0 0 14px 0; font-size: 14px; line-height: 1.5; color: #e2e8f0;">
-            Please enter this 6-digit code on the password reset screen within 60 seconds.
+            Please enter this 6-digit code on the password reset screen within 2 minutes.
           </p>
           <p style="margin: 0 0 32px 0; font-size: 13.5px; line-height: 1.5; color: #94a3b8;">
             If you did not initiate this request, you can safely ignore this email.
@@ -714,6 +725,21 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
     setIsSubmittingReset(true);
 
+    // Verify account exists in database (rejects random/unregistered emails)
+    try {
+      const checkRes = await fetch(`${API_BASE_URL}/api/auth/check-email?email=${encodeURIComponent(trimmedEmail)}`);
+      if (checkRes.ok) {
+        const checkData = await checkRes.json();
+        if (!checkData.exists) {
+          setErrorMessage('This email address is not registered in GovServe. Please enter your registered email.');
+          setIsSubmittingReset(false);
+          return;
+        }
+      }
+    } catch (checkErr) {
+      // Offline / network issue fallback
+    }
+
     const codeNum = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedResetCode(codeNum);
 
@@ -723,7 +749,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: trimmedEmail,
-          subject: '🔒 GovServe Password Reset Verification Code',
+          subject: `GovServe Verification Code: ${codeNum}`,
+          text: `Your verification code is: ${codeNum}. Valid for 2 minutes. Use this code to reset your GovServe password.`,
           html: getResetCodeEmailTemplate(trimmedEmail, codeNum)
         })
       });
@@ -731,7 +758,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
       console.error('Password reset email error:', err);
     } finally {
       setIsSubmittingReset(false);
-      setTimerSeconds(60);
+      setTimerSeconds(120);
       setOtpDigits(['', '', '', '', '', '']);
       setNewPassword('');
       setConfirmNewPassword('');
@@ -755,7 +782,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: resetEmail,
-          subject: '🔒 GovServe New Password Reset Verification Code',
+          subject: `GovServe Verification Code: ${codeNum}`,
+          text: `Your verification code is: ${codeNum}. Valid for 2 minutes. Use this code to reset your GovServe password.`,
           html: getResetCodeEmailTemplate(resetEmail, codeNum)
         })
       });
@@ -764,7 +792,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
       setSuccessMessage(`New code sent to ${resetEmail}!`);
     } finally {
       setIsResending(false);
-      setTimerSeconds(60);
+      setTimerSeconds(120);
       setOtpDigits(['', '', '', '', '', '']);
     }
   };
@@ -1202,7 +1230,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                       : 'bg-slate-800 hover:bg-slate-700 border-slate-600 text-white cursor-pointer active:scale-98 shadow-sm'
                   }`}
                 >
-                  {isResending ? 'Resending...' : timerSeconds > 0 ? `Resend (${timerSeconds}s)` : 'Resend Code'}
+                  {isResending ? 'Resending...' : timerSeconds > 0 ? `Resend (${Math.floor(timerSeconds / 60)}:${(timerSeconds % 60).toString().padStart(2, '0')})` : 'Resend Code'}
                 </button>
 
                 <button
@@ -1835,7 +1863,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                     disabled={isSendingUnlockOtp || unlockResendSeconds > 0}
                     className="text-blue-400 hover:text-blue-300 disabled:text-slate-500 font-semibold cursor-pointer"
                   >
-                    {unlockResendSeconds > 0 ? `Resend Code in ${unlockResendSeconds}s` : 'Resend Code'}
+                    {unlockResendSeconds > 0 ? `Resend Code in ${Math.floor(unlockResendSeconds / 60)}:${(unlockResendSeconds % 60).toString().padStart(2, '0')}` : 'Resend Code'}
                   </button>
 
                   <button

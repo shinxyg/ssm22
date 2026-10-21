@@ -2741,6 +2741,31 @@ async function parseDeviceInfo(userAgent = '', clientIp = '') {
   return { deviceType, osName, browserName, location };
 }
 
+// GET /api/auth/check-email - Check if user account exists (prevents random/unregistered emails)
+app.get('/api/auth/check-email', async (req, res) => {
+  const { email } = req.query;
+  if (!email || !email.trim()) {
+    return res.status(400).json({ success: false, exists: false, message: 'Email query parameter is required.' });
+  }
+
+  try {
+    let cleanEmail = email.trim().toLowerCase();
+    if (cleanEmail === 'admin@quezoncity.gov.ph') {
+      cleanEmail = 'admin@gmail.com';
+    }
+
+    const result = await pool.query('SELECT id, email, first_name FROM users WHERE LOWER(email) = $1 LIMIT 1;', [cleanEmail]);
+    if (result.rows.length > 0) {
+      return res.json({ success: true, exists: true });
+    } else {
+      return res.json({ success: true, exists: false, message: 'This email address is not registered in GovServe.' });
+    }
+  } catch (err) {
+    console.error('Check email error:', err);
+    res.status(500).json({ success: false, exists: false, message: err.message });
+  }
+});
+
 // GET /api/auth/lockout-status - Check if account or IP is currently locked
 app.get('/api/auth/lockout-status', async (req, res) => {
   const { email } = req.query;
@@ -3086,7 +3111,7 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
 
     const user = result.rows[0];
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const expiresAt = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes
 
     await pool.query(
       'UPDATE users SET unlock_otp = $1, unlock_otp_expires = $2 WHERE id = $3;',
@@ -3096,9 +3121,21 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
     const mailOptions = {
       from: `"GovServe Security Portal" <${process.env.EMAIL_USER || 'no-reply@quezoncity.gov.ph'}>`,
       to: cleanEmail,
-      subject: 'GovServe Account Unlock Verification Code',
+      subject: `GovServe Verification Code: ${otpCode}`,
+      text: `Your verification code is: ${otpCode}. Valid for 2 minutes. Use this code to unlock your GovServe account.`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+          <script type="application/ld+json">
+          {
+            "@context": "http://schema.org",
+            "@type": "EmailMessage",
+            "description": "Your GovServe verification code",
+            "potentialAction": {
+              "@type": "ConfirmAction",
+              "name": "Copy code: ${otpCode}"
+            }
+          }
+          </script>
           <h2 style="color: #1e3a8a; margin-top: 0;">GovServe Security Alert</h2>
           <p>Hello <strong>${user.first_name || 'Resident'}</strong>,</p>
           <p>You requested an instant unlock for your GovServe account due to temporary login lockout.</p>
@@ -3106,7 +3143,7 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
           <div style="background-color: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center; margin: 20px 0;">
             <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #2563eb;">${otpCode}</span>
           </div>
-          <p style="color: #64748b; font-size: 13px;">This code will expire in 10 minutes. If you did not request this, please contact support immediately.</p>
+          <p style="color: #64748b; font-size: 13px;">This code will expire in 2 minutes. If you did not request this, please contact support immediately.</p>
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
           <p style="color: #94a3b8; font-size: 11px; text-align: center;">Quezon City Social Services & Development Department (SSDD)</p>
         </div>
