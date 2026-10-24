@@ -15,14 +15,81 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// Setup Nodemailer Transporter using Gmail App Password
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+// Setup Nodemailer Transporter using Gmail App Password (Fallback for localhost)
+let transporter = null;
+if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+  try {
+    transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  } catch (tErr) {
+    console.warn('Nodemailer initialization warning:', tErr.message);
+  }
+}
+
+// Universal Email Sender: Resend API over HTTPS (Port 443) with Nodemailer SMTP fallback
+const sendEmail = async ({ to, subject, text, html }) => {
+  const recipients = Array.isArray(to) ? to : [to];
+  const recipient = recipients[0];
+
+  // 1. Primary: Resend HTTPS API (Port 443 - Bypasses Railway outbound SMTP port restrictions)
+  const resendApiKey = process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY.trim() : null;
+  if (resendApiKey) {
+    try {
+      const fromAddress = process.env.RESEND_FROM || 'QC GovServe <onboarding@resend.dev>';
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + resendApiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: fromAddress,
+          to: recipients,
+          subject: subject,
+          html: html || text || '',
+          text: text || '',
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        console.log('✅ [Resend HTTPS] Email sent successfully to ' + recipient + ' (Message ID: ' + data.id + ')');
+        return { success: true, messageId: data.id, provider: 'resend' };
+      } else {
+        console.warn('⚠️ [Resend HTTPS] API responded with error (' + res.status + '):', data);
+        if (!transporter) {
+          throw new Error(data.message || ('Resend error: ' + JSON.stringify(data)));
+        }
+      }
+    } catch (resendErr) {
+      console.warn('⚠️ [Resend HTTPS] Attempt failed: ' + resendErr.message);
+      if (!transporter) {
+        throw resendErr;
+      }
+    }
+  }
+
+  // 2. Fallback: Nodemailer SMTP (Localhost / open SMTP environments)
+  if (transporter) {
+    const senderEmail = process.env.EMAIL_USER || 'clarencemillares15@gmail.com';
+    const info = await transporter.sendMail({
+      from: '"QC GovServe Social Services" <' + senderEmail + '>',
+      to: recipient,
+      subject: subject,
+      text: text || '',
+      html: html || text || '',
+    });
+    console.log('📧 [Nodemailer SMTP] Email sent to ' + recipient + ' (Message ID: ' + info.messageId + ')');
+    return { success: true, messageId: info.messageId, provider: 'nodemailer' };
+  }
+
+  throw new Error('No email transport configured. Please set RESEND_API_KEY in Railway Variables.');
+};
 
 // Endpoint to reset and clear all data from applications, appointments, logs, etc.
 const handleResetAllData = async (req, res) => {
@@ -159,7 +226,7 @@ app.delete('/api/senior/applications/:refNo', async (req, res) => {
   }
 });
 
-// POST endpoint to send emails
+// POST endpoint to send emails (Uses Resend HTTPS API / SMTP fallback)
 app.post('/api/send-email', async (req, res) => {
   const { to, subject, text, html } = req.body;
   if (!to || !subject) {
@@ -167,15 +234,8 @@ app.post('/api/send-email', async (req, res) => {
   }
 
   try {
-    const info = await transporter.sendMail({
-      from: `"GovServe Social Services" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      text: text || '',
-      html: html || text || '',
-    });
-    console.log('Email sent:', info.messageId);
-    res.json({ success: true, messageId: info.messageId });
+    const result = await sendEmail({ to, subject, text, html });
+    res.json({ success: true, messageId: result.messageId, provider: result.provider });
   } catch (err) {
     console.error('Email sending error:', err);
     res.status(500).json({ error: 'Failed to send email', details: err.message });
@@ -219,17 +279,16 @@ const sendNotificationEmail = async ({ to, subject, title, applicantName, refNo,
   `;
 
   try {
-    const info = await transporter.sendMail({
-      from: `"QC GovServe Social Services" <${senderEmail}>`,
+    const info = await sendEmail({
       to: recipient,
       subject: subject || `QC GovServe Notice: ${refNo || 'Application Update'}`,
       text: `${title}\nReference No: ${refNo || 'N/A'}\nStatus: ${status || 'N/A'}\n${detailsMessage || ''}`,
       html: htmlContent
     });
-    console.log(`📧 Gmail sent successfully to ${recipient} (Message ID: ${info.messageId})`);
+    console.log(`📧 Notification email sent to ${recipient}`);
     return info;
   } catch (err) {
-    console.error(`❌ Gmail sending error for ${recipient}:`, err.message);
+    console.error(`❌ Notification sending error for ${recipient}:`, err.message);
   }
 };
 
@@ -1659,6 +1718,41 @@ app.post('/api/financial-aid/disbursements/schedule', async (req, res) => {
       SET scheduled_payout_date = $1, scheduled_payout_time = $2, status = 'PAYOUT SCHEDULED', updated_at = CURRENT_TIMESTAMP
       WHERE reference_no = $3;
     `, [payoutDate, `${startTime} - ${endTime}`, referenceNo]);
+
+    // Send automated Financial Payout confirmation email to applicant
+    try {
+      const disbRow = result.rows[0];
+      if (disbRow) {
+        const emailQuery = `
+          SELECT email_address as email FROM solo_parent_applications WHERE reference_no = $1
+          UNION ALL
+          SELECT email_address as email FROM educational_applications WHERE reference_no = $1
+          UNION ALL
+          SELECT email_address as email FROM senior_applications WHERE reference_no = $1
+          UNION ALL
+          SELECT email_address as email FROM livelihood_applications WHERE reference_no = $1
+          UNION ALL
+          SELECT email_address as email FROM aics_applications WHERE reference_no = $1
+          LIMIT 1;
+        `;
+        const emailCheck = await pool.query(emailQuery, [referenceNo]);
+        const recipientEmail = emailCheck.rows[0]?.email;
+        if (recipientEmail) {
+          sendNotificationEmail({
+            to: recipientEmail,
+            subject: `GovServe Notice: Financial Aid Payout Scheduled (${referenceNo})`,
+            title: 'Financial Aid Payout Scheduled!',
+            applicantName: disbRow.applicant_name,
+            refNo: referenceNo,
+            status: 'PAYOUT SCHEDULED',
+            detailsMessage: `Naitakda na ang release ng inyong tulong-pinansyal (${disbRow.benefit_name || 'Financial Assistance'}) na nagkakahalaga ng ₱${Number(disbRow.amount || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })}.`,
+            appointmentInfo: `Petsa: ${payoutDate} | Oras: ${startTime} - ${endTime} | Lugar: ${venue || 'Quezon City SSDD Office'}`
+          });
+        }
+      }
+    } catch (payoutErr) {
+      console.warn('Payout notification email warning:', payoutErr.message);
+    }
 
     res.json(result.rows[0] || { success: true });
   } catch (err) {
@@ -3151,10 +3245,15 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
     };
 
     try {
-      await transporter.sendMail(mailOptions);
+      await sendEmail({
+        to: cleanEmail,
+        subject: mailOptions.subject,
+        text: mailOptions.text,
+        html: mailOptions.html
+      });
       console.log(`✅ Unlock OTP sent to ${cleanEmail}: ${otpCode}`);
     } catch (mailErr) {
-      console.warn('Nodemailer notice (simulated OTP):', mailErr.message);
+      console.warn('Unlock OTP email notice:', mailErr.message);
     }
 
     res.json({
