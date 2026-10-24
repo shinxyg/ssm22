@@ -760,7 +760,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: trimmedEmail,
-          subject: `GovServe Verification Code: ${codeNum}`,
+          subject: 'GovServe Verification Code',
           text: `Your verification code is: ${codeNum}. Valid for 2 minutes. Use this code to reset your GovServe password.`,
           html: getResetCodeEmailTemplate(trimmedEmail, codeNum)
         })
@@ -793,7 +793,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: resetEmail,
-          subject: `GovServe Verification Code: ${codeNum}`,
+          subject: 'GovServe Verification Code',
           text: `Your verification code is: ${codeNum}. Valid for 2 minutes. Use this code to reset your GovServe password.`,
           html: getResetCodeEmailTemplate(resetEmail, codeNum)
         })

@@ -3250,7 +3250,7 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
     const mailOptions = {
       from: `"GovServe Security Portal" <${process.env.EMAIL_USER || 'no-reply@quezoncity.gov.ph'}>`,
       to: cleanEmail,
-      subject: `GovServe Verification Code: ${otpCode}`,
+      subject: 'GovServe Verification Code',
       text: `Your verification code is: ${otpCode}. Valid for 2 minutes. Use this code to unlock your GovServe account.`,
       html: `
         <!-- Gmail / Mobile Snippet Preheader: triggers the native 'Copy code: XXXXXX' pill in Gmail -->
