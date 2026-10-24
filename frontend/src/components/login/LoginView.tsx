@@ -637,9 +637,13 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
   // Helper for generating high-end official responsive HTML email template for password reset OTP matching user screenshot
   const getResetCodeEmailTemplate = (targetEmail: string, code: string) => {
-    const formattedCode = (code || '000000').padStart(6, '0').split('').join(' ');
+    const rawCode = (code || '000000').padStart(6, '0');
 
     return `
+      <!-- Gmail / Mobile Snippet Preheader: triggers the native 'Copy code: XXXXXX' pill in Gmail -->
+      <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;">
+        Your verification code is: ${rawCode}. Valid for 2 minutes. Use this code to verify your GovServe password reset request.
+      </div>
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #060b17; color: #f8fafc; padding: 40px 15px; width: 100%; box-sizing: border-box;">
         <script type="application/ld+json">
         {
@@ -648,7 +652,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
           "description": "Your GovServe verification code",
           "potentialAction": {
             "@type": "ConfirmAction",
-            "name": "Copy code: ${code}"
+            "name": "Copy code: ${rawCode}"
           }
         }
         </script>
@@ -669,20 +673,27 @@ export const LoginView: React.FC<LoginViewProps> = ({
             <a href="mailto:${targetEmail}" style="color: #3b82f6; text-decoration: underline; font-weight: 600;">${targetEmail}</a>.
           </p>
 
-          <!-- 6-Digit Code Card Box -->
+          <!-- 6-Digit Code Card Box with 1-Click Auto Select & Copy Pill -->
           <div style="background-color: #131f37; border: 1px solid #1e2e4a; border-radius: 16px; padding: 26px 20px; margin-bottom: 28px; text-align: center;">
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 1.5px; margin-bottom: 16px;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 1.5px; margin-bottom: 14px;">
               YOUR 6-DIGIT PASSWORD RESET CODE
             </div>
             
-            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 38px; font-weight: 800; color: #38bdf8; letter-spacing: 12px; margin: 0; padding-left: 12px;">
-              ${formattedCode}
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40px; font-weight: 800; color: #38bdf8; letter-spacing: 8px; margin: 0; padding: 8px 0; -webkit-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all; cursor: pointer;" title="Click to select code">
+              ${rawCode}
+            </div>
+
+            <!-- Prominent One-Click Copy Code Chip / Button -->
+            <div style="margin-top: 14px; text-align: center;">
+              <div style="display: inline-block; background-color: #1e293b; color: #38bdf8; border: 1px solid #334155; border-radius: 9999px; padding: 8px 20px; font-size: 13.5px; font-weight: 700; -webkit-user-select: all; user-select: all; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);">
+                📋 Copy code: <span style="color: #ffffff; font-weight: 800;">${rawCode}</span>
+              </div>
             </div>
           </div>
 
           <!-- Instructions & Security Note -->
           <p style="margin: 0 0 14px 0; font-size: 14px; line-height: 1.5; color: #e2e8f0;">
-            Please enter this 6-digit code on the password reset screen within 2 minutes.
+            Please enter this 6-digit code on the password reset screen within <strong>2 minutes</strong>.
           </p>
           <p style="margin: 0 0 32px 0; font-size: 13.5px; line-height: 1.5; color: #94a3b8;">
             If you did not initiate this request, you can safely ignore this email.

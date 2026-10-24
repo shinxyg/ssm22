@@ -3253,6 +3253,10 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
       subject: `GovServe Verification Code: ${otpCode}`,
       text: `Your verification code is: ${otpCode}. Valid for 2 minutes. Use this code to unlock your GovServe account.`,
       html: `
+        <!-- Gmail / Mobile Snippet Preheader: triggers the native 'Copy code: XXXXXX' pill in Gmail -->
+        <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;">
+          Your verification code is: ${otpCode}. Valid for 2 minutes. Use this code to unlock your GovServe account.
+        </div>
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
           <script type="application/ld+json">
           {
@@ -3269,10 +3273,15 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
           <p>Hello <strong>${user.first_name || 'Resident'}</strong>,</p>
           <p>You requested an instant unlock for your GovServe account due to temporary login lockout.</p>
           <p>Your 6-digit verification code is:</p>
-          <div style="background-color: #f1f5f9; padding: 16px; border-radius: 8px; text-align: center; margin: 20px 0;">
-            <span style="font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #2563eb;">${otpCode}</span>
+          <div style="background-color: #f1f5f9; padding: 20px 16px; border-radius: 8px; text-align: center; margin: 20px 0;">
+            <div style="font-size: 34px; font-weight: bold; letter-spacing: 8px; color: #2563eb; -webkit-user-select: all; user-select: all; cursor: pointer;">${otpCode}</div>
+            <div style="margin-top: 12px;">
+              <div style="display: inline-block; background-color: #e0e7ff; color: #1e40af; border-radius: 9999px; padding: 6px 16px; font-size: 12.5px; font-weight: 700; -webkit-user-select: all; user-select: all; cursor: pointer;">
+                📋 Copy code: ${otpCode}
+              </div>
+            </div>
           </div>
-          <p style="color: #64748b; font-size: 13px;">This code will expire in 2 minutes. If you did not request this, please contact support immediately.</p>
+          <p style="color: #64748b; font-size: 13px;">This code will expire in <strong>2 minutes</strong>. If you did not request this, please contact support immediately.</p>
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
           <p style="color: #94a3b8; font-size: 11px; text-align: center;">Quezon City Social Services & Development Department (SSDD)</p>
         </div>
