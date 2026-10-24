@@ -31,12 +31,53 @@ if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
   }
 }
 
-// Universal Email Sender: Resend API over HTTPS (Port 443) with Nodemailer SMTP fallback
+// Universal Email Sender: EmailJS REST API over HTTPS (Port 443) with Resend & Nodemailer fallbacks
 const sendEmail = async ({ to, subject, text, html }) => {
   const recipients = Array.isArray(to) ? to : [to];
   const recipient = recipients[0];
 
-  // 1. Primary: Resend HTTPS API (Port 443 - Bypasses Railway outbound SMTP port restrictions)
+  // 1. Primary: EmailJS REST API (Port 443 - Can send to ANY recipient via connected Gmail)
+  const emailJsServiceId = process.env.EMAILJS_SERVICE_ID ? process.env.EMAILJS_SERVICE_ID.trim() : null;
+  const emailJsTemplateId = process.env.EMAILJS_TEMPLATE_ID ? process.env.EMAILJS_TEMPLATE_ID.trim() : null;
+  const emailJsPublicKey = process.env.EMAILJS_PUBLIC_KEY ? process.env.EMAILJS_PUBLIC_KEY.trim() : null;
+  const emailJsPrivateKey = process.env.EMAILJS_PRIVATE_KEY ? process.env.EMAILJS_PRIVATE_KEY.trim() : null;
+
+  if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey) {
+    try {
+      const emailJsPayload = {
+        service_id: emailJsServiceId,
+        template_id: emailJsTemplateId,
+        user_id: emailJsPublicKey,
+        ...(emailJsPrivateKey ? { accessToken: emailJsPrivateKey } : {}),
+        template_params: {
+          to_email: recipient,
+          subject: subject,
+          html_content: html || text || '',
+          message: text || '',
+        },
+      };
+
+      const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailJsPayload),
+      });
+
+      const responseText = await res.text();
+      if (res.ok) {
+        console.log('✅ [EmailJS HTTPS] Email sent successfully to ' + recipient + ' (Response: ' + responseText + ')');
+        return { success: true, provider: 'emailjs', response: responseText };
+      } else {
+        console.warn('⚠️ [EmailJS HTTPS] API responded with error (' + res.status + '): ' + responseText);
+      }
+    } catch (ejsErr) {
+      console.warn('⚠️ [EmailJS HTTPS] Attempt failed: ' + ejsErr.message);
+    }
+  }
+
+  // 2. Secondary: Resend HTTPS API (Port 443)
   const resendApiKey = process.env.RESEND_API_KEY ? process.env.RESEND_API_KEY.trim() : null;
   if (resendApiKey) {
     try {
@@ -62,19 +103,13 @@ const sendEmail = async ({ to, subject, text, html }) => {
         return { success: true, messageId: data.id, provider: 'resend' };
       } else {
         console.warn('⚠️ [Resend HTTPS] API responded with error (' + res.status + '):', data);
-        if (!transporter) {
-          throw new Error(data.message || ('Resend error: ' + JSON.stringify(data)));
-        }
       }
     } catch (resendErr) {
       console.warn('⚠️ [Resend HTTPS] Attempt failed: ' + resendErr.message);
-      if (!transporter) {
-        throw resendErr;
-      }
     }
   }
 
-  // 2. Fallback: Nodemailer SMTP (Localhost / open SMTP environments)
+  // 3. Fallback: Nodemailer SMTP (Localhost / open SMTP environments)
   if (transporter) {
     const senderEmail = process.env.EMAIL_USER || 'clarencemillares15@gmail.com';
     const info = await transporter.sendMail({
@@ -88,7 +123,7 @@ const sendEmail = async ({ to, subject, text, html }) => {
     return { success: true, messageId: info.messageId, provider: 'nodemailer' };
   }
 
-  throw new Error('No email transport configured. Please set RESEND_API_KEY in Railway Variables.');
+  throw new Error('No email transport configured or all services failed. Please check EmailJS variables.');
 };
 
 // Endpoint to reset and clear all data from applications, appointments, logs, etc.
