@@ -671,13 +671,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
             <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40px; font-weight: 800; color: #38bdf8; letter-spacing: 8px; margin: 0; padding: 8px 0; -webkit-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all; cursor: pointer;" title="Click to select code">
               ${rawCode}
             </div>
-
-            <!-- Prominent One-Click Copy Code Chip / Button -->
-            <div style="margin-top: 14px; text-align: center;">
-              <div style="display: inline-block; background-color: #1e293b; color: #38bdf8; border: 1px solid #334155; border-radius: 9999px; padding: 8px 20px; font-size: 13.5px; font-weight: 700; -webkit-user-select: all; user-select: all; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);">
-                📋 Copy code: <span style="color: #ffffff; font-weight: 800;">${rawCode}</span>
-              </div>
-            </div>
           </div>
 
           <!-- Instructions & Security Note -->

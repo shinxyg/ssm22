@@ -3264,11 +3264,6 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
           <p>Your 6-digit verification code is:</p>
           <div style="background-color: #f1f5f9; padding: 20px 16px; border-radius: 8px; text-align: center; margin: 20px 0;">
             <div style="font-size: 34px; font-weight: bold; letter-spacing: 8px; color: #2563eb; -webkit-user-select: all; user-select: all; cursor: pointer;">${otpCode}</div>
-            <div style="margin-top: 12px;">
-              <div style="display: inline-block; background-color: #e0e7ff; color: #1e40af; border-radius: 9999px; padding: 6px 16px; font-size: 12.5px; font-weight: 700; -webkit-user-select: all; user-select: all; cursor: pointer;">
-                📋 Copy code: ${otpCode}
-              </div>
-            </div>
           </div>
           <p style="color: #64748b; font-size: 13px;">This code will expire in <strong>2 minutes</strong>. If you did not request this, please contact support immediately.</p>
           <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
