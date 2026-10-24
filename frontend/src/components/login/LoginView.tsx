@@ -645,17 +645,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
         Your verification code is: ${rawCode}. Valid for 2 minutes. Use this code to verify your GovServe password reset request.
       </div>
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #060b17; color: #f8fafc; padding: 40px 15px; width: 100%; box-sizing: border-box;">
-        <script type="application/ld+json">
-        {
-          "@context": "http://schema.org",
-          "@type": "EmailMessage",
-          "description": "Your GovServe verification code",
-          "potentialAction": {
-            "@type": "ConfirmAction",
-            "name": "Copy code: ${rawCode}"
-          }
-        }
-        </script>
         <div style="max-width: 580px; margin: 0 auto; background-color: #0b1426; border: 1px solid #1e293b; border-radius: 20px; padding: 36px 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);">
           
           <!-- Top Branding Header -->

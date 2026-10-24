@@ -3258,17 +3258,6 @@ app.post('/api/auth/send-unlock-otp', async (req, res) => {
           Your verification code is: ${otpCode}. Valid for 2 minutes. Use this code to unlock your GovServe account.
         </div>
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-          <script type="application/ld+json">
-          {
-            "@context": "http://schema.org",
-            "@type": "EmailMessage",
-            "description": "Your GovServe verification code",
-            "potentialAction": {
-              "@type": "ConfirmAction",
-              "name": "Copy code: ${otpCode}"
-            }
-          }
-          </script>
           <h2 style="color: #1e3a8a; margin-top: 0;">GovServe Security Alert</h2>
           <p>Hello <strong>${user.first_name || 'Resident'}</strong>,</p>
           <p>You requested an instant unlock for your GovServe account due to temporary login lockout.</p>
