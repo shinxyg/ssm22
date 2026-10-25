@@ -424,7 +424,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
       </div>
 
       {/* VIEW TABS: ACTIVE FINANCIAL AID */}
-      <div className="flex items-center gap-3 border-b border-slate-800 pb-2">
+      <div className={`flex items-center gap-3 border-b pb-2 ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
         <div className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl text-xs font-extrabold flex items-center gap-2 bg-blue-600 text-white shadow-xl border border-blue-400/40">
           <Clock className="w-4 h-4" />
           <span>Active Financial Aid ({activeApplications.length})</span>
@@ -433,7 +433,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
 
       {/* MODULE FILTER PILLS (Smooth horizontal swipe on mobile) */}
       <div className="flex items-center gap-2 pt-1 overflow-x-auto no-scrollbar pb-1.5 -mx-1 px-1 flex-nowrap md:flex-wrap">
-        <span className="text-[10px] font-extrabold text-slate-400 tracking-wider uppercase mr-1 flex items-center gap-1 shrink-0">
+        <span className={`text-[10px] font-extrabold tracking-wider uppercase mr-1 flex items-center gap-1 shrink-0 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
           <Filter className="w-3.5 h-3.5" />
           Filter:
         </span>
@@ -443,7 +443,9 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
           className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'ALL'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
-              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : darkMode
+              ? 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-sm'
           }`}
         >
           ALL ({currentList.length})
@@ -454,7 +456,9 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
           className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'soloparent'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
-              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : darkMode
+              ? 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-sm'
           }`}
         >
           SOLO PARENT SUBSIDY
@@ -465,7 +469,9 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
           className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'educational'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
-              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : darkMode
+              ? 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-sm'
           }`}
         >
           EDUCATIONAL GRANT
@@ -476,7 +482,9 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
           className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'pwd'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
-              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : darkMode
+              ? 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-sm'
           }`}
         >
           PWD ASSISTANCE
@@ -487,7 +495,9 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
           className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'aics'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
-              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : darkMode
+              ? 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-sm'
           }`}
         >
           AICS ASSISTANCE
@@ -498,7 +508,9 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
           className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'senior'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
-              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : darkMode
+              ? 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-sm'
           }`}
         >
           SENIOR CITIZEN
@@ -509,7 +521,9 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
           className={`shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap ${
             selectedModuleFilter === 'livelihood'
               ? 'bg-blue-600 text-white shadow-lg border border-blue-400/40'
-              : 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : darkMode
+              ? 'bg-[#0e1726] text-slate-400 hover:text-slate-200 border border-slate-800'
+              : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200 shadow-sm'
           }`}
         >
           LIVELIHOOD PROGRAM
@@ -518,9 +532,9 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
 
       {/* APPLICATIONS LIST */}
       <div className="space-y-4">
-        <h3 className="text-sm font-extrabold text-white tracking-wide uppercase flex items-center justify-between">
+        <h3 className={`text-sm font-extrabold tracking-wide uppercase flex items-center justify-between ${darkMode ? 'text-white' : 'text-slate-900'}`}>
           <span>{activeViewTab === 'ACTIVE' ? 'Active Requests' : 'Archived History'} ({filteredApps.length})</span>
-          <span className="text-[10px] text-slate-400 font-mono normal-case">Live DB Synchronization</span>
+          <span className={`text-[10px] font-mono normal-case ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Live DB Synchronization</span>
         </h3>
 
         {filteredApps.length > 0 ? (
@@ -592,7 +606,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
               const isTrnUnqualified = statusText === 'UNQUALIFIED' || statusText === 'Unqualified';
 
               let statusBadge = (
-                <span className="px-3 py-1 rounded-full text-xs font-black bg-amber-500/10 border border-amber-500/30 text-amber-400 inline-block">
+                <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' : 'bg-amber-50 border-amber-200 text-amber-700'}`}>
                   {isTrn ? 'PENDING (Pending SSDD Validation)' : 'PENDING (Pending Document Validation)'}
                 </span>
               );
@@ -613,49 +627,49 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
 
               if (isTrn && isTrnUnqualified) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-rose-500/10 border border-rose-500/30 text-rose-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>
                     UNQUALIFIED
                   </span>
                 );
                 processExplanation = "Pasensya na, ikaw ay Unqualified sa Orientation Assessment.";
               } else if (isTrn && isTrnEnrolled) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
                     QUALIFIED / ENROLLED
                   </span>
                 );
                 processExplanation = "Binabati kita! Qualified at Enrolled ka na sa Training Program! Class Batch Number: Batch 3 (2026). (Non-Financial Program — Walang Financial Payout / Disbursement).";
               } else if (isTrn && isTrnScheduled) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-500/10 border border-blue-500/30 text-blue-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
                     TRAINING SCHEDULED / ORIENTATION APPOINTED
                   </span>
                 );
                 processExplanation = `Naitakda ang Training Orientation sa Quezon City Skills Development Center sa ${interviewDateFormatted} sa ganap na ${interviewTimeFormatted || '09:00 AM'}.`;
               } else if (isTrn && isSsddValidated) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
                     SSDD VALIDATED
                   </span>
                 );
                 processExplanation = "Validated na ang inyong qualification at mga dokumento. Inilipat sa Stage 2 (Scheduling).";
               } else if (isApprovedByAdmin) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
                     APPROVED BY ADMIN
                   </span>
                 );
                 processExplanation = "Nakalinya na sa interview schedule. Inilipat ang inyong record sa SSDD Appointments.";
               } else if (isInterviewScheduled) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-500/10 border border-blue-500/30 text-blue-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' : 'bg-blue-50 border-blue-200 text-blue-700'}`}>
                     INTERVIEW SCHEDULED
                   </span>
                 );
                 processExplanation = `Naitakda ang interview sa Quezon City Hall SSDD Office sa ${interviewDateFormatted} sa ganap na ${interviewTimeFormatted || '09:00 AM'}.`;
               } else if (isApproved) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
                     {statusText.includes('Ready for Payout') ? 'APPROVED & READY FOR PAYOUT' : 'APPROVED'}
                   </span>
                 );
@@ -674,7 +688,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
                   : "Nakalipas sa Physical Interview! Inisyu na ang Official Solo Parent ID Card at ₱3,000 Cash Subsidy Certificate. Awtomatikong pumasok sa Financial Aid Masterlist na may Fixed Amount: ₱3,000.00.";
               } else if (isPayoutScheduled) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-purple-500/10 border border-purple-500/30 text-purple-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-purple-500/10 border-purple-500/30 text-purple-400' : 'bg-purple-50 border-purple-200 text-purple-700'}`}>
                     {isAics ? 'GL READY FOR RELEASE' : 'PAYOUT SCHEDULED'}
                   </span>
                 );
@@ -693,7 +707,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
                   : `Naitakda ang ₱3,000 Solo Parent Payout release date sa ${payoutDateFormatted} sa ${payoutTimeFormatted}.`;
               } else if (isReleased) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
                     COMPLETED ({isAics ? 'GL Released' : isCwProtection ? 'Child Protection / Case Services Completed' : (isSoloParentEdu || isChildEdu) ? '₱5,000 Educational Grant Release Completed' : isLivelihood ? '₱15,000 Livelihood Grant Released' : isPwd ? '₱1,500 PWD Pension Released' : isSenior ? '₱3,000 Senior Cash Grant Released' : isTrn ? 'Training Completed' : '₱3,000 Cash Subsidy Release Completed'})
                   </span>
                 );
@@ -720,7 +734,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
                   : "Nailabas na ang inyong ₱3,000 Solo Parent Subsidy. Maraming salamat!";
               } else if (isRejected) {
                 statusBadge = (
-                  <span className="px-3 py-1 rounded-full text-xs font-black bg-rose-500/10 border border-rose-500/30 text-rose-400 inline-block">
+                  <span className={`px-3 py-1 rounded-full text-xs font-black border inline-block ${darkMode ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' : 'bg-rose-50 border-rose-200 text-rose-700'}`}>
                     REJECTED
                   </span>
                 );
@@ -732,14 +746,14 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
               return (
                 <div
                   key={`${app.referenceNo}-${idx}`}
-                  className="bg-[#0e1726] border border-slate-800/90 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4 hover:border-slate-700 transition-all"
+                  className={`border rounded-2xl p-4 sm:p-6 shadow-xl space-y-4 transition-all ${darkMode ? 'bg-[#0e1726] border-slate-800/90 hover:border-slate-700' : 'bg-white border-slate-200 hover:border-blue-300 shadow-slate-200/60'}`}
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                  <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b pb-3 ${darkMode ? 'border-slate-800/80' : 'border-slate-100'}`}>
                     <div>
-                      <span className="text-[10px] font-mono font-bold text-blue-400 tracking-wider uppercase block">
+                      <span className={`text-[10px] font-mono font-bold tracking-wider uppercase block ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>
                         REF NO: {app.referenceNo}
                       </span>
-                      <h4 className="text-base font-extrabold text-white mt-0.5">{isSoloParentEdu ? 'Solo Parent Educational Assistance Program' : (app.serviceName || '').replace(/\bNieto\s*/gi, '')}</h4>
+                      <h4 className={`text-base font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{isSoloParentEdu ? 'Solo Parent Educational Assistance Program' : (app.serviceName || '').replace(/\bNieto\s*/gi, '')}</h4>
                     </div>
 
                     <div className="flex items-center gap-2">
@@ -749,27 +763,27 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
 
                   {/* Summary Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-                    <div className="p-3 rounded-xl bg-[#080f1e] border border-slate-800 space-y-1">
-                      <span className="text-slate-400 text-[10px] font-semibold uppercase block">Applicant Info</span>
-                      <div className="font-bold text-white">{name}</div>
-                      <div className="text-slate-400 text-[11px] font-mono space-y-0.5">
+                    <div className={`p-3 rounded-xl border space-y-1 ${darkMode ? 'bg-[#080f1e] border-slate-800' : 'bg-slate-50 border-slate-200/80'}`}>
+                      <span className={`text-[10px] font-semibold uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Applicant Info</span>
+                      <div className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{name}</div>
+                      <div className={`text-[11px] font-mono space-y-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                         <div>Filed: {app.dateSubmitted}</div>
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-[#080f1e] border border-slate-800 space-y-1">
-                      <span className="text-slate-400 text-[10px] font-semibold uppercase block">Processing Office</span>
-                      <div className="font-bold text-slate-200">
+                    <div className={`p-3 rounded-xl border space-y-1 ${darkMode ? 'bg-[#080f1e] border-slate-800' : 'bg-slate-50 border-slate-200/80'}`}>
+                      <span className={`text-[10px] font-semibold uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Processing Office</span>
+                      <div className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                         Quezon City Social Services Development Department
                       </div>
-                      <div className="text-slate-400 text-[11px]">
+                      <div className={`text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                         QC Hall Building
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-[#080f1e] border border-slate-800 space-y-1">
-                      <span className="text-slate-400 text-[10px] font-semibold uppercase block">Benefit Entitlement</span>
-                      <div className="font-bold text-amber-400">
+                    <div className={`p-3 rounded-xl border space-y-1 ${darkMode ? 'bg-[#080f1e] border-slate-800' : 'bg-slate-50 border-slate-200/80'}`}>
+                      <span className={`text-[10px] font-semibold uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Benefit Entitlement</span>
+                      <div className={`font-bold ${darkMode ? 'text-amber-400' : 'text-amber-600'}`}>
                         {isCwProtection
                           ? 'Child Protection & Case Intake Services (Non-Financial)'
                           : isChildEdu
@@ -788,7 +802,7 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
                           ? 'Free Vocational Training & Orientation'
                           : (app.amountOrType || 'Financial Assistance Grant')}
                       </div>
-                      <div className="text-slate-400 text-[11px]">
+                      <div className={`text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                         {isAics ? 'Official Guarantee Letter (Non-Cash)' : 'Official City Welfare Assistance'}
                       </div>
                     </div>
@@ -796,13 +810,13 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
 
                   {/* ACTIVE PAYOUT CARD (STEP 5) */}
                   {isPayoutScheduled && (isSoloParent || isSoloParentEdu || isChildEdu || isLivelihood || isPwd || isSenior) && (
-                    <div className="p-5 rounded-2xl bg-purple-950/40 border border-purple-500/50 space-y-3 shadow-lg">
-                      <div className="flex items-center justify-between border-b border-purple-800/60 pb-2">
-                        <span className="text-xs font-black uppercase text-purple-300 tracking-wider flex items-center gap-1.5">
+                    <div className={`p-5 rounded-2xl border space-y-3 shadow-lg ${darkMode ? 'bg-purple-950/40 border-purple-500/50' : 'bg-purple-50/70 border-purple-200'}`}>
+                      <div className={`flex items-center justify-between border-b pb-2 ${darkMode ? 'border-purple-800/60' : 'border-purple-200'}`}>
+                        <span className={`text-xs font-black uppercase tracking-wider flex items-center gap-1.5 ${darkMode ? 'text-purple-300' : 'text-purple-800'}`}>
                           <Award className="w-4 h-4 text-purple-400" />
                           <span>ACTIVE PAYOUT CARD ({isChildEdu ? 'FIXED ₱5,000 EDUCATIONAL GRANT (CHILDREN & YOUTH)' : isSoloParentEdu ? 'FIXED SOLO PARENT EDUCATIONAL GRANT' : isLivelihood ? '₱15,000 LIVELIHOOD CAPITAL GRANT' : isPwd ? '₱1,500 PWD QUARTERLY CASH PENSION' : isSenior ? '₱3,000 SENIOR CITIZEN CASH GRANT' : 'FIXED SOLO PARENT CASH SUBSIDY'})</span>
                         </span>
-                        <span className="font-mono text-xs font-bold text-purple-400 bg-purple-900/60 px-2.5 py-0.5 rounded-lg">
+                        <span className={`font-mono text-xs font-bold px-2.5 py-0.5 rounded-lg ${darkMode ? 'text-purple-400 bg-purple-900/60' : 'text-purple-700 bg-purple-100'}`}>
                           STATUS: PAYOUT SCHEDULED
                         </span>
                       </div>
@@ -810,21 +824,21 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                         <div>
                           <span className="text-slate-400 text-[10px] uppercase font-bold block">MATATANGGAP:</span>
-                          <span className="text-base font-extrabold text-emerald-400">{(isSoloParentEdu || isChildEdu) ? '₱5,000.00 FIXED' : isLivelihood ? '₱15,000.00 FIXED' : isPwd ? '₱1,500.00 FIXED' : isSenior ? '₱3,000.00 FIXED' : '₱3,000.00 FIXED'}</span>
+                          <span className={`text-base font-extrabold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>{(isSoloParentEdu || isChildEdu) ? '₱5,000.00 FIXED' : isLivelihood ? '₱15,000.00 FIXED' : isPwd ? '₱1,500.00 FIXED' : isSenior ? '₱3,000.00 FIXED' : '₱3,000.00 FIXED'}</span>
                         </div>
                         <div>
                           <span className="text-slate-400 text-[10px] uppercase font-bold block">PETSA & ORAS:</span>
-                          <span className="font-extrabold text-white">{payoutDateFormatted} • {payoutTimeFormatted}</span>
+                          <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{payoutDateFormatted} • {payoutTimeFormatted}</span>
                         </div>
                         <div>
                           <span className="text-slate-400 text-[10px] uppercase font-bold block">LUGAR NG CLAIM:</span>
-                          <span className="font-bold text-slate-200">
+                          <span className={`font-bold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                             {isSenior ? 'OSCA Desk / QC Hall Cashier' : isPwd ? 'PDAO Desk / QC Hall Cashier' : 'Quezon City Hall Cashier / SSDD Area'}
                           </span>
                         </div>
                         <div>
                           <span className="text-slate-400 text-[10px] uppercase font-bold block">DADALHIN:</span>
-                          <span className="font-bold text-amber-300">
+                          <span className={`font-bold ${darkMode ? 'text-amber-300' : 'text-amber-700'}`}>
                             {isChildEdu
                               ? 'School ID / Enrollment Certificate & Parent Valid ID'
                               : isPwd 
@@ -845,14 +859,14 @@ export const DisbursementView: React.FC<DisbursementViewProps> = ({
             })}
           </div>
         ) : (
-          <div className="bg-[#0e1726] border border-slate-800/90 rounded-2xl p-16 text-center shadow-xl flex flex-col items-center justify-center space-y-3">
-            <div className="p-3.5 rounded-2xl bg-[#121c2e] border border-slate-800 text-slate-400">
+          <div className={`border rounded-2xl p-16 text-center shadow-xl flex flex-col items-center justify-center space-y-3 ${darkMode ? 'bg-[#0e1726] border-slate-800/90' : 'bg-white border-slate-200'}`}>
+            <div className={`p-3.5 rounded-2xl border ${darkMode ? 'bg-[#121c2e] border-slate-800 text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
               <FileText className="w-8 h-8 stroke-[1.5]" />
             </div>
-            <h4 className="text-base font-extrabold text-white">
+            <h4 className={`text-base font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
               {activeViewTab === 'ACTIVE' ? 'No active financial aid applications' : 'No application history found'}
             </h4>
-            <p className="text-xs text-slate-400 max-w-sm">
+            <p className={`text-xs max-w-sm ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
               {activeViewTab === 'ACTIVE'
                 ? 'Applications currently being reviewed or scheduled will appear here.'
                 : 'Completed or archived financial subsidy applications will be stored here.'}
