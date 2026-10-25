@@ -33,7 +33,9 @@ interface DisbursementViewProps {
 
 const formatTo12Hour = (timeStr: string) => {
   if (!timeStr) return '';
-  const [hoursStr, minutesStr] = timeStr.split(':');
+  const trimmed = String(timeStr).trim();
+  if (/am|pm/i.test(trimmed)) return trimmed;
+  const [hoursStr, minutesStr] = trimmed.split(':');
   let hours = parseInt(hoursStr, 10);
   if (isNaN(hours)) return timeStr;
   const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -292,13 +294,14 @@ const getSlipConfig = (app: ApplicationRecord) => {
     (app as any).payout_date || 
     'Oct 8, 2026';
 
-  const schedTime = 
+  const rawSchedTime = 
     (app as any).appointmentTime || 
     (app as any).appointment_time || 
     (app as any).scheduledPayoutTime || 
     (app as any).scheduled_payout_time || 
     (app as any).payout_time || 
     '09:00 AM';
+  const schedTime = formatTo12Hour(rawSchedTime);
 
   return {
     title,

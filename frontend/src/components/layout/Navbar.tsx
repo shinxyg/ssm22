@@ -19,6 +19,20 @@ interface NavbarProps {
   isSidebarOpen?: boolean;
 }
 
+const formatTo12Hour = (timeStr?: string) => {
+  if (!timeStr) return '';
+  const trimmed = String(timeStr).trim();
+  if (/am|pm/i.test(trimmed)) return trimmed;
+  const [hoursStr, minutesStr] = trimmed.split(':');
+  let hours = parseInt(hoursStr, 10);
+  if (isNaN(hours)) return trimmed;
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  const minutes = minutesStr ? minutesStr.padStart(2, '0') : '00';
+  return `${hours}:${minutes} ${ampm}`;
+};
+
 // Isolated ClockDisplay component so 1-second ticks DO NOT re-render Navbar or Main Page
 const ClockDisplay: React.FC<{ darkMode: boolean }> = React.memo(({ darkMode }) => {
   const [timeStr, setTimeStr] = useState<string>('');
@@ -238,12 +252,13 @@ export const Navbar: React.FC<NavbarProps> = ({
       // Step 3: Interview Scheduled
       if (st.includes('INTERVIEW SCHEDULED') || st.includes('APPROVED BY OSCA') || st.includes('PAYOUT') || st.includes('RELEASED') || st.includes('COMPLETED')) {
         const apptDate = app.appointmentDate || (app as any).appointmentDetails?.appointmentDate || 'QC Hall SSDD Desk';
-        const apptTime = app.appointmentTime || (app as any).appointmentDetails?.appointmentTime || '';
+        const rawApptTime = app.appointmentTime || (app as any).appointmentDetails?.appointmentTime || '';
+        const apptTime = formatTo12Hour(rawApptTime);
         list.unshift({
           id: `${ref}-step3`,
           title: 'Interview Scheduled',
           message: isSenior
-            ? `QC Govt: Scheduled OSCA interview at QC Hall on ${apptDate} ${apptTime}.`
+            ? `QC Govt: Scheduled OSCA interview at QC Hall on ${apptDate}${apptTime ? ` ${apptTime}` : ''}.`
             : `Interview Scheduled: Your appointment for ${serv} (Ref: ${ref}) is set at QC Hall SSDD Desk.`,
           time: 'Scheduled',
           type: 'info'
@@ -274,13 +289,14 @@ export const Navbar: React.FC<NavbarProps> = ({
       // Step 5: Payout Scheduled
       if (st.includes('PAYOUT SCHEDULED') || st.includes('RELEASED') || st.includes('COMPLETED')) {
         const payDate = (app as any).scheduledPayoutDate || app.appointmentDate || 'Scheduled Date';
-        const payTime = (app as any).scheduledPayoutTime || '';
+        const rawPayTime = (app as any).scheduledPayoutTime || '';
+        const payTime = formatTo12Hour(rawPayTime);
         list.unshift({
           id: `${ref}-step5`,
           title: 'Payout Scheduled',
           message: isSenior
-            ? `QC Govt: Scheduled your ₱3,000 Payout on ${payDate} ${payTime} at QC Hall OSCA Desk.`
-            : `Scheduled your financial payout for ${serv} on ${payDate} ${payTime}.`,
+            ? `QC Govt: Scheduled your ₱3,000 Payout on ${payDate}${payTime ? ` ${payTime}` : ''} at QC Hall OSCA Desk.`
+            : `Scheduled your financial payout for ${serv} on ${payDate}${payTime ? ` ${payTime}` : ''}.`,
           time: 'Payout Scheduled',
           type: 'info'
         });
