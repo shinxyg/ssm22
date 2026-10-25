@@ -970,24 +970,38 @@ export const LoginView: React.FC<LoginViewProps> = ({
             </div>
 
             {/* Email Verified Toast Badge */}
-            <div className="mb-4 p-2.5 bg-emerald-950/40 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs font-semibold flex items-center justify-between">
+            <div className={`mb-4 p-2.5 border rounded-xl text-xs font-semibold flex items-center justify-between ${
+              darkMode
+                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
+                : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+            }`}>
               <div className="flex items-center gap-2 truncate">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 <span className="truncate">Email: <strong>{resetEmail}</strong></span>
               </div>
-              <span className="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full uppercase font-bold shrink-0">Verified</span>
+              <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase font-bold shrink-0 ${
+                darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
+              }`}>Verified</span>
             </div>
 
             {errorMessage && (
-              <div className="mb-4 p-3 bg-red-950/50 border border-red-500/40 rounded-xl text-red-300 text-xs font-semibold flex items-center gap-2">
+              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                darkMode
+                  ? 'bg-red-950/50 border-red-500/40 text-red-300'
+                  : 'bg-red-50 border-red-200 text-red-700'
+              }`}>
                 <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
             )}
 
             {successMessage && (
-              <div className="mb-4 p-3 bg-emerald-950/50 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                darkMode
+                  ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              }`}>
+                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 <span>{successMessage}</span>
               </div>
             )}
@@ -1168,9 +1182,24 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
             {/* Error Message */}
             {errorMessage && (
-              <div className="mb-5 p-3.5 bg-red-950/60 border border-red-500/40 rounded-2xl text-red-300 text-xs font-semibold flex items-center gap-2.5 shadow-sm animate-in fade-in">
+              <div className={`mb-5 p-3.5 border rounded-2xl text-xs font-semibold flex items-center gap-2.5 shadow-sm animate-in fade-in ${
+                darkMode
+                  ? 'bg-red-950/60 border-red-500/40 text-red-300'
+                  : 'bg-red-50 border-red-200 text-red-700'
+              }`}>
                 <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 animate-pulse" />
                 <span>{errorMessage}</span>
+              </div>
+            )}
+
+            {successMessage && (
+              <div className={`mb-5 p-3.5 border rounded-2xl text-xs font-semibold flex items-center gap-2.5 shadow-sm animate-in fade-in ${
+                darkMode
+                  ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              }`}>
+                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+                <span>{successMessage}</span>
               </div>
             )}
 
@@ -1200,7 +1229,9 @@ export const LoginView: React.FC<LoginViewProps> = ({
                       onPaste={handleOtpPaste}
                       className={`w-11 h-14 sm:w-12 sm:h-14 text-center text-2xl font-mono font-bold border rounded-xl transition-all outline-none ${
                         digit
-                          ? 'bg-blue-950/80 border-blue-500 text-blue-300'
+                          ? darkMode
+                            ? 'bg-blue-950/80 border-blue-500 text-blue-300'
+                            : 'bg-blue-50 border-blue-500 text-blue-700'
                           : darkMode
                           ? 'bg-[#101b33] border-slate-700/80 text-white focus:border-blue-400 focus:bg-blue-950/40'
                           : 'bg-white border-slate-300 text-slate-900 focus:border-blue-500'
@@ -1219,8 +1250,12 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   disabled={timerSeconds > 0 || isResending}
                   className={`w-1/2 py-3 px-4 border rounded-xl text-xs font-bold transition-all h-11 flex items-center justify-center ${
                     timerSeconds > 0 || isResending
-                      ? 'bg-slate-800/40 border-slate-700/40 text-slate-500 cursor-not-allowed'
-                      : 'bg-slate-800 hover:bg-slate-700 border-slate-600 text-white cursor-pointer active:scale-98 shadow-sm'
+                      ? darkMode
+                        ? 'bg-slate-800/40 border-slate-700/40 text-slate-500 cursor-not-allowed'
+                        : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
+                      : darkMode
+                        ? 'bg-slate-800 hover:bg-slate-700 border-slate-600 text-white cursor-pointer active:scale-98 shadow-sm'
+                        : 'bg-slate-200 hover:bg-slate-300 border-slate-300 text-slate-800 cursor-pointer active:scale-98 shadow-sm'
                   }`}
                 >
                   {isResending ? 'Resending...' : timerSeconds > 0 ? `Resend (${Math.floor(timerSeconds / 60)}:${(timerSeconds % 60).toString().padStart(2, '0')})` : 'Resend Code'}
@@ -1290,15 +1325,23 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
             {/* Alert Messages */}
             {errorMessage && (
-              <div className="mb-4 p-3 bg-red-950/50 border border-red-500/40 rounded-xl text-red-300 text-xs font-semibold flex items-center gap-2">
+              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                darkMode
+                  ? 'bg-red-950/50 border-red-500/40 text-red-300'
+                  : 'bg-red-50 border-red-200 text-red-700'
+              }`}>
                 <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
             )}
 
             {successMessage && (
-              <div className="mb-4 p-3 bg-emerald-950/50 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                darkMode
+                  ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              }`}>
+                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 <span>{successMessage}</span>
               </div>
             )}
@@ -1344,7 +1387,9 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   }}
                   className={`border rounded-xl p-3 flex items-center justify-between select-none cursor-pointer transition-all ${
                     isCaptchaChecked 
-                      ? 'bg-emerald-950/30 border-emerald-500/50 shadow-sm' 
+                      ? darkMode
+                        ? 'bg-emerald-950/30 border-emerald-500/50 shadow-sm'
+                        : 'bg-emerald-50 border-emerald-300 shadow-sm'
                       : darkMode 
                         ? 'bg-[#091122] border-slate-700/80 hover:border-blue-500/60' 
                         : 'bg-white border-slate-300 hover:border-blue-500/60'
@@ -1431,42 +1476,68 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
             {/* Alert Messages */}
             {errorMessage && (
-              <div className="mb-4 p-3 bg-red-950/50 border border-red-500/40 rounded-xl text-red-300 text-xs font-semibold flex items-center gap-2">
+              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                darkMode
+                  ? 'bg-red-950/50 border-red-500/40 text-red-300'
+                  : 'bg-red-50 border-red-200 text-red-700'
+              }`}>
                 <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
                 <span>{errorMessage}</span>
               </div>
             )}
 
             {successMessage && (
-              <div className="mb-4 p-3 bg-emerald-950/50 border border-emerald-500/40 rounded-xl text-emerald-300 text-xs font-semibold flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                darkMode
+                  ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300'
+                  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              }`}>
+                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                 <span>{successMessage}</span>
               </div>
             )}
 
             {/* Lockout Screen Box (English, Clean Text, Compact) */}
             {isLocked && (
-              <div className="mb-3.5 p-3 rounded-xl border border-red-500/40 bg-red-950/30 text-left space-y-2">
+              <div className={`mb-3.5 p-3 rounded-xl border text-left space-y-2 ${
+                darkMode
+                  ? 'border-red-500/40 bg-red-950/30'
+                  : 'border-red-200 bg-red-50'
+              }`}>
                 <div className="flex items-center justify-between">
-                  <h3 className="text-[11px] font-extrabold text-red-400 tracking-wider uppercase">
+                  <h3 className={`text-[11px] font-extrabold tracking-wider uppercase ${
+                    darkMode ? 'text-red-400' : 'text-red-600'
+                  }`}>
                     ACCOUNT TEMPORARILY LOCKED
                   </h3>
-                  <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
+                    darkMode
+                      ? 'bg-red-500/20 text-red-300 border-red-500/30'
+                      : 'bg-red-100 text-red-700 border-red-200'
+                  }`}>
                     Stage {lockoutStage} of 4
                   </span>
                 </div>
 
-                <p className="text-[10px] text-slate-300 leading-snug">
+                <p className={`text-[10px] leading-snug ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                   {lockoutStage >= 4
                     ? 'Maximum login attempts exceeded. Access locked for 24 hours.'
                     : 'Too many failed attempts. Login is temporarily paused.'}
                 </p>
 
-                <div className="py-2 px-3 rounded-lg bg-slate-900/90 border border-slate-700/80 text-center space-y-0.5">
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                <div className={`py-2 px-3 rounded-lg border text-center space-y-0.5 ${
+                  darkMode
+                    ? 'bg-slate-900/90 border-slate-700/80'
+                    : 'bg-white border-red-200'
+                }`}>
+                  <div className={`text-[9px] font-bold uppercase tracking-wider ${
+                    darkMode ? 'text-slate-400' : 'text-slate-500'
+                  }`}>
                     LOCKOUT COUNTDOWN
                   </div>
-                  <div className="text-xl font-mono font-extrabold text-red-400 tracking-wider">
+                  <div className={`text-xl font-mono font-extrabold tracking-wider ${
+                    darkMode ? 'text-red-400' : 'text-red-600'
+                  }`}>
                     {formatCountdown(remainingSeconds)}
                   </div>
                   <div className="flex justify-center gap-5 text-[8px] font-bold text-slate-500 uppercase tracking-widest">
@@ -1476,7 +1547,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   </div>
                 </div>
 
-                <p className="text-[9px] text-slate-400 text-center leading-tight">
+                <p className={`text-[9px] text-center leading-tight ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                   Access automatically restores when countdown reaches zero.
                 </p>
               </div>
@@ -1504,7 +1575,9 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   placeholder="name@email.com"
                   className={`w-full px-3.5 py-3 border rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
                     isLocked
-                      ? 'bg-[#09101f] border-slate-800 text-slate-500 cursor-not-allowed opacity-70'
+                      ? darkMode
+                        ? 'bg-[#09101f] border-slate-800 text-slate-500 cursor-not-allowed opacity-70'
+                        : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-70'
                       : darkMode 
                         ? 'bg-[#101c38] border-slate-700/80 text-white placeholder-slate-500' 
                         : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
@@ -1545,7 +1618,9 @@ export const LoginView: React.FC<LoginViewProps> = ({
                     placeholder="••••••••••••"
                     className={`w-full px-3.5 py-3 border rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all pr-10 ${
                       isLocked
-                        ? 'bg-[#09101f] border-slate-800 text-slate-500 cursor-not-allowed opacity-70'
+                        ? darkMode
+                          ? 'bg-[#09101f] border-slate-800 text-slate-500 cursor-not-allowed opacity-70'
+                          : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-70'
                         : darkMode 
                           ? 'bg-[#101c38] border-slate-700/80 text-white placeholder-slate-500' 
                           : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
@@ -1804,13 +1879,21 @@ export const LoginView: React.FC<LoginViewProps> = ({
               </div>
 
               {unlockModalError && (
-                <div className="mb-3 p-2.5 rounded-xl border border-red-500/50 bg-red-950/40 text-red-300 text-xs font-semibold text-center">
+                <div className={`mb-3 p-2.5 rounded-xl border text-xs font-semibold text-center ${
+                  darkMode
+                    ? 'border-red-500/50 bg-red-950/40 text-red-300'
+                    : 'border-red-200 bg-red-50 text-red-700'
+                }`}>
                   {unlockModalError}
                 </div>
               )}
 
               {unlockModalSuccess && (
-                <div className="mb-3 p-2.5 rounded-xl border border-emerald-500/50 bg-emerald-950/40 text-emerald-300 text-xs font-semibold text-center">
+                <div className={`mb-3 p-2.5 rounded-xl border text-xs font-semibold text-center ${
+                  darkMode
+                    ? 'border-emerald-500/50 bg-emerald-950/40 text-emerald-300'
+                    : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                }`}>
                   {unlockModalSuccess}
                 </div>
               )}
