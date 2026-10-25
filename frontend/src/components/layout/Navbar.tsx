@@ -147,6 +147,54 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
   }, []);
 
+  // Track unseen other device logins for Profile Red Dot indicator
+  const [hasUnseenOtherDevices, setHasUnseenOtherDevices] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkOtherDevices = async () => {
+      try {
+        const saved = localStorage.getItem('currentUser');
+        const parsed = saved ? JSON.parse(saved) : null;
+        const targetEmail = parsed?.email || (userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
+        const currentToken = parsed?.session_token || '';
+
+        const res = await fetch(`${API_BASE_URL}/api/user/sessions?email=${encodeURIComponent(targetEmail)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.success || !Array.isArray(data.sessions)) return;
+
+        const sessionsList = data.sessions;
+        const activeCurrent = sessionsList.find((s: any) => currentToken ? s.session_token === currentToken : false) || sessionsList[0];
+        if (!activeCurrent) {
+          setHasUnseenOtherDevices(false);
+          return;
+        }
+
+        const otherSessions = sessionsList.filter((s: any) => s.session_token !== activeCurrent.session_token && s.id !== activeCurrent.id);
+        const seenRaw = localStorage.getItem('govserve_seen_device_tokens');
+        const seenTokens: string[] = seenRaw ? JSON.parse(seenRaw) : [];
+
+        const unseen = otherSessions.some((s: any) => {
+          const tokenKey = s.session_token || String(s.id);
+          return !seenTokens.includes(tokenKey);
+        });
+        setHasUnseenOtherDevices(unseen);
+      } catch {
+        // Ignore network errors silently
+      }
+    };
+
+    checkOtherDevices();
+    const interval = setInterval(checkOtherDevices, 8000);
+    window.addEventListener('govserve_devices_seen', checkOtherDevices);
+    window.addEventListener('storage', checkOtherDevices);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('govserve_devices_seen', checkOtherDevices);
+      window.removeEventListener('storage', checkOtherDevices);
+    };
+  }, [userRole]);
+
   const computedCitizenName = useMemo(() => {
     if (userName) return userName;
     if (currentUserData) {
@@ -545,8 +593,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => setShowProfileMenu(!showProfileMenu)}
             className={`flex items-center gap-2.5 px-2.5 py-1 rounded-xl outline-none transition-all cursor-pointer select-none group border ${
               showProfileMenu 
-                ? 'bg-[#0f1b33] border-blue-500/40' 
-                : 'bg-transparent hover:bg-[#0f1b33]/60 border-transparent'
+                ? darkMode
+                  ? 'bg-[#0f1b33] border-blue-500/40'
+                  : 'bg-slate-100 border-blue-300 shadow-sm'
+                : darkMode
+                ? 'bg-transparent hover:bg-[#0f1b33]/60 border-transparent'
+                : 'bg-transparent hover:bg-slate-100 border-transparent'
             }`}
           >
             {/* Title & Subtitle text on the left */}
@@ -564,14 +616,17 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Avatar Squircle Badge on the right (AD / JL) */}
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-sky-400 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
+            <div className="relative w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-sky-400 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
               {displayInitials}
+              {hasUnseenOtherDevices && (
+                <span className={`absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 animate-pulse ${darkMode ? 'ring-[#070e1b]' : 'ring-white'}`} />
+              )}
             </div>
           </button>
 
           {/* Profile Dropdown Menu (Compact, No Shadow, No Line) */}
           {showProfileMenu && (
-            <div className={`absolute right-0 mt-1.5 w-44 rounded-xl p-1.5 z-50 border animate-in fade-in slide-in-from-top-2 ${
+            <div className={`absolute right-0 mt-1.5 w-44 rounded-xl p-1.5 z-50 border shadow-xl animate-in fade-in slide-in-from-top-2 ${
               darkMode ? 'bg-[#091122] border-slate-700/80 text-white' : 'bg-white border-slate-200 text-slate-800'
             }`}>
               <button
@@ -587,7 +642,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 }`}
               >
                 <User className="w-3.5 h-3.5 text-slate-400" />
-                <span>{t('nav.profile')}</span>
+                <span className="flex-1 text-left">{t('nav.profile')}</span>
+                {hasUnseenOtherDevices && (
+                  <span className="w-2 h-2 bg-rose-500 rounded-full shrink-0 animate-pulse" />
+                )}
               </button>
 
               <button

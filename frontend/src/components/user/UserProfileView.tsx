@@ -273,11 +273,53 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     }
   }, []);
 
+  // Track seen other-device session tokens in localStorage
+  const [seenDeviceTokens, setSeenDeviceTokens] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('govserve_seen_device_tokens');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const activeCurrentSession = sessions.find(s => currentSessionToken ? s.session_token === currentSessionToken : false) || sessions[0];
+  const otherDeviceSessions = activeCurrentSession
+    ? sessions.filter(s => s.session_token !== activeCurrentSession.session_token && s.id !== activeCurrentSession.id)
+    : [];
+
+  const hasUnseenOtherDevices = otherDeviceSessions.some(s => {
+    const tokenKey = s.session_token || String(s.id);
+    return !seenDeviceTokens.includes(tokenKey);
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchSessions();
+    }, 8000);
+    return () => clearInterval(interval);
+  }, [email]);
+
   useEffect(() => {
     if (activeTab === 'devices') {
       fetchSessions();
     }
   }, [activeTab]);
+
+  // Mark all other device sessions as seen once the user opens the Devices & History tab
+  useEffect(() => {
+    if (activeTab === 'devices' && otherDeviceSessions.length > 0) {
+      const currentOtherKeys = otherDeviceSessions.map(s => s.session_token || String(s.id));
+      const merged = Array.from(new Set([...seenDeviceTokens, ...currentOtherKeys]));
+      if (merged.length !== seenDeviceTokens.length) {
+        setSeenDeviceTokens(merged);
+        try {
+          localStorage.setItem('govserve_seen_device_tokens', JSON.stringify(merged));
+          window.dispatchEvent(new Event('govserve_devices_seen'));
+        } catch {}
+      }
+    }
+  }, [activeTab, sessions]);
 
   const handlePasswordSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -422,13 +464,16 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                   key={tab.id}
                   type="button"
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-2.5 sm:py-3 px-3 sm:px-5 text-xs font-extrabold transition-all border-b-2 whitespace-nowrap cursor-pointer shrink-0 ${
+                  className={`py-2.5 sm:py-3 px-3 sm:px-5 text-xs font-extrabold transition-all border-b-2 whitespace-nowrap cursor-pointer shrink-0 inline-flex items-center gap-1.5 ${
                     isActive
                       ? darkMode ? 'border-blue-500 text-blue-400 bg-blue-950/30' : 'border-blue-600 text-blue-600 bg-blue-50'
                       : darkMode ? 'border-transparent text-slate-400 hover:text-slate-200' : 'border-transparent text-slate-500 hover:text-slate-900'
                   }`}
                 >
-                  {tab.label}
+                  <span>{tab.label}</span>
+                  {tab.id === 'devices' && hasUnseenOtherDevices && (
+                    <span className="w-2 h-2 bg-rose-500 rounded-full shrink-0 animate-pulse" />
+                  )}
                 </button>
               );
             })}
