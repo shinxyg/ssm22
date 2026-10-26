@@ -337,26 +337,6 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                       )}
                     </div>
 
-                    {/* Access Control Action Button */}
-                    <div className="pt-1">
-                      <button
-                        type="button"
-                        onClick={() => handleToggleStatus(u)}
-                        disabled={updatingId === u.id}
-                        className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                          u.status === 'Active'
-                            ? darkMode
-                              ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60 active:scale-[0.98]'
-                              : 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100 active:scale-[0.98]'
-                            : darkMode
-                            ? 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60 active:scale-[0.98]'
-                            : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100 active:scale-[0.98]'
-                        } ${updatingId === u.id ? 'opacity-50 pointer-events-none' : ''}`}
-                      >
-                        <Power className="w-3.5 h-3.5" />
-                        <span>{u.status === 'Active' ? 'Deactivate Account' : 'Activate Account'}</span>
-                      </button>
-                    </div>
                   </div>
                 );
               })}
@@ -377,7 +357,6 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                       <th className="px-5 py-3.5">EMAIL & CONTACT</th>
                       <th className="px-5 py-3.5">ROLE</th>
                       <th className="px-5 py-3.5">PRESENCE STATUS</th>
-                      <th className="px-5 py-3.5 text-right">ACCESS CONTROL</th>
                     </tr>
                   </thead>
                   <tbody className={`divide-y font-medium ${
@@ -457,25 +436,6 @@ export const AdminUserView: React.FC<{ darkMode?: boolean }> = ({ darkMode = tru
                           }`}>
                             {u.isOnline ? 'Online' : 'Offline'}
                           </span>
-                        </td>
-                        <td className="px-5 py-4 text-right whitespace-nowrap">
-                          <button
-                            onClick={() => handleToggleStatus(u)}
-                            disabled={updatingId === u.id}
-                            title={u.status === 'Active' ? 'Deactivate Account' : 'Activate Account'}
-                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                              u.status === 'Active'
-                                ? darkMode
-                                  ? 'bg-rose-950/40 border-rose-800/80 text-rose-300 hover:bg-rose-900/60'
-                                  : 'bg-rose-50 border-rose-300 text-rose-700 hover:bg-rose-100'
-                                : darkMode
-                                ? 'bg-emerald-950/40 border-emerald-800/80 text-emerald-300 hover:bg-emerald-900/60'
-                                : 'bg-emerald-50 border-emerald-300 text-emerald-700 hover:bg-emerald-100'
-                            } ${updatingId === u.id ? 'opacity-50 pointer-events-none' : ''}`}
-                          >
-                            <Power className="w-3.5 h-3.5" />
-                            <span>{u.status === 'Active' ? 'Deactivate' : 'Activate'}</span>
-                          </button>
                         </td>
                       </tr>
                     ))}

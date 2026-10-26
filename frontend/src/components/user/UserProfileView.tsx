@@ -708,36 +708,6 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 </div>
               </form>
 
-              {/* Section 3: Danger Zone Box */}
-              <div className={`p-4 sm:p-6 rounded-2xl space-y-4 shadow-lg ${
-                darkMode ? 'bg-red-950/20 border border-red-900/60' : 'bg-red-50/60 border border-red-200'
-              }`}>
-                <div className="flex items-center gap-2 text-red-500 font-extrabold text-sm">
-                  <AlertTriangle className="w-4 h-4 text-red-500" />
-                  <span>Danger Zone</span>
-                </div>
-                <p className={`text-xs leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                  Deactivating your account is a permanent action. All your data will be removed and you will lose access to the portal.
-                </p>
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => alert('Account deactivation link requested.')}
-                    className="w-full sm:w-auto px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl cursor-pointer"
-                  >
-                    Deactivate Account
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => alert('Account deletion confirmation sent to email.')}
-                    className={`w-full sm:w-auto px-6 py-2.5 border font-bold text-xs rounded-xl transition-all cursor-pointer ${
-                      darkMode ? 'border-red-600 text-red-400 hover:bg-red-950/40' : 'border-red-500 text-red-600 hover:bg-red-100'
-                    }`}
-                  >
-                    Delete Account
-                  </button>
-                </div>
-              </div>
             </div>
           ) : activeTab === 'personal' ? (
             /* TAB 2: PERSONAL INFORMATION (Matching Pic 3 for Admin, Resident form for User) */
@@ -822,36 +792,6 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                   </div>
                 </div>
 
-                {/* Danger Zone Box */}
-                <div className={`p-6 rounded-2xl space-y-4 ${
-                  darkMode ? 'bg-red-950/20 border border-red-900/60' : 'bg-red-50/60 border border-red-200'
-                }`}>
-                  <div className="flex items-center gap-2 text-red-500 font-extrabold text-sm">
-                    <AlertTriangle className="w-4 h-4 text-red-500" />
-                    <span>Danger Zone</span>
-                  </div>
-                  <p className={`text-xs leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                    Deactivating your account is a permanent action. All your data will be removed and you will lose access to the portal.
-                  </p>
-                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                    <button
-                      type="button"
-                      onClick={() => alert('Account deactivation requested.')}
-                      className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl cursor-pointer"
-                    >
-                      Deactivate Account
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => alert('Account deletion requested.')}
-                      className={`px-6 py-2.5 border font-bold text-xs rounded-xl transition-all cursor-pointer ${
-                        darkMode ? 'border-red-600 text-red-400 hover:bg-red-950/40' : 'border-red-500 text-red-600 hover:bg-red-100'
-                      }`}
-                    >
-                      Delete Account
-                    </button>
-                  </div>
-                </div>
               </div>
             ) : (
               <div className="space-y-8 max-w-4xl mx-auto">
@@ -1095,36 +1035,6 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 </div>
               </div>
 
-              {/* Danger Zone Box at Bottom */}
-              <div className={`p-6 rounded-2xl space-y-4 shadow-lg ${
-                darkMode ? 'bg-red-950/20 border border-red-900/60' : 'bg-red-50/60 border border-red-200'
-              }`}>
-                <div className="flex items-center gap-2 text-red-500 font-extrabold text-sm">
-                  <AlertTriangle className="w-4 h-4 text-red-500" />
-                  <span>Danger Zone</span>
-                </div>
-                <p className={`text-xs leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                  Deactivating your account is a permanent action. All your data will be removed and you will lose access to the portal.
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => alert('Account deactivation requested.')}
-                    className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl"
-                  >
-                    Deactivate Account
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => alert('Account deletion requested.')}
-                    className={`px-6 py-2.5 border font-bold text-xs rounded-xl transition-all ${
-                      darkMode ? 'border-red-600 text-red-400 hover:bg-red-950/40' : 'border-red-500 text-red-600 hover:bg-red-100'
-                    }`}
-                  >
-                    Delete Account
-                  </button>
-                </div>
-              </div>
               </div>
             )
           ) : activeTab === 'devices' ? (
@@ -1303,36 +1213,6 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 );
               })()}
 
-              {/* Danger Zone Box */}
-              <div className={`p-6 rounded-2xl space-y-4 ${
-                darkMode ? 'bg-red-950/20 border border-red-900/60' : 'bg-red-50/60 border border-red-200'
-              }`}>
-                <div className="flex items-center gap-2 text-red-500 font-extrabold text-sm">
-                  <AlertTriangle className="w-4 h-4 text-red-500" />
-                  <span>Danger Zone</span>
-                </div>
-                <p className={`text-xs leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                  Deactivating your account is a permanent action. All your data will be removed and you will lose access to the portal.
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => alert('Account deactivation requested.')}
-                    className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl"
-                  >
-                    Deactivate Account
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => alert('Account deletion requested.')}
-                    className={`px-6 py-2.5 border font-bold text-xs rounded-xl transition-all ${
-                      darkMode ? 'border-red-600 text-red-400 hover:bg-red-950/40' : 'border-red-500 text-red-600 hover:bg-red-100'
-                    }`}
-                  >
-                    Delete Account
-                  </button>
-                </div>
-              </div>
             </div>
           ) : (
             /* TAB 4: LANGUAGE */
@@ -1371,36 +1251,6 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 })}
               </div>
 
-              {/* Danger Zone Box */}
-              <div className={`p-6 rounded-2xl space-y-4 ${
-                darkMode ? 'bg-red-950/20 border border-red-900/60' : 'bg-red-50/60 border border-red-200'
-              }`}>
-                <div className="flex items-center gap-2 text-red-500 font-extrabold text-sm">
-                  <AlertTriangle className="w-4 h-4 text-red-500" />
-                  <span>Danger Zone</span>
-                </div>
-                <p className={`text-xs leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                  Deactivating your account is a permanent action. All your data will be removed and you will lose access to the portal.
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => alert('Account deactivation requested.')}
-                    className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-xl"
-                  >
-                    Deactivate Account
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => alert('Account deletion requested.')}
-                    className={`px-6 py-2.5 border font-bold text-xs rounded-xl transition-all ${
-                      darkMode ? 'border-red-600 text-red-400 hover:bg-red-950/40' : 'border-red-500 text-red-600 hover:bg-red-100'
-                    }`}
-                  >
-                    Delete Account
-                  </button>
-                </div>
-              </div>
             </div>
           )}
         </div>
