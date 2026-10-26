@@ -61,7 +61,44 @@ export const LoginView: React.FC<LoginViewProps> = ({
   onBackToHome,
   darkMode = false,
 }) => {
-  const [viewMode, setViewMode] = useState<'login' | 'forgot_password' | 'verify_code' | 'reset_password'>('login');
+  const [viewMode, setViewMode] = useState<'login' | 'forgot_password' | 'verify_code' | 'reset_password'>(() => {
+    try {
+      const path = (window.location.pathname || '').toLowerCase();
+      if (path.endsWith('/forgot-password')) return 'forgot_password';
+      if (path.endsWith('/verify-code')) return 'verify_code';
+      if (path.endsWith('/reset-password')) return 'reset_password';
+    } catch {}
+    return 'login';
+  });
+
+  // Sync Login / Forgot Password viewMode with browser URL bar
+  useEffect(() => {
+    try {
+      const modeToPath: Record<string, string> = {
+        'login': '/login',
+        'forgot_password': '/login/forgot-password',
+        'verify_code': '/login/verify-code',
+        'reset_password': '/login/reset-password',
+      };
+      const targetPath = modeToPath[viewMode] || '/login';
+      const currentPath = (window.location.pathname || '').replace(/\/+$/, '');
+      if (currentPath !== targetPath) {
+        window.history.pushState(null, '', targetPath);
+      }
+    } catch {}
+  }, [viewMode]);
+
+  useEffect(() => {
+    const handleLoginPopState = () => {
+      const path = (window.location.pathname || '').toLowerCase();
+      if (path.endsWith('/forgot-password')) setViewMode('forgot_password');
+      else if (path.endsWith('/verify-code')) setViewMode('verify_code');
+      else if (path.endsWith('/reset-password')) setViewMode('reset_password');
+      else if (path.endsWith('/login')) setViewMode('login');
+    };
+    window.addEventListener('popstate', handleLoginPopState);
+    return () => window.removeEventListener('popstate', handleLoginPopState);
+  }, []);
   
   // Helper to read initial lockout from localStorage so there is zero flicker on refresh
   const getInitialLockout = () => {

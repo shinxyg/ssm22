@@ -36,7 +36,44 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
   darkMode = true, 
   userRole = 'user' 
 }) => {
-  const [activeTab, setActiveTab] = useState<'account' | 'personal' | 'devices' | 'language'>('account');
+  const [activeTab, setActiveTab] = useState<'account' | 'personal' | 'devices' | 'language'>(() => {
+    try {
+      const path = (window.location.pathname || '').toLowerCase();
+      if (path.endsWith('/personal')) return 'personal';
+      if (path.endsWith('/devices')) return 'devices';
+      if (path.endsWith('/language')) return 'language';
+    } catch {}
+    return 'account';
+  });
+
+  // Sync User Profile inner tab with browser URL bar
+  useEffect(() => {
+    try {
+      const basePath = userRole === 'admin' ? '/admin/profile' : '/portal/profile';
+      const targetPath = `${basePath}/${activeTab}`;
+      const currentPath = (window.location.pathname || '').replace(/\/+$/, '');
+      if (currentPath !== targetPath) {
+        if (currentPath === basePath) {
+          window.history.replaceState(null, '', targetPath);
+        } else {
+          window.history.pushState(null, '', targetPath);
+        }
+      }
+    } catch {}
+  }, [activeTab, userRole]);
+
+  // Support browser Back/Forward inside User Profile tabs
+  useEffect(() => {
+    const handleProfilePopState = () => {
+      const path = (window.location.pathname || '').toLowerCase();
+      if (path.endsWith('/personal')) setActiveTab('personal');
+      else if (path.endsWith('/devices')) setActiveTab('devices');
+      else if (path.endsWith('/language')) setActiveTab('language');
+      else if (path.endsWith('/account') || path.endsWith('/profile')) setActiveTab('account');
+    };
+    window.addEventListener('popstate', handleProfilePopState);
+    return () => window.removeEventListener('popstate', handleProfilePopState);
+  }, []);
   const { language, setLanguage, t } = useLanguage();
 
 

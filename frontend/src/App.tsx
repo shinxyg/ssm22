@@ -63,6 +63,99 @@ import {
   LogIn
 } from 'lucide-react';
 
+
+const USER_TAB_TO_PATH: Record<string, string> = {
+  'landing': '/',
+  'login': '/login',
+  'help-guide': '/portal/help-guide',
+  'aics': '/portal/aics',
+  'aics-medical': '/portal/aics/medical',
+  'aics-funeral': '/portal/aics/funeral',
+  'pwd': '/portal/pwd',
+  'pwd-form': '/portal/pwd/apply',
+  'senior': '/portal/senior-citizen',
+  'senior-form': '/portal/senior-citizen/apply',
+  'soloparent': '/portal/solo-parent',
+  'soloparent-form': '/portal/solo-parent/subsidy',
+  'soloparent-financial-form': '/portal/solo-parent/subsidy',
+  'soloparent-edu-form': '/portal/solo-parent/educational',
+  'childwelfare': '/portal/child-welfare',
+  'childwelfare-form': '/portal/child-welfare/apply',
+  'aics-educational': '/portal/child-welfare/educational',
+  'livelihood': '/portal/livelihood',
+  'livelihood-grants': '/portal/livelihood',
+  'skills-training': '/portal/skills-training',
+  'payout': '/portal/financial-aid',
+  'disbursements': '/portal/financial-aid',
+  'history': '/portal/application-history',
+  'profile': '/portal/profile/account',
+};
+
+const PATH_TO_USER_TAB: Record<string, string> = {
+  '/': 'landing',
+  '/login': 'login',
+  '/login/forgot-password': 'login',
+  '/login/verify-code': 'login',
+  '/login/reset-password': 'login',
+  '/portal': 'help-guide',
+  '/portal/help-guide': 'help-guide',
+  '/portal/aics': 'aics',
+  '/portal/aics/medical': 'aics-medical',
+  '/portal/aics/funeral': 'aics-funeral',
+  '/portal/pwd': 'pwd',
+  '/portal/pwd/apply': 'pwd-form',
+  '/portal/senior-citizen': 'senior',
+  '/portal/senior-citizen/apply': 'senior-form',
+  '/portal/solo-parent': 'soloparent',
+  '/portal/solo-parent/subsidy': 'soloparent-financial-form',
+  '/portal/solo-parent/educational': 'soloparent-edu-form',
+  '/portal/child-welfare': 'childwelfare',
+  '/portal/child-welfare/apply': 'childwelfare-form',
+  '/portal/child-welfare/educational': 'aics-educational',
+  '/portal/livelihood': 'livelihood',
+  '/portal/skills-training': 'skills-training',
+  '/portal/financial-aid': 'payout',
+  '/portal/application-history': 'history',
+  '/portal/profile': 'profile',
+  '/portal/profile/account': 'profile',
+  '/portal/profile/personal': 'profile',
+  '/portal/profile/devices': 'profile',
+  '/portal/profile/language': 'profile',
+};
+
+const ADMIN_TAB_TO_PATH: Record<string, string> = {
+  'reports': '/admin/reports',
+  'aics': '/admin/aics',
+  'pwd-senior': '/admin/pwd-senior',
+  'solo-child': '/admin/solo-child',
+  'livelihood': '/admin/livelihood',
+  'disbursement': '/admin/financial-aid',
+  'beneficiaries': '/admin/beneficiaries',
+  'appointments': '/admin/appointments',
+  'activity': '/admin/activity-log',
+  'users': '/admin/users',
+  'profile': '/admin/profile/account',
+};
+
+const PATH_TO_ADMIN_TAB: Record<string, string> = {
+  '/admin': 'reports',
+  '/admin/reports': 'reports',
+  '/admin/aics': 'aics',
+  '/admin/pwd-senior': 'pwd-senior',
+  '/admin/solo-child': 'solo-child',
+  '/admin/livelihood': 'livelihood',
+  '/admin/financial-aid': 'disbursement',
+  '/admin/beneficiaries': 'beneficiaries',
+  '/admin/appointments': 'appointments',
+  '/admin/activity-log': 'activity',
+  '/admin/users': 'users',
+  '/admin/profile': 'profile',
+  '/admin/profile/account': 'profile',
+  '/admin/profile/personal': 'profile',
+  '/admin/profile/devices': 'profile',
+  '/admin/profile/language': 'profile',
+};
+
 export default function App() {
   const { language, t } = useLanguage();
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
@@ -83,11 +176,22 @@ export default function App() {
     }
   });
 
-  // Tab & role state persisted in sessionStorage (retains on page refresh, resets on new tab/window)
+  // Tab & role state persisted in sessionStorage & synced with URL pathname
   const [activeTab, setActiveTab] = useState<string>(() => {
     try {
       if (localStorage.getItem('govserve_session_expired') === 'true') {
         return 'login';
+      }
+      const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+      if (currentPath === '/login' || currentPath.startsWith('/login/')) {
+        return 'login';
+      }
+      const hasSession = Boolean(localStorage.getItem('currentUser') || sessionStorage.getItem('activeTab'));
+      if (hasSession && PATH_TO_USER_TAB[currentPath] && currentPath !== '/') {
+        return PATH_TO_USER_TAB[currentPath];
+      }
+      if (hasSession && currentPath.startsWith('/admin')) {
+        return 'help-guide';
       }
       return sessionStorage.getItem('activeTab') || 'landing';
     } catch {
@@ -127,6 +231,10 @@ export default function App() {
 
   const [adminTab, setAdminTab] = useState<string>(() => {
     try {
+      const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+      if (PATH_TO_ADMIN_TAB[currentPath]) {
+        return PATH_TO_ADMIN_TAB[currentPath];
+      }
       return sessionStorage.getItem('adminTab') || 'reports';
     } catch {
       return 'reports';
@@ -154,6 +262,75 @@ export default function App() {
       sessionStorage.setItem('adminTab', adminTab);
     } catch (e) {}
   }, [adminTab]);
+
+  // Sync activeTab, adminTab, and userRole to browser URL address bar
+  useEffect(() => {
+    try {
+      const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+      if (activeTab === 'landing') {
+        if (currentPath !== '/') {
+          window.history.pushState(null, '', '/');
+        }
+        return;
+      }
+      if (activeTab === 'login') {
+        if (!currentPath.startsWith('/login')) {
+          window.history.pushState(null, '', '/login');
+        }
+        return;
+      }
+      if (userRole === 'admin') {
+        if (adminTab === 'profile' && currentPath.startsWith('/admin/profile/')) {
+          return;
+        }
+        const targetAdminPath = ADMIN_TAB_TO_PATH[adminTab] || '/admin/reports';
+        if (currentPath !== targetAdminPath) {
+          window.history.pushState(null, '', targetAdminPath);
+        }
+      } else {
+        if (activeTab === 'profile' && currentPath.startsWith('/portal/profile/')) {
+          return;
+        }
+        const targetUserPath = USER_TAB_TO_PATH[activeTab] || '/portal/help-guide';
+        if (currentPath !== targetUserPath) {
+          window.history.pushState(null, '', targetUserPath);
+        }
+      }
+    } catch (e) {}
+  }, [activeTab, adminTab, userRole]);
+
+  // Listen to browser Back / Forward buttons (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
+      if (currentPath === '/') {
+        setActiveTab('landing');
+        return;
+      }
+      if (currentPath === '/login' || currentPath.startsWith('/login/')) {
+        setActiveTab('login');
+        return;
+      }
+      if (currentPath.startsWith('/admin')) {
+        const mappedAdmin = PATH_TO_ADMIN_TAB[currentPath];
+        if (mappedAdmin) {
+          setUserRole('admin');
+          setActiveTab('help-guide');
+          setAdminTab(mappedAdmin);
+        }
+        return;
+      }
+      if (currentPath.startsWith('/portal')) {
+        const mappedUser = PATH_TO_USER_TAB[currentPath];
+        if (mappedUser) {
+          setUserRole('user');
+          setActiveTab(mappedUser);
+        }
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Persistent Theme Mode (White / Dark) via localStorage
   useEffect(() => {
