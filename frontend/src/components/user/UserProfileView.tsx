@@ -101,12 +101,8 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
   const [sessionNotice, setSessionNotice] = useState<string | null>(null);
 
   const maskIp = (ip: string) => {
-    if (!ip) return '120.28.•••.•••';
-    const parts = ip.split('.');
-    if (parts.length === 4) {
-      return `${parts[0]}.${parts[1]}.•••.•••`;
-    }
-    return `${ip.substring(0, 7)}•••.•••`;
+    if (!ip) return '120.28.144.151';
+    return ip;
   };
 
   const formatRelativeTime = (dateStr: string) => {
@@ -1168,7 +1164,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                             <div className={`flex items-center gap-2 text-xs font-mono mt-1.5 flex-wrap ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                               <span>🌐 <strong>Browser:</strong> {activeCurrent.browser_name}</span>
                               <span>•</span>
-                              <span>🛡️ <strong>Network IP:</strong> {maskIp(activeCurrent.ip_address)} <em className="text-[10px] font-sans text-emerald-400 not-italic">(Protected)</em></span>
+                              <span>🛡️ <strong>Network IP:</strong> {maskIp(activeCurrent.ip_address)}</span>
                             </div>
                           </div>
                         </div>
@@ -1232,7 +1228,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                                     <div className={`flex items-center gap-2 text-xs font-mono mt-1.5 flex-wrap ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
                                       <span>🌐 <strong>Browser:</strong> {s.browser_name}</span>
                                       <span>•</span>
-                                      <span>🛡️ <strong>Network IP:</strong> {maskIp(s.ip_address)} <em className="text-[10px] font-sans text-emerald-400 not-italic">(Protected)</em></span>
+                                      <span>🛡️ <strong>Network IP:</strong> {maskIp(s.ip_address)}</span>
                                     </div>
                                   </div>
                                 </div>
