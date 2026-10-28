@@ -10,7 +10,6 @@ import {
   AlertTriangle,
   FileText,
   ArrowRight,
-  Sparkles,
   ShieldCheck,
   Check,
   Shield,
@@ -312,29 +311,13 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
               : 'bg-gradient-to-r from-blue-50 via-indigo-50/60 to-white border-slate-200'
           }`}
         >
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h2 className={`text-xs sm:text-sm font-extrabold tracking-tight truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                  AI-Powered Eligibility Assessment & Assistance Recommendation
-                </h2>
-                <span
-                  className={`text-[10px] px-2 py-0.5 rounded-full font-bold border ${
-                    darkMode
-                      ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300'
-                      : 'bg-emerald-50 border-emerald-300 text-emerald-700'
-                  }`}
-                >
-                  Strict MSWDO System-Locked AI
-                </span>
-              </div>
-              <p className={`text-[10px] sm:text-[11px] truncate ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                Municipal Social Welfare and Development Office (MSWDO) — Automated Pre-Screening & Program Matcher
-              </p>
-            </div>
+          <div className="min-w-0">
+            <h2 className={`text-xs sm:text-sm font-extrabold tracking-tight truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              AI-Powered Eligibility Assessment & Assistance Recommendation
+            </h2>
+            <p className={`text-[10px] sm:text-[11px] truncate ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              Municipal Social Welfare and Development Office (MSWDO) — Automated Pre-Screening & Program Matcher
+            </p>
           </div>
 
           <button
@@ -374,7 +357,6 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                   }`}
                 >
                   {isPast && <Check className="w-3 h-3 text-emerald-500" />}
-                  {st.num === 4 && !isPast && <Sparkles className="w-3 h-3 text-blue-400" />}
                   <span>{st.label}</span>
                 </div>
               );
@@ -837,7 +819,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
-                    <Sparkles className="w-5 h-5 text-blue-500" />
+                    <CheckCircle className="w-5 h-5 text-blue-500" />
                     <h3 className={`text-base sm:text-lg font-bold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                       AI Eligibility Assessment & Assistance Recommendations
                     </h3>
@@ -913,7 +895,6 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                       darkMode ? 'bg-amber-500/20 border-amber-400/30 text-amber-200' : 'bg-amber-100 border-amber-300 text-amber-800'
                     }`}
                   >
-                    <Sparkles className="w-3.5 h-3.5" />
                     <span>{aiResult.matchScore}% Policy Match</span>
                   </div>
                 </div>
@@ -951,7 +932,6 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                         : 'bg-emerald-100 border-emerald-300 text-emerald-800'
                     }`}
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
                     <span>{aiResult.matchScore}% Policy Match</span>
                   </div>
                 </div>
@@ -1122,10 +1102,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                       <span>Analyzing Eligibility with AI...</span>
                     </>
                   ) : (
-                    <>
-                      <Sparkles className="w-4 h-4" />
-                      <span>Analyze & Generate AI Recommendation</span>
-                    </>
+                    <span>Analyze & Generate AI Recommendation</span>
                   )}
                 </button>
               ) : (
