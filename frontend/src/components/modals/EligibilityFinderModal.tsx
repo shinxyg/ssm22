@@ -97,50 +97,50 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
   const hardshipCards = [
     {
       id: 'medical',
-      title: 'AICS Medical Emergency, Hospitalization, or Maintenance Drugs',
-      description: 'Hospital admission, surgery bills, ongoing dialysis/chemo, laboratory fees, or costly prescribed medicines.',
+      title: 'Unsettled Hospital Bills, Surgery, or Ongoing Medical Treatment',
+      description: 'A family member is hospitalized, undergoing dialysis/chemotherapy, or requires costly prescription maintenance medicines.',
       icon: Stethoscope,
     },
     {
       id: 'bereavement',
-      title: 'AICS Bereavement & Funeral / Burial Expenses',
-      description: 'Recent passing of a family member with unpaid funeral parlor contract, casket, or burial expenses.',
+      title: 'Recent Death or Bereavement in the Immediate Family',
+      description: 'Coping with the recent passing of a loved one with unpaid funeral parlor, casket, or burial expenses.',
       icon: ShieldAlert,
     },
     {
       id: 'educational',
-      title: 'Educational Assistance for Indigent / Solo Parent Youth',
-      description: 'Struggling with school enrollment, tuition, or educational allowance for indigent or solo-parent student dependents.',
+      title: 'Difficulty Sustaining Schooling & Youth Education Expenses',
+      description: 'Struggling to afford school enrollment, tuition, books, or daily allowance for studying children or youth.',
       icon: GraduationCap,
     },
     {
       id: 'disability',
-      title: 'Person with Disability (PWD) Welfare & Cash Assistance',
-      description: 'Household member with physical, sensory, mental, or chronic disability needing financial grant or assistive support.',
+      title: 'Household Member Living with a Physical, Sensory, or Mental Disability',
+      description: 'Caring for a family member with a long-term physical, visual, hearing, intellectual, or psychosocial condition.',
       icon: Users,
     },
     {
       id: 'senior',
-      title: 'Vulnerable Senior Citizen (60+ Years Old) Assistance',
-      description: 'Elderly citizen or household member with no adequate pension needing financial aid and medical maintenance.',
+      title: 'Elderly Family Member (60+ Years Old) Without Regular Pension',
+      description: 'Household includes a senior citizen with no stable retirement income who needs daily living and health support.',
       icon: Heart,
     },
     {
       id: 'soloparent',
-      title: 'Solo Parent Household Financial Subsidy',
-      description: 'Single-handedly raising minor dependent children without spousal support and needing monthly/crisis cash subsidy.',
+      title: 'Single-Handedly Raising Minor Dependent Children Alone',
+      description: 'Solely bearing the financial and parenting responsibilities for minor children without spousal or partner support.',
       icon: Users,
     },
     {
       id: 'children',
-      title: 'Child Welfare, Protection & Nutritional Care Services',
-      description: 'Vulnerable infants, toddlers, or children needing nutritional care, early daycare, or protective social work intake.',
+      title: 'Infants or Young Children Needing Nutrition, Daycare, or Protection',
+      description: 'Having young children at risk of malnutrition, lacking early childhood care, or needing protective social support.',
       icon: Wallet,
     },
     {
       id: 'livelihood_training',
-      title: 'Livelihood Starter Capital Grant & Vocational Skills Training',
-      description: 'Unemployed or informal earner needing ₱15,000 micro-business capital or free TESDA-accredited vocational training.',
+      title: 'Loss of Income, Unemployment, or Lack of Stable Livelihood Skills',
+      description: 'Primary earner is unemployed, displaced, or relies on unstable daily sidelining and needs sustainable income opportunities.',
       icon: Briefcase,
     },
   ];
@@ -633,18 +633,18 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
             </div>
           )}
 
-          {/* STEP 2: Current Life Situation & Hardships (All Icons Uniform Blue) */}
+          {/* STEP 2: Current Household Hardships & Vulnerability Indicators (All Icons Uniform Blue) */}
           {currentStep === 2 && (
             <div className="space-y-4 animate-in fade-in duration-200">
               <div>
                 <div className="flex items-center gap-1.5 mb-0.5">
                   <Shield className="w-4 h-4 text-blue-500" />
                   <h3 className={`text-sm sm:text-base font-bold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                    Current Life Situation, Sector & Hardships (MSWDO System Modules)
+                    Current Household Hardships & Vulnerability Indicators
                   </h3>
                 </div>
                 <p className={`text-[11px] sm:text-xs leading-normal ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                  Select all crisis situations or vulnerable sectors applicable to your household. Our AI strictly matches your selections with the official programs inside this system:
+                  Select all real-life challenges or household conditions currently experienced by your family:
                 </p>
               </div>
 
@@ -739,7 +739,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
 
               <div className="space-y-2">
                 <label className={`block text-xs font-bold ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                  Or click a pre-filled MSWDO case scenario:
+                  Or click a sample household situation:
                 </label>
                 <div className="flex flex-wrap items-center gap-2">
                   <button
@@ -756,7 +756,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                         : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>AICS Medical: Hospital bills & medicines</span>
+                    <span>Hospital bills & maintenance medicines</span>
                   </button>
 
                   <button
@@ -764,7 +764,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                     onClick={() => {
                       setStepValidationMsg('');
                       setNarrative(
-                        'I am a solo parent raising minor children without spousal support, struggling to pay for my child school enrollment and requesting Solo Parent cash subsidy and small sari-sari store livelihood capital.'
+                        'I am raising minor children alone without spousal support, struggling to pay for my child school enrollment and needing small sari-sari store capital for daily family income.'
                       );
                     }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
@@ -773,7 +773,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                         : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>Solo Parent + Educational + Livelihood Capital</span>
+                    <span>Single parent with studying child & small store plan</span>
                   </button>
 
                   <button
@@ -790,7 +790,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                         : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>AICS Funeral: Bereavement & burial expenses</span>
+                    <span>Recent death of parent & unpaid burial expenses</span>
                   </button>
 
                   <button
@@ -798,7 +798,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                     onClick={() => {
                       setStepValidationMsg('');
                       setNarrative(
-                        'Indigent senior citizen (67 years old) and PWD household member with no monthly pension, requiring Senior Citizen cash grant, PWD financial assistance, and maintenance medicines.'
+                        'Elderly household member (67 years old) with physical disability and no monthly pension, struggling to afford daily living needs and regular maintenance medicines.'
                       );
                     }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
@@ -807,7 +807,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                         : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>Senior Citizen & PWD Financial Grant</span>
+                    <span>Elderly & disabled family member without pension</span>
                   </button>
 
                   <button
@@ -815,7 +815,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                     onClick={() => {
                       setStepValidationMsg('');
                       setNarrative(
-                        'Walang trabaho ang breadwinner ng aming pamilya at nais pong mag-aplay sa libreng Vocational Skills Training at Educational Assistance para sa aming anak na nag-aaral.'
+                        'Walang trabaho ang breadwinner ng aming pamilya at nais pong matuto ng vocational skills habang nagpapa-aral ng aming anak sa kolehiyo.'
                       );
                     }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
@@ -824,7 +824,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                         : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>Skills Training & Indigent Educational Grant</span>
+                    <span>Unemployed breadwinner & studying child</span>
                   </button>
                 </div>
               </div>
@@ -1081,13 +1081,13 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
           )}
         </div>
 
-        {/* Modal Footer Bar (Disclaimer removed, Back & Next Step without < or >) */}
+        {/* Modal Footer Bar (Back on far left, Next Step / AI button on far right) */}
         <div
-          className={`px-4 sm:px-6 py-2.5 sm:py-3 border-t flex items-center justify-end gap-2.5 ${
+          className={`px-4 sm:px-6 py-2.5 sm:py-3 border-t flex items-center justify-between gap-2.5 ${
             darkMode ? 'bg-[#080e1e] border-slate-800' : 'bg-slate-50 border-slate-200'
           }`}
         >
-          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
+          <div>
             {currentStep > 1 && (
               <button
                 type="button"
@@ -1105,7 +1105,9 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                 <span>Back</span>
               </button>
             )}
+          </div>
 
+          <div className="flex items-center gap-2 shrink-0 justify-end">
             {currentStep < 4 ? (
               currentStep === 3 ? (
                 <button
