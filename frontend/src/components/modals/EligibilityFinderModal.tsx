@@ -6,8 +6,6 @@ import {
   Activity,
   Stethoscope,
   Clock,
-  ChevronRight,
-  ChevronLeft,
   CheckCircle,
   AlertTriangle,
   FileText,
@@ -67,22 +65,28 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [aiResult, setAiResult] = useState<AiAssessmentResult | null>(null);
+  const [stepValidationMsg, setStepValidationMsg] = useState<string>('');
 
-  // Step 1: Household & Demographics
-  const [primaryApplicant, setPrimaryApplicant] = useState<string>('Myself (Individual)');
-  const [householdIncome, setHouseholdIncome] = useState<string>('Below ₱10,000 per month (Indigent threshold)');
-  const [barangay, setBarangay] = useState<string>('Barangay Poblacion (Municipal Proper)');
-  const [dependentMembers, setDependentMembers] = useState<string>('3 to 5 members');
-  const [employmentStatus, setEmploymentStatus] = useState<string>('Daily Wage / Sideline / Informal vendor');
-  const [welfareProgramStatus, setWelfareProgramStatus] = useState<string>('Non-4Ps Household (Direct Citizen Applicant)');
-  const [healthInsurance, setHealthInsurance] = useState<string>('PhilHealth Indigent / Sponsored (LGU / DSWD)');
-  const [urgencyTimeline, setUrgencyTimeline] = useState<string>('Immediate Emergency (Within 24–48h - Hospital Discharge / Burial)');
-  const [residencyCondition, setResidencyCondition] = useState<string>('Permanent Resident (Own house/lot)');
+  // Step 1: Household & Demographics (Default empty so nothing is pre-selected)
+  const [primaryApplicant, setPrimaryApplicant] = useState<string>('');
+  const [householdIncome, setHouseholdIncome] = useState<string>('');
+  const [barangay, setBarangay] = useState<string>('');
+  const [dependentMembers, setDependentMembers] = useState<string>('');
+  const [employmentStatus, setEmploymentStatus] = useState<string>('');
+  const [welfareProgramStatus, setWelfareProgramStatus] = useState<string>('');
+  const [healthInsurance, setHealthInsurance] = useState<string>('');
+  const [urgencyTimeline, setUrgencyTimeline] = useState<string>('');
+  const [residencyCondition, setResidencyCondition] = useState<string>('');
 
-  // Step 2: Hardships & Crisis (Strictly aligned with the 8 MSWDO System Modules)
-  const [selectedHardships, setSelectedHardships] = useState<string[]>(['medical']);
+  // Step 2: Hardships & Crisis (Default empty so nothing is pre-checked)
+  const [selectedHardships, setSelectedHardships] = useState<string[]>([]);
+
+  // Step 3: Narrative Statement (Default empty so nothing is pre-filled)
+  const [narrative, setNarrative] = useState<string>('');
+  const [specialCircumstances] = useState<string[]>([]);
 
   const toggleHardship = (id: string) => {
+    setStepValidationMsg('');
     if (selectedHardships.includes(id)) {
       setSelectedHardships(selectedHardships.filter((item) => item !== id));
     } else {
@@ -96,91 +100,50 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
       title: 'AICS Medical Emergency, Hospitalization, or Maintenance Drugs',
       description: 'Hospital admission, surgery bills, ongoing dialysis/chemo, laboratory fees, or costly prescribed medicines.',
       icon: Stethoscope,
-      iconClass: 'bg-red-600 text-white',
-      selectedStyle: darkMode
-        ? 'border-red-500/90 bg-red-950/25 shadow-red-900/20'
-        : 'border-red-500 bg-red-50/90 shadow-sm',
     },
     {
       id: 'bereavement',
       title: 'AICS Bereavement & Funeral / Burial Expenses',
       description: 'Recent passing of a family member with unpaid funeral parlor contract, casket, or burial expenses.',
       icon: ShieldAlert,
-      iconClass: darkMode ? 'bg-slate-800 text-slate-200 border border-slate-600' : 'bg-slate-700 text-white',
-      selectedStyle: darkMode
-        ? 'border-slate-400 bg-slate-800/50'
-        : 'border-slate-500 bg-slate-100',
     },
     {
       id: 'educational',
       title: 'Educational Assistance for Indigent / Solo Parent Youth',
       description: 'Struggling with school enrollment, tuition, or educational allowance for indigent or solo-parent student dependents.',
       icon: GraduationCap,
-      iconClass: darkMode ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-500/50' : 'bg-indigo-600 text-white',
-      selectedStyle: darkMode
-        ? 'border-indigo-500 bg-indigo-950/30'
-        : 'border-indigo-500 bg-indigo-50/90',
     },
     {
       id: 'disability',
       title: 'Person with Disability (PWD) Welfare & Cash Assistance',
       description: 'Household member with physical, sensory, mental, or chronic disability needing financial grant or assistive support.',
       icon: Users,
-      iconClass: darkMode ? 'bg-blue-950/80 text-blue-400 border border-blue-700/50' : 'bg-blue-600 text-white',
-      selectedStyle: darkMode
-        ? 'border-blue-500 bg-blue-950/25'
-        : 'border-blue-500 bg-blue-50/90',
     },
     {
       id: 'senior',
       title: 'Vulnerable Senior Citizen (60+ Years Old) Assistance',
       description: 'Elderly citizen or household member with no adequate pension needing financial aid and medical maintenance.',
       icon: Heart,
-      iconClass: darkMode ? 'bg-amber-950/70 text-amber-400 border border-amber-600/50' : 'bg-amber-600 text-white',
-      selectedStyle: darkMode
-        ? 'border-amber-500 bg-amber-950/25'
-        : 'border-amber-500 bg-amber-50/90',
     },
     {
       id: 'soloparent',
       title: 'Solo Parent Household Financial Subsidy',
       description: 'Single-handedly raising minor dependent children without spousal support and needing monthly/crisis cash subsidy.',
       icon: Users,
-      iconClass: darkMode ? 'bg-purple-950/80 text-purple-400 border border-purple-600/50' : 'bg-purple-600 text-white',
-      selectedStyle: darkMode
-        ? 'border-purple-500 bg-purple-950/25'
-        : 'border-purple-500 bg-purple-50/90',
     },
     {
       id: 'children',
       title: 'Child Welfare, Protection & Nutritional Care Services',
       description: 'Vulnerable infants, toddlers, or children needing nutritional care, early daycare, or protective social work intake.',
       icon: Wallet,
-      iconClass: darkMode ? 'bg-pink-950/80 text-pink-400 border border-pink-600/50' : 'bg-pink-600 text-white',
-      selectedStyle: darkMode
-        ? 'border-pink-500 bg-pink-950/25'
-        : 'border-pink-500 bg-pink-50/90',
     },
     {
       id: 'livelihood_training',
       title: 'Livelihood Starter Capital Grant & Vocational Skills Training',
       description: 'Unemployed or informal earner needing ₱15,000 micro-business capital or free TESDA-accredited vocational training.',
       icon: Briefcase,
-      iconClass: darkMode ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-600/50' : 'bg-emerald-600 text-white',
-      selectedStyle: darkMode
-        ? 'border-emerald-500 bg-emerald-950/25'
-        : 'border-emerald-500 bg-emerald-50/90',
     },
   ];
-
-  // Step 3: Narrative Statement
-  const [narrative, setNarrative] = useState<string>(
-    'Hihingi po sana ng tulong pinansyal para sa kagyat na gastusin sa pagpapagamot at gamot dahil nawalan ng sapat na kita ang aming pamilya.'
-  );
-  const [specialCircumstances] = useState<string[]>([
-    'Family member with chronic illness or needing maintenance',
-    'Low-income breadwinner with informal livelihood'
-  ]);
 
   useEffect(() => {
     if (isOpen) {
@@ -188,6 +151,19 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
     } else {
       document.body.classList.remove('modal-open');
       setCurrentStep(1);
+      setStepValidationMsg('');
+      setPrimaryApplicant('');
+      setHouseholdIncome('');
+      setBarangay('');
+      setDependentMembers('');
+      setEmploymentStatus('');
+      setWelfareProgramStatus('');
+      setHealthInsurance('');
+      setUrgencyTimeline('');
+      setResidencyCondition('');
+      setSelectedHardships([]);
+      setNarrative('');
+      setAiResult(null);
     }
     return () => {
       document.body.classList.remove('modal-open');
@@ -196,7 +172,42 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
 
   if (!isOpen) return null;
 
+  const isStep1Complete = Boolean(
+    primaryApplicant &&
+      householdIncome &&
+      barangay &&
+      dependentMembers &&
+      employmentStatus &&
+      welfareProgramStatus &&
+      healthInsurance &&
+      urgencyTimeline &&
+      residencyCondition
+  );
+
+  const handleNextStep = () => {
+    if (currentStep === 1) {
+      if (!isStep1Complete) {
+        setStepValidationMsg('Please select an option for all 9 household & demographic fields before proceeding.');
+        return;
+      }
+      setStepValidationMsg('');
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      if (selectedHardships.length === 0) {
+        setStepValidationMsg('Please select at least one current life situation or hardship category to continue.');
+        return;
+      }
+      setStepValidationMsg('');
+      setCurrentStep(3);
+    }
+  };
+
   const handleRunAiAssessment = async () => {
+    if (!narrative.trim()) {
+      setStepValidationMsg('Please describe your situation or select a scenario before running the AI assessment.');
+      return;
+    }
+    setStepValidationMsg('');
     setIsAnalyzing(true);
     try {
       const response = await fetch(`${API_BASE_URL}/api/ai/eligibility-assessment`, {
@@ -226,7 +237,6 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
         throw new Error('Backend returned non-200');
       }
     } catch {
-      // Client-side safety fallback strictly locked to system programs
       setAiResult({
         eligibilityStatus: 'HIGHLY_ELIGIBLE',
         statusBadge: 'High Eligibility Match Confirmed (Priority Indigent Category)',
@@ -280,11 +290,12 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
     { num: 4, label: '4. AI Assessment & Recommendations' },
   ];
 
-  const selectInputClass = `w-full px-3.5 py-2.5 border rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-    darkMode
-      ? 'bg-[#0f182e] border-slate-700 text-slate-100'
-      : 'bg-white border-slate-300 text-slate-900'
-  }`;
+  const getSelectClass = (val: string) =>
+    `w-full px-3.5 py-2.5 border rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+      darkMode
+        ? `bg-[#0f182e] border-slate-700 ${val ? 'text-slate-100' : 'text-slate-400'}`
+        : `bg-white border-slate-300 ${val ? 'text-slate-900' : 'text-slate-500'}`
+    }`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in overflow-y-auto">
@@ -337,45 +348,35 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
           </button>
         </div>
 
-        {/* Stepper Navigation Bar */}
+        {/* Non-Clickable Stepper Indicator Bar (No > separators) */}
         <div
           className={`px-4 sm:px-5 py-2 border-b flex items-center justify-between ${
             darkMode ? 'bg-[#080e1e] border-slate-800' : 'bg-slate-50 border-slate-200'
           }`}
         >
-          <div className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden text-xs">
-            {steps.map((st, idx) => {
+          <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden text-xs select-none">
+            {steps.map((st) => {
               const isActive = currentStep === st.num;
               const isPast = currentStep > st.num;
               return (
-                <React.Fragment key={st.num}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (st.num === 4 && !aiResult) {
-                        handleRunAiAssessment();
-                      } else {
-                        setCurrentStep(st.num);
-                      }
-                    }}
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                      isActive
-                        ? 'bg-blue-600 text-white shadow'
-                        : isPast
-                        ? darkMode
-                          ? 'bg-[#0b2426] border border-emerald-500/40 text-emerald-400 hover:bg-[#0e2f31]'
-                          : 'bg-emerald-50 border border-emerald-300 text-emerald-700 hover:bg-emerald-100'
-                        : darkMode
-                        ? 'text-slate-400 hover:text-slate-200'
-                        : 'text-slate-500 hover:text-slate-700'
-                    }`}
-                  >
-                    {isPast && <Check className="w-3 h-3 text-emerald-500" />}
-                    {st.num === 4 && !isPast && <Sparkles className="w-3 h-3 text-blue-400" />}
-                    <span>{st.label}</span>
-                  </button>
-                  {idx < steps.length - 1 && <ChevronRight className="w-3 h-3 text-slate-500 shrink-0" />}
-                </React.Fragment>
+                <div
+                  key={st.num}
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold whitespace-nowrap ${
+                    isActive
+                      ? 'bg-blue-600 text-white shadow'
+                      : isPast
+                      ? darkMode
+                        ? 'bg-[#0b2426] border border-emerald-500/40 text-emerald-400'
+                        : 'bg-emerald-50 border border-emerald-300 text-emerald-700'
+                      : darkMode
+                      ? 'text-slate-400'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  {isPast && <Check className="w-3 h-3 text-emerald-500" />}
+                  {st.num === 4 && !isPast && <Sparkles className="w-3 h-3 text-blue-400" />}
+                  <span>{st.label}</span>
+                </div>
               );
             })}
           </div>
@@ -383,6 +384,19 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
 
         {/* Modal Main Content */}
         <div className="p-4 sm:p-5 overflow-y-auto max-h-[72vh]">
+          {stepValidationMsg && (
+            <div
+              className={`mb-4 p-3 rounded-xl border flex items-center gap-2 text-xs font-semibold ${
+                darkMode
+                  ? 'bg-amber-950/60 border-amber-500/50 text-amber-200'
+                  : 'bg-amber-50 border-amber-300 text-amber-800'
+              }`}
+            >
+              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500" />
+              <span>{stepValidationMsg}</span>
+            </div>
+          )}
+
           {/* STEP 1: Household & Demographics */}
           {currentStep === 1 && (
             <div className="space-y-5 animate-in fade-in duration-200">
@@ -404,11 +418,21 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                   <label className={`block text-xs font-bold mb-1.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                     Who is the primary applicant?
                   </label>
-                  <select value={primaryApplicant} onChange={(e) => setPrimaryApplicant(e.target.value)} className={selectInputClass}>
+                  <select
+                    value={primaryApplicant}
+                    onChange={(e) => {
+                      setPrimaryApplicant(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(primaryApplicant)}
+                  >
+                    <option value="" disabled>
+                      Select Primary Applicant
+                    </option>
                     <option value="Myself (Individual)">Myself (Individual)</option>
-                    <option value="Family Representative / Relative">Family Representative / Relative</option>
-                    <option value="Guardian / Authorized Caregiver">Guardian / Authorized Caregiver</option>
-                    <option value="Senior Citizen / PWD Applicant">Senior Citizen / PWD Applicant</option>
+                    <option value="Household Head / Breadwinner">Household Head / Breadwinner</option>
+                    <option value="Immediate Family Member / Relative">Immediate Family Member / Relative</option>
+                    <option value="Authorized Guardian / Caregiver">Authorized Guardian / Caregiver</option>
                   </select>
                 </div>
 
@@ -417,10 +441,20 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                   <label className={`block text-xs font-bold mb-1.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                     Estimated Total Monthly Household Income:
                   </label>
-                  <select value={householdIncome} onChange={(e) => setHouseholdIncome(e.target.value)} className={selectInputClass}>
-                    <option value="Below ₱10,000 per month (Indigent threshold)">Below ₱10,000 per month (Indigent threshold)</option>
-                    <option value="₱10,000 to ₱20,000 per month (Low income)">₱10,000 to ₱20,000 per month (Low income)</option>
-                    <option value="₱20,001 to ₱30,000 per month (Lower-middle income)">₱20,001 to ₱30,000 per month (Lower-middle income)</option>
+                  <select
+                    value={householdIncome}
+                    onChange={(e) => {
+                      setHouseholdIncome(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(householdIncome)}
+                  >
+                    <option value="" disabled>
+                      Select Monthly Household Income
+                    </option>
+                    <option value="Below ₱10,000 per month">Below ₱10,000 per month</option>
+                    <option value="₱10,000 to ₱20,000 per month">₱10,000 to ₱20,000 per month</option>
+                    <option value="₱20,001 to ₱30,000 per month">₱20,001 to ₱30,000 per month</option>
                     <option value="Above ₱30,000 per month">Above ₱30,000 per month</option>
                   </select>
                 </div>
@@ -431,7 +465,17 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                     <MapPin className="w-3.5 h-3.5 text-blue-500" />
                     <span>Barangay of Residence (Within Municipality):</span>
                   </label>
-                  <select value={barangay} onChange={(e) => setBarangay(e.target.value)} className={selectInputClass}>
+                  <select
+                    value={barangay}
+                    onChange={(e) => {
+                      setBarangay(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(barangay)}
+                  >
+                    <option value="" disabled>
+                      Select Barangay of Residence
+                    </option>
                     <option value="Barangay Poblacion (Municipal Proper)">Barangay Poblacion (Municipal Proper)</option>
                     <option value="Barangay San Bartolome (Novaliches)">Barangay San Bartolome (Novaliches)</option>
                     <option value="Barangay Bagong Silangan">Barangay Bagong Silangan</option>
@@ -446,7 +490,17 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                   <label className={`block text-xs font-bold mb-1.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                     Number of Dependent Family Members:
                   </label>
-                  <select value={dependentMembers} onChange={(e) => setDependentMembers(e.target.value)} className={selectInputClass}>
+                  <select
+                    value={dependentMembers}
+                    onChange={(e) => {
+                      setDependentMembers(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(dependentMembers)}
+                  >
+                    <option value="" disabled>
+                      Select Number of Dependents
+                    </option>
                     <option value="None (Living alone)">None (Living alone)</option>
                     <option value="1 to 2 members">1 to 2 members</option>
                     <option value="3 to 5 members">3 to 5 members</option>
@@ -459,7 +513,17 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                   <label className={`block text-xs font-bold mb-1.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                     Primary Earner Employment Status:
                   </label>
-                  <select value={employmentStatus} onChange={(e) => setEmploymentStatus(e.target.value)} className={selectInputClass}>
+                  <select
+                    value={employmentStatus}
+                    onChange={(e) => {
+                      setEmploymentStatus(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(employmentStatus)}
+                  >
+                    <option value="" disabled>
+                      Select Employment Status
+                    </option>
                     <option value="Daily Wage / Sideline / Informal vendor">Daily Wage / Sideline / Informal vendor</option>
                     <option value="Unemployed / Displaced worker">Unemployed / Displaced worker</option>
                     <option value="Minimum Wage Earner (Contractual/Agency)">Minimum Wage Earner (Contractual/Agency)</option>
@@ -475,7 +539,17 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                     <Activity className="w-3.5 h-3.5 text-blue-500" />
                     <span>Existing Government Social Welfare Program Status:</span>
                   </label>
-                  <select value={welfareProgramStatus} onChange={(e) => setWelfareProgramStatus(e.target.value)} className={selectInputClass}>
+                  <select
+                    value={welfareProgramStatus}
+                    onChange={(e) => {
+                      setWelfareProgramStatus(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(welfareProgramStatus)}
+                  >
+                    <option value="" disabled>
+                      Select Welfare Program Status
+                    </option>
                     <option value="Non-4Ps Household (Direct Citizen Applicant)">Non-4Ps Household (Direct Citizen Applicant)</option>
                     <option value="Active 4Ps Beneficiary Household">Active 4Ps Beneficiary Household</option>
                     <option value="Waitlisted 4Ps Applicant">Waitlisted 4Ps Applicant</option>
@@ -486,10 +560,20 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                 {/* 7. Health Insurance & Medical Coverage */}
                 <div>
                   <label className={`flex items-center gap-1.5 text-xs font-bold mb-1.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                    <Stethoscope className="w-3.5 h-3.5 text-emerald-500" />
+                    <Stethoscope className="w-3.5 h-3.5 text-blue-500" />
                     <span>Health Insurance & Medical Coverage (PhilHealth):</span>
                   </label>
-                  <select value={healthInsurance} onChange={(e) => setHealthInsurance(e.target.value)} className={selectInputClass}>
+                  <select
+                    value={healthInsurance}
+                    onChange={(e) => {
+                      setHealthInsurance(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(healthInsurance)}
+                  >
+                    <option value="" disabled>
+                      Select PhilHealth Coverage Status
+                    </option>
                     <option value="PhilHealth Indigent / Sponsored (LGU / DSWD)">PhilHealth Indigent / Sponsored (LGU / DSWD)</option>
                     <option value="PhilHealth Senior Citizen Automatic Coverage">PhilHealth Senior Citizen Automatic Coverage</option>
                     <option value="PhilHealth PWD Automatic Coverage">PhilHealth PWD Automatic Coverage</option>
@@ -501,14 +585,24 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                 {/* 8. Assistance Urgency & Timeline Need */}
                 <div>
                   <label className={`flex items-center gap-1.5 text-xs font-bold mb-1.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                    <Clock className="w-3.5 h-3.5 text-red-500" />
+                    <Clock className="w-3.5 h-3.5 text-blue-500" />
                     <span>Assistance Urgency & Timeline Need:</span>
                   </label>
-                  <select value={urgencyTimeline} onChange={(e) => setUrgencyTimeline(e.target.value)} className={selectInputClass}>
-                    <option value="Immediate Emergency (Within 24–48h - Hospital Discharge / Burial)">Immediate Emergency (Within 24–48h - Hospital Discharge / Burial)</option>
-                    <option value="Urgent (Within 3 to 5 days - Scheduled Chemo/Dialysis/Medications)">Urgent (Within 3 to 5 days - Scheduled Chemo/Dialysis/Medications)</option>
-                    <option value="Standard (Within 1 to 2 weeks - Education/Livelihood/Sectoral)">Standard (Within 1 to 2 weeks - Education/Livelihood/Sectoral)</option>
-                    <option value="Routine / General Assistance Consultation">Routine / General Assistance Consultation</option>
+                  <select
+                    value={urgencyTimeline}
+                    onChange={(e) => {
+                      setUrgencyTimeline(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(urgencyTimeline)}
+                  >
+                    <option value="" disabled>
+                      Select Urgency / Timeline Need
+                    </option>
+                    <option value="Immediate Emergency (Within 24 to 48 hours)">Immediate Emergency (Within 24 to 48 hours)</option>
+                    <option value="Urgent Need (Within 3 to 5 days)">Urgent Need (Within 3 to 5 days)</option>
+                    <option value="Standard Processing (Within 1 to 2 weeks)">Standard Processing (Within 1 to 2 weeks)</option>
+                    <option value="Routine / General Consultation">Routine / General Consultation</option>
                   </select>
                 </div>
 
@@ -517,7 +611,17 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                   <label className={`block text-xs font-bold mb-1.5 ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
                     Residency & Housing Condition:
                   </label>
-                  <select value={residencyCondition} onChange={(e) => setResidencyCondition(e.target.value)} className={selectInputClass}>
+                  <select
+                    value={residencyCondition}
+                    onChange={(e) => {
+                      setResidencyCondition(e.target.value);
+                      setStepValidationMsg('');
+                    }}
+                    className={getSelectClass(residencyCondition)}
+                  >
+                    <option value="" disabled>
+                      Select Residency & Housing Condition
+                    </option>
                     <option value="Permanent Resident (Own house/lot)">Permanent Resident (Own house/lot)</option>
                     <option value="Informal Settler / Unsecured Tenancy">Informal Settler / Unsecured Tenancy</option>
                     <option value="Renting (Room / House)">Renting (Room / House)</option>
@@ -529,7 +633,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
             </div>
           )}
 
-          {/* STEP 2: Current Life Situation & Hardships (Strictly System Modules) */}
+          {/* STEP 2: Current Life Situation & Hardships (All Icons Uniform Blue) */}
           {currentStep === 2 && (
             <div className="space-y-4 animate-in fade-in duration-200">
               <div>
@@ -554,13 +658,23 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                       onClick={() => toggleHardship(card.id)}
                       className={`relative p-3 rounded-xl border transition-all cursor-pointer flex items-start gap-3 select-none ${
                         isChecked
-                          ? card.selectedStyle
+                          ? darkMode
+                            ? 'border-blue-500 bg-blue-950/30 shadow-blue-900/20'
+                            : 'border-blue-500 bg-blue-50/90 shadow-sm'
                           : darkMode
                           ? 'bg-[#0e1628] border-slate-800 hover:border-slate-700'
                           : 'bg-slate-50 border-slate-200 hover:border-slate-300'
                       }`}
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${card.iconClass}`}>
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                          isChecked
+                            ? 'bg-blue-600 text-white'
+                            : darkMode
+                            ? 'bg-blue-950/80 text-blue-400 border border-blue-700/50'
+                            : 'bg-blue-50 text-blue-600 border border-blue-200'
+                        }`}
+                      >
                         <Icon className="w-4 h-4" />
                       </div>
 
@@ -610,7 +724,10 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                 <textarea
                   rows={5}
                   value={narrative}
-                  onChange={(e) => setNarrative(e.target.value)}
+                  onChange={(e) => {
+                    setNarrative(e.target.value);
+                    setStepValidationMsg('');
+                  }}
                   placeholder="Halimbawa: Ako po ay isang solo parent na may tatlong anak sa Brgy. Bagong Silangan. Na-ospital po ang aking bunso at kailangan din po namin ng educational assistance at puhunan sa maliit na tindahan..."
                   className={`w-full p-4 border rounded-2xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 leading-relaxed resize-none ${
                     darkMode
@@ -627,86 +744,86 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                 <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setStepValidationMsg('');
                       setNarrative(
                         'Hospital admission and critical emergency bills for a family member undergoing acute medical intervention, with unsettled hospital bills and costly prescribed maintenance medications.'
-                      )
-                    }
+                      );
+                    }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
                       darkMode
-                        ? 'bg-red-950/60 border-red-500/50 text-red-300 hover:bg-red-900/60'
-                        : 'bg-red-50 border-red-300 text-red-700 hover:bg-red-100'
+                        ? 'bg-blue-950/60 border-blue-500/50 text-blue-300 hover:bg-blue-900/60'
+                        : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>🏥</span>
                     <span>AICS Medical: Hospital bills & medicines</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setStepValidationMsg('');
                       setNarrative(
                         'I am a solo parent raising minor children without spousal support, struggling to pay for my child school enrollment and requesting Solo Parent cash subsidy and small sari-sari store livelihood capital.'
-                      )
-                    }
+                      );
+                    }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
                       darkMode
-                        ? 'bg-purple-950/60 border-purple-500/50 text-purple-300 hover:bg-purple-900/60'
-                        : 'bg-purple-50 border-purple-300 text-purple-700 hover:bg-purple-100'
+                        ? 'bg-blue-950/60 border-blue-500/50 text-blue-300 hover:bg-blue-900/60'
+                        : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>👩‍👧</span>
                     <span>Solo Parent + Educational + Livelihood Capital</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setStepValidationMsg('');
                       setNarrative(
                         'Recent sudden demise of my parent with pending funeral parlor balance, casket fees, and burial plot expenses that our indigent family cannot afford.'
-                      )
-                    }
+                      );
+                    }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
                       darkMode
-                        ? 'bg-slate-800/80 border-slate-600/60 text-slate-300 hover:bg-slate-700'
-                        : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'
+                        ? 'bg-blue-950/60 border-blue-500/50 text-blue-300 hover:bg-blue-900/60'
+                        : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>💐</span>
                     <span>AICS Funeral: Bereavement & burial expenses</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setStepValidationMsg('');
                       setNarrative(
                         'Indigent senior citizen (67 years old) and PWD household member with no monthly pension, requiring Senior Citizen cash grant, PWD financial assistance, and maintenance medicines.'
-                      )
-                    }
+                      );
+                    }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
                       darkMode
-                        ? 'bg-amber-950/60 border-amber-600/50 text-amber-300 hover:bg-amber-900/60'
-                        : 'bg-amber-50 border-amber-300 text-amber-800 hover:bg-amber-100'
+                        ? 'bg-blue-950/60 border-blue-500/50 text-blue-300 hover:bg-blue-900/60'
+                        : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>👴</span>
                     <span>Senior Citizen & PWD Financial Grant</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() =>
+                    onClick={() => {
+                      setStepValidationMsg('');
                       setNarrative(
                         'Walang trabaho ang breadwinner ng aming pamilya at nais pong mag-aplay sa libreng Vocational Skills Training at Educational Assistance para sa aming anak na nag-aaral.'
-                      )
-                    }
+                      );
+                    }}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all cursor-pointer ${
                       darkMode
-                        ? 'bg-emerald-950/60 border-emerald-600/50 text-emerald-300 hover:bg-emerald-900/60'
-                        : 'bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100'
+                        ? 'bg-blue-950/60 border-blue-500/50 text-blue-300 hover:bg-blue-900/60'
+                        : 'bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100'
                     }`}
                   >
-                    <span>🎓</span>
                     <span>Skills Training & Indigent Educational Grant</span>
                   </button>
                 </div>
@@ -964,30 +1081,28 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
           )}
         </div>
 
-        {/* Modal Footer Bar */}
+        {/* Modal Footer Bar (Disclaimer removed, Back & Next Step without < or >) */}
         <div
-          className={`px-4 sm:px-6 py-2.5 sm:py-3 border-t flex flex-col sm:flex-row items-center justify-between gap-2.5 ${
+          className={`px-4 sm:px-6 py-2.5 sm:py-3 border-t flex items-center justify-end gap-2.5 ${
             darkMode ? 'bg-[#080e1e] border-slate-800' : 'bg-slate-50 border-slate-200'
           }`}
         >
-          <p className={`text-[10px] sm:text-[11px] italic leading-tight ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            * This AI assessment serves as an automated MSWDO pre-screening diagnostic. Final approval is subject to case validation by a licensed MSWDO Social Worker.
-          </p>
-
           <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end">
             {currentStep > 1 && (
               <button
                 type="button"
                 disabled={isAnalyzing}
-                onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
-                className={`px-3.5 py-1.5 rounded-lg font-bold text-xs border transition-colors flex items-center gap-1 cursor-pointer ${
+                onClick={() => {
+                  setStepValidationMsg('');
+                  setCurrentStep((prev) => Math.max(1, prev - 1));
+                }}
+                className={`px-4 py-1.5 rounded-lg font-bold text-xs border transition-colors flex items-center justify-center cursor-pointer ${
                   darkMode
                     ? 'bg-slate-800 hover:bg-slate-700 text-white border-slate-700'
                     : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
                 }`}
               >
-                <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Previous</span>
+                <span>Back</span>
               </button>
             )}
 
@@ -1014,11 +1129,10 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
               ) : (
                 <button
                   type="button"
-                  onClick={() => setCurrentStep((prev) => Math.min(4, prev + 1))}
-                  className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md border border-blue-400/40 transition-all flex items-center gap-1 cursor-pointer"
+                  onClick={handleNextStep}
+                  className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md border border-blue-400/40 transition-all flex items-center justify-center cursor-pointer"
                 >
                   <span>Next Step</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               )
             ) : (
