@@ -316,7 +316,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
               AI-Powered Eligibility Assessment & Assistance Recommendation
             </h2>
             <p className={`text-[10px] sm:text-[11px] truncate ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-              Municipal Social Welfare and Development Office (MSWDO) — Automated Pre-Screening & Program Matcher
+              Social Assistance Management Information System for Municipal Social Welfare and Development Offices
             </p>
           </div>
 
