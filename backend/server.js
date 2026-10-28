@@ -4350,6 +4350,454 @@ app.post('/api/beneficiaries/verify', async (req, res) => {
   }
 });
 
+// ============================================================================
+// STRICT SYSTEM-LOCKED AI ELIGIBILITY ASSESSMENT & ASSISTANCE RECOMMENDATION
+// ============================================================================
+const OFFICIAL_MSWDO_SYSTEM_PROGRAMS = {
+  'aics-medical': {
+    tabKey: 'aics-medical',
+    programName: 'AICS Medical & Hospitalization Assistance',
+    moduleLabel: 'AICS Module',
+    benefitAmount: '₱5,000 – ₱20,000 Guarantee Letter / Cash Aid',
+    defaultRequirements: [
+      'Valid Government / QCitizen ID',
+      'Medical Certificate / Clinical Abstract (Signed by Physician)',
+      'Hospital Statement of Account (Billing) or Doctor Prescription',
+      'Barangay Certificate of Indigency'
+    ]
+  },
+  'aics-funeral': {
+    tabKey: 'aics-funeral',
+    programName: 'AICS Bereavement & Funeral Assistance',
+    moduleLabel: 'AICS Module',
+    benefitAmount: 'Up to ₱10,000 Funeral Guarantee Letter',
+    defaultRequirements: [
+      'Registered Death Certificate of Deceased Family Member',
+      'Funeral Parlor Contract / Official Billing Statement',
+      'Valid ID of Claimant (Immediate Family Member)',
+      'Barangay Certificate of Indigency'
+    ]
+  },
+  'aics-educational': {
+    tabKey: 'aics-educational',
+    programName: 'Educational Assistance for Indigent Children & Youth',
+    moduleLabel: 'Child Welfare Module',
+    benefitAmount: '₱5,000 Educational Cash Grant',
+    defaultRequirements: [
+      'Certificate of Registration / Enrollment Form (Current Term)',
+      ' Certified True Copy of Grades / Report Card',
+      'School ID of Student & Valid ID of Parent/Guardian',
+      'Barangay Certificate of Indigency'
+    ]
+  },
+  'childwelfare-form': {
+    tabKey: 'childwelfare-form',
+    programName: 'Child Welfare Protection & Care Services',
+    moduleLabel: 'Child Welfare Module',
+    benefitAmount: 'Child Protection, Daycare & Nutritional Support',
+    defaultRequirements: [
+      'PSA Birth Certificate of the Child',
+      'Valid Government ID of Parent or Legal Guardian',
+      'Barangay Referral or Social Case Intake Report'
+    ]
+  },
+  'pwd-form': {
+    tabKey: 'pwd-form',
+    programName: 'PWD Financial & Assistive Welfare Assistance',
+    moduleLabel: 'PWD Assistance Module',
+    benefitAmount: '₱3,000 Cash Grant & Assistive Support',
+    defaultRequirements: [
+      'Official PDAO / PWD Identification Card',
+      'Medical Certificate Confirming Disability Type',
+      'Barangay Certificate of Residency / Indigency'
+    ]
+  },
+  'senior-form': {
+    tabKey: 'senior-form',
+    programName: 'Senior Citizen Social Welfare Financial Assistance',
+    moduleLabel: 'Senior Citizen Module',
+    benefitAmount: '₱3,000 Senior Citizen Cash Grant',
+    defaultRequirements: [
+      'OSCA Senior Citizen ID Card (60+ Years Old)',
+      'Birth Certificate or Valid Government ID with Date of Birth',
+      'Barangay Certificate of Indigency / No Regular Pension'
+    ]
+  },
+  'soloparent-financial-form': {
+    tabKey: 'soloparent-financial-form',
+    programName: 'Solo Parent Monthly / Crisis Financial Subsidy',
+    moduleLabel: 'Solo Parent Module',
+    benefitAmount: '₱3,000 Solo Parent Cash Subsidy',
+    defaultRequirements: [
+      'Valid Solo Parent ID (RA 11861) or Sworn Affidavit of Solo Parent',
+      'PSA Birth Certificate(s) of Minor Dependent Child(ren)',
+      'Barangay Certificate of Indigency & Residency'
+    ]
+  },
+  'soloparent-edu-form': {
+    tabKey: 'soloparent-edu-form',
+    programName: 'Solo Parent Educational Assistance Program',
+    moduleLabel: 'Solo Parent Module',
+    benefitAmount: '₱5,000 Solo Parent Child Educational Grant',
+    defaultRequirements: [
+      'Valid Solo Parent ID Card',
+      'Certificate of Enrollment / Registration of Dependent Child',
+      'PSA Birth Certificate of Student & Barangay Indigency'
+    ]
+  },
+  'livelihood': {
+    tabKey: 'livelihood',
+    programName: 'Sustainable Livelihood Starter Kit / Capital Grant',
+    moduleLabel: 'Livelihood Module',
+    benefitAmount: '₱15,000 Micro-Enterprise Capital Grant',
+    defaultRequirements: [
+      'Valid Government / QCitizen ID',
+      'Simple Micro-Business Proposal / Sari-Sari or Vending Plan',
+      'Barangay Clearance & Certificate of Indigency'
+    ]
+  },
+  'skills-training': {
+    tabKey: 'skills-training',
+    programName: 'Vocational & Livelihood Skills Training Program',
+    moduleLabel: 'Skills Training Module',
+    benefitAmount: 'Free TESDA-Accredited Vocational Course & Kit',
+    defaultRequirements: [
+      'Valid Government / QCitizen ID (Resident 18+ Years Old)',
+      'Barangay Certificate of Residency',
+      '2x2 ID Picture & Completed Enrollment Form'
+    ]
+  }
+};
+
+function buildRuleBasedEligibilityAssessment(payload) {
+  const {
+    primaryApplicant = '',
+    householdIncome = '',
+    barangay = '',
+    dependentMembers = '',
+    employmentStatus = '',
+    welfareProgramStatus = '',
+    healthInsurance = '',
+    urgencyTimeline = '',
+    residencyCondition = '',
+    selectedHardships = [],
+    narrative = '',
+    specialCircumstances = []
+  } = payload || {};
+
+  const text = `${narrative} ${(specialCircumstances || []).join(' ')}`.toLowerCase();
+  const isHighIncome = householdIncome.includes('Above ₱30,000');
+  const isModerateIncome = householdIncome.includes('₱20,001 to ₱30,000');
+  const isLowIncome = householdIncome.includes('Below ₱10,000') || householdIncome.includes('₱10,000 to ₱20,000');
+
+  // Detect out-of-scope / non-MSWDO requests in narrative
+  const outOfScopeKeywords = [
+    'gaming pc', 'playstation', 'iphone', 'kotse', 'sports car', 'crypto', 'bitcoin',
+    'casino', 'sugal', 'bakasyon', 'travel abroad', 'tourist visa', 'homework',
+    'coding', 'programming', 'luxury', 'concert ticket'
+  ];
+  const hasOutOfScopeKeyword = outOfScopeKeywords.some(kw => text.includes(kw));
+
+  const welfareKeywords = [
+    'ospital', 'hospital', 'gamot', 'medicine', 'dialysis', 'chemo', 'surgery', 'operasyon', 'medical', 'sakit',
+    'patay', 'namatay', 'libing', 'burol', 'funeral', 'burial', 'casket', 'deceased', 'death',
+    'aral', 'school', 'tuition', 'enroll', 'estudyante', 'student', 'educational', 'allowance', 'bata', 'child',
+    'pwd', 'disability', 'kapansanan', 'wheelchair', 'bulag', 'pilay', 'stroke',
+    'senior', 'matanda', 'elderly', 'lola', 'lolo', 'pension', 'maintenance',
+    'solo parent', 'single parent', 'mag-isa', 'iniwan', 'anak',
+    'negosyo', 'puhunan', 'livelihood', 'sari-sari', 'tindahan', 'vendor', 'kapital', 'capital',
+    'training', 'vocational', 'tesda', 'trabaho', 'skills', 'walang trabaho', 'unemployed', 'indigent', 'mahirap', 'tulong'
+  ];
+  const hasWelfareKeyword = welfareKeywords.some(kw => text.includes(kw));
+
+  if (hasOutOfScopeKeyword && !hasWelfareKeyword) {
+    return {
+      eligibilityStatus: 'NOT_ELIGIBLE',
+      statusBadge: 'Outside MSWDO System Scope / Not Eligible',
+      matchScore: 12,
+      priorityLevel: 'Non-Qualifying Request',
+      aiAssessmentSummary: 'Ang inyong inilagay na sitwasyon sa Narrative Statement ay labas sa sakop ng Municipal Social Welfare and Development Office (MSWDO). Ang system na ito ay mahigpit na nakalaan lamang para sa opisyal na Social Assistance Programs (AICS Medical, AICS Funeral, Educational, PWD, Senior Citizen, Solo Parent, Child Welfare, Livelihood, at Skills Training).',
+      policyNotes: 'Strict MSWDO Policy Guardrail: Only verified social welfare crises and statutory vulnerable sectors within the system catalog are eligible for assessment.',
+      recommendedPrograms: [],
+      engineSource: 'strict-guardrail'
+    };
+  }
+
+  const matchedKeys = new Set();
+
+  // Map selected hardship IDs strictly to official system tabKeys
+  const hardshipList = Array.isArray(selectedHardships) ? selectedHardships : [];
+  if (hardshipList.includes('medical') || /ospital|hospital|gamot|medicine|dialysis|chemo|surgery|operasyon|medical|sakit|admission|bill/.test(text)) {
+    matchedKeys.add('aics-medical');
+  }
+  if (hardshipList.includes('bereavement') || /patay|namatay|libing|burol|funeral|burial|casket|deceased|death|parlor/.test(text)) {
+    matchedKeys.add('aics-funeral');
+  }
+  if (hardshipList.includes('disability') || /pwd|disability|kapansanan|wheelchair|assistive|impairment|stroke/.test(text)) {
+    matchedKeys.add('pwd-form');
+  }
+  if (hardshipList.includes('senior') || primaryApplicant.includes('Senior') || /senior|matanda|elderly|lolo|lola|60|pension/.test(text)) {
+    matchedKeys.add('senior-form');
+  }
+  if (hardshipList.includes('soloparent') || /solo parent|single parent|raising.*alone|without spousal/.test(text)) {
+    matchedKeys.add('soloparent-financial-form');
+    if (/aral|school|tuition|student|educational|allowance|enroll/.test(text) || hardshipList.includes('educational')) {
+      matchedKeys.add('soloparent-edu-form');
+    }
+  }
+  if (hardshipList.includes('educational') || /aral|school|tuition|student|educational|allowance|enroll|college|high school/.test(text)) {
+    if (matchedKeys.has('soloparent-financial-form')) {
+      matchedKeys.add('soloparent-edu-form');
+    } else {
+      matchedKeys.add('aics-educational');
+    }
+  }
+  if (hardshipList.includes('children') || /child|bata|infant|toddler|malnourish|daycare|nutrition|milk|underweight/.test(text)) {
+    matchedKeys.add('childwelfare-form');
+  }
+  if (hardshipList.includes('livelihood_training') || hardshipList.includes('livelihood') || /negosyo|puhunan|livelihood|sari-sari|tindahan|vendor|capital|micro-enterprise|store/.test(text)) {
+    matchedKeys.add('livelihood');
+  }
+  if (hardshipList.includes('livelihood_training') || hardshipList.includes('skills_training') || /training|vocational|tesda|skills|course|unemployed|walang trabaho/.test(text)) {
+    matchedKeys.add('skills-training');
+  }
+
+  // If high income (> ₱30,000) and no statutory sector (PWD/Senior/Solo Parent) or acute medical/funeral crisis
+  if (isHighIncome && !matchedKeys.has('pwd-form') && !matchedKeys.has('senior-form') && !matchedKeys.has('aics-medical') && !matchedKeys.has('aics-funeral')) {
+    return {
+      eligibilityStatus: 'NOT_ELIGIBLE',
+      statusBadge: 'Above Indigent Income Threshold (Not Eligible)',
+      matchScore: 25,
+      priorityLevel: 'Above Indigent Threshold',
+      aiAssessmentSummary: `Base sa inyong idineklarang buwanang kita (${householdIncome}), lagpas ang sambahayan sa indigent income ceiling ng MSWDO para sa regular cash grants. Tanging mga kagyat na medikal/funeral crisis o statutory sectors (PWD / Senior Citizen) ang maaaring isailalim sa espesyal na social worker evaluation.`,
+      policyNotes: 'MSWDO Indigency Policy: Priority financial grants require monthly household income within the indigent or low-income threshold.',
+      recommendedPrograms: [],
+      engineSource: 'rule-based'
+    };
+  }
+
+  // Ensure at least 1 relevant system program if user left narrative brief
+  if (matchedKeys.size === 0) {
+    matchedKeys.add('aics-medical');
+    matchedKeys.add('livelihood');
+  }
+
+  const recommendedPrograms = Array.from(matchedKeys).slice(0, 4).map((key, idx) => {
+    const prog = OFFICIAL_MSWDO_SYSTEM_PROGRAMS[key];
+    let matchConfidence = isLowIncome ? (98 - idx * 3) : isModerateIncome ? (84 - idx * 4) : (72 - idx * 4);
+    let eligibilityTag = isLowIncome
+      ? (idx === 0 ? 'Primary AI Match (100% Eligible)' : 'Highly Eligible')
+      : 'Conditionally Eligible (For Validation)';
+
+    let matchReason = '';
+    switch (key) {
+      case 'aics-medical':
+        matchReason = `Tugma sa inyong medikal/hospitalization crisis at ${householdIncome} income profile (${urgencyTimeline}).`;
+        break;
+      case 'aics-funeral':
+        matchReason = 'Direktang sagot para sa gastusin sa punerarya at libing ng pumanaw na kapamilya sa ilalim ng AICS.';
+        break;
+      case 'aics-educational':
+        matchReason = `Tulong pang-edukasyon para sa dependent (${dependentMembers}) ng low-income household.`;
+        break;
+      case 'childwelfare-form':
+        matchReason = 'Para sa proteksyon, nutrisyon, at kapakanan ng mga bata sa sambahayan.';
+        break;
+      case 'pwd-form':
+        matchReason = 'Statutory financial at assistive support para sa miyembro ng pamilya na may kapansanan (PWD).';
+        break;
+      case 'senior-form':
+        matchReason = 'Tulong pinansyal at pang-medikal para sa indigent Senior Citizen (60+ taong gulang).';
+        break;
+      case 'soloparent-financial-form':
+        matchReason = 'Buwanan/crisis financial subsidy para sa Solo Parent na mag-isang nagtataguyod ng anak.';
+        break;
+      case 'soloparent-edu-form':
+        matchReason = 'Educational grant na nakalaan para sa nag-aaral na anak ng rehistradong Solo Parent.';
+        break;
+      case 'livelihood':
+        matchReason = `Puhunan pang-kabuhayan (₱15,000) na angkop sa inyong employment status (${employmentStatus}).`;
+        break;
+      case 'skills-training':
+        matchReason = 'Libreng vocational at TESDA-style skills training upang madagdagan ang kita ng pamilya.';
+        break;
+    }
+
+    return {
+      tabKey: prog.tabKey,
+      programName: prog.programName,
+      moduleLabel: prog.moduleLabel,
+      benefitAmount: prog.benefitAmount,
+      matchConfidence,
+      eligibilityTag,
+      matchReason,
+      requirements: prog.defaultRequirements
+    };
+  });
+
+  const topScore = recommendedPrograms[0]?.matchConfidence || 90;
+  const eligibilityStatus = isLowIncome ? 'HIGHLY_ELIGIBLE' : 'CONDITIONALLY_ELIGIBLE';
+  const statusBadge = isLowIncome
+    ? 'High Eligibility Match Confirmed (Priority Indigent Category)'
+    : 'Conditionally Eligible (Subject to Social Worker Case Validation)';
+
+  const aiAssessmentSummary = isLowIncome
+    ? `Base sa AI Pre-Screening ng inyong household profile (${householdIncome}, ${dependentMembers}, ${employmentStatus}) at sa inyong salaysay sa Step 3, ang inyong sambahayan ay PASOK sa Indigent Priority Criteria ng MSWDO. Narito ang mga opisyal na programa sa loob ng ating system na direktang tumutugon sa inyong sitwasyon.`
+    : `Base sa AI Pre-Screening, ang inyong sambahayan (${householdIncome}) ay CONDITIONALLY ELIGIBLE. Maaari kayong magpasa ng aplikasyon sa mga inirekomendang programa sa ibaba, ngunit dadaan ito sa karagdagang case validation ng MSWDO Social Worker.`;
+
+  return {
+    eligibilityStatus,
+    statusBadge,
+    matchScore: topScore,
+    priorityLevel: isLowIncome ? 'Priority Category 1 (Indigent / Crisis)' : 'Category 2 (Secondary Evaluation)',
+    aiAssessmentSummary,
+    policyNotes: `Evaluated under MSWDO Social Case Intake Guidelines for ${barangay} (${welfareProgramStatus}).`,
+    recommendedPrograms,
+    engineSource: 'mswdo-rule-engine'
+  };
+}
+
+app.post('/api/ai/eligibility-assessment', async (req, res) => {
+  const payload = req.body || {};
+  const fallbackResult = buildRuleBasedEligibilityAssessment(payload);
+
+  // If strict guardrail already caught an obvious out-of-scope keyword, return immediately
+  if (fallbackResult.engineSource === 'strict-guardrail') {
+    return res.json(fallbackResult);
+  }
+
+  const geminiApiKey = (process.env.GEMINI_API_KEY || 'AIzaSyCr2mu87r0FCIcPKV9Ufevu5HV1mqck09g').trim();
+  if (!geminiApiKey) {
+    return res.json(fallbackResult);
+  }
+
+  const catalogListText = Object.values(OFFICIAL_MSWDO_SYSTEM_PROGRAMS)
+    .map(p => `- tabKey: "${p.tabKey}" | Program Name: "${p.programName}" | Module: "${p.moduleLabel}" | Benefit: "${p.benefitAmount}"`)
+    .join('\n');
+
+  const systemInstruction = `You are the Official AI Eligibility Assessment and Assistance Recommendation Engine for the Municipal Social Welfare and Development Office (MSWDO) Social Assistance Management Information System.
+
+STRICT SYSTEM-ONLY GUARDRAIL RULES (MANDATORY):
+1. You must ONLY evaluate and recommend programs from the following 10 official MSWDO programs that exist inside this system:
+${catalogListText}
+
+2. NEVER invent, mention, or recommend any program outside the 10 tabKeys listed above (do NOT recommend food packs, stranded travel/balik-probinsya, housing loans, SSS/Pag-IBIG, or anything not in the 10 tabKeys).
+3. If the applicant's Narrative Statement is completely unrelated to social welfare, crisis assistance, disability, senior welfare, solo parenting, child welfare, education, or livelihood (for example: asking for gaming items, luxury goods, car loans, jokes/gibberish, or unrelated topics), OR if their monthly income is "Above ₱30,000 per month" with no valid crisis/disability/senior condition:
+   - Set "eligibilityStatus" to "NOT_ELIGIBLE"
+   - Set "matchScore" between 5 and 30
+   - Set "recommendedPrograms" to an empty array []
+   - Explain clearly in Taglish/English in "aiAssessmentSummary" why the request is outside the MSWDO system's scope or above the indigent income threshold.
+4. Otherwise, select between 1 and 4 of the most relevant programs from the 10 allowed tabKeys based on the applicant's Step 1 demographics, Step 2 selected hardships, and Step 3 narrative statement.
+5. Write "aiAssessmentSummary" and each program's "matchReason" in clear, empathetic, professional Taglish or English tailored specifically to the applicant's narrative and household profile.
+
+Return ONLY valid JSON matching this exact structure:
+{
+  "eligibilityStatus": "HIGHLY_ELIGIBLE" | "CONDITIONALLY_ELIGIBLE" | "NOT_ELIGIBLE",
+  "statusBadge": "string headline for the status banner",
+  "matchScore": number (0 to 99),
+  "priorityLevel": "string priority tier",
+  "aiAssessmentSummary": "2-3 sentences explaining the AI eligibility assessment based on the citizen's income, dependents, and narrative",
+  "policyNotes": "1 sentence MSWDO policy note",
+  "recommendedPrograms": [
+    {
+      "tabKey": "MUST be one of the 10 exact tabKeys",
+      "matchConfidence": number (65 to 99),
+      "eligibilityTag": "e.g. Primary AI Match (98% Eligible) or Eligible",
+      "matchReason": "1-2 sentences explaining why this specific MSWDO system program fits their situation"
+    }
+  ]
+}`;
+
+  const userPrompt = `Evaluate this Citizen Applicant for MSWDO Social Assistance:
+- Primary Applicant: ${payload.primaryApplicant || 'Myself'}
+- Monthly Household Income: ${payload.householdIncome || 'Below ₱10,000 per month'}
+- Barangay: ${payload.barangay || 'Quezon City'}
+- Dependent Members: ${payload.dependentMembers || '3 to 5 members'}
+- Employment Status: ${payload.employmentStatus || 'Informal / Daily Wage'}
+- Welfare Program Status: ${payload.welfareProgramStatus || 'Non-4Ps'}
+- Health Insurance: ${payload.healthInsurance || 'PhilHealth Indigent'}
+- Urgency Timeline: ${payload.urgencyTimeline || 'Immediate'}
+- Housing / Residency Condition: ${payload.residencyCondition || 'Permanent Resident'}
+- Selected Hardship Categories (Step 2): ${Array.isArray(payload.selectedHardships) ? payload.selectedHardships.join(', ') : 'None'}
+- Special Vulnerability Checkboxes: ${Array.isArray(payload.specialCircumstances) ? payload.specialCircumstances.join('; ') : 'None'}
+- Citizen Narrative Statement (Step 3): "${payload.narrative || ''}"`;
+
+  const modelsToTry = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+
+  for (const modelName of modelsToTry) {
+    try {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${geminiApiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemInstruction }] },
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+            generationConfig: {
+              temperature: 0.2,
+              responseMimeType: 'application/json'
+            }
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.warn(`⚠️ [Gemini AI ${modelName}] HTTP ${response.status}:`, errText.slice(0, 200));
+        continue;
+      }
+
+      const data = await response.json();
+      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!rawText) continue;
+
+      const parsed = JSON.parse(rawText);
+
+      // Strictly filter & enrich recommendedPrograms against OFFICIAL_MSWDO_SYSTEM_PROGRAMS
+      const validPrograms = Array.isArray(parsed.recommendedPrograms)
+        ? parsed.recommendedPrograms
+            .filter(item => item && item.tabKey && OFFICIAL_MSWDO_SYSTEM_PROGRAMS[item.tabKey])
+            .slice(0, 4)
+            .map(item => {
+              const official = OFFICIAL_MSWDO_SYSTEM_PROGRAMS[item.tabKey];
+              return {
+                tabKey: official.tabKey,
+                programName: official.programName,
+                moduleLabel: official.moduleLabel,
+                benefitAmount: official.benefitAmount,
+                matchConfidence: typeof item.matchConfidence === 'number' ? item.matchConfidence : 92,
+                eligibilityTag: item.eligibilityTag || 'AI Recommended Match',
+                matchReason: item.matchReason || 'Matched against MSWDO eligibility criteria.',
+                requirements: official.defaultRequirements
+              };
+            })
+        : [];
+
+      // If Gemini said ELIGIBLE but returned no valid system tabKeys, use fallback programs
+      const finalPrograms = parsed.eligibilityStatus === 'NOT_ELIGIBLE'
+        ? []
+        : (validPrograms.length > 0 ? validPrograms : fallbackResult.recommendedPrograms);
+
+      return res.json({
+        eligibilityStatus: parsed.eligibilityStatus || fallbackResult.eligibilityStatus,
+        statusBadge: parsed.statusBadge || fallbackResult.statusBadge,
+        matchScore: typeof parsed.matchScore === 'number' ? parsed.matchScore : fallbackResult.matchScore,
+        priorityLevel: parsed.priorityLevel || fallbackResult.priorityLevel,
+        aiAssessmentSummary: parsed.aiAssessmentSummary || fallbackResult.aiAssessmentSummary,
+        policyNotes: parsed.policyNotes || fallbackResult.policyNotes,
+        recommendedPrograms: finalPrograms,
+        engineSource: `gemini-ai (${modelName})`
+      });
+    } catch (aiErr) {
+      console.warn(`⚠️ [Gemini AI ${modelName}] Exception:`, aiErr.message);
+    }
+  }
+
+  // Fallback to deterministic MSWDO rule engine if all Gemini endpoints fail
+  return res.json(fallbackResult);
+});
+
 app.listen(PORT, () => {
   console.log(`GovServe Backend API server listening on http://localhost:${PORT}`);
   initDB();

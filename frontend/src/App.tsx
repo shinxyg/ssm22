@@ -1685,6 +1685,10 @@ export default function App() {
           setActiveFilter(category);
           setActiveTab('help-guide');
         }}
+        onNavigateToProgram={(tabKey) => {
+          setActiveTab(tabKey);
+          setIsEligibilityModalOpen(false);
+        }}
         darkMode={darkMode}
       />
 
