@@ -748,11 +748,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
       return;
     }
 
-    if (!isCaptchaChecked) {
-      setErrorMessage('Please verify that you are not a robot.');
-      return;
-    }
-
     setIsSubmittingReset(true);
 
     // Verify account exists in database (rejects random/unregistered emails)
@@ -1410,47 +1405,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
                         : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
                     }`}
                   />
-                </div>
-
-                {/* reCAPTCHA Checkbox Box (Clicking triggers Challenge Modal) */}
-                <div 
-                  onClick={() => {
-                    if (isCaptchaChecked) {
-                      setIsCaptchaChecked(false);
-                    } else {
-                      setIsCaptchaModalOpen(true);
-                      setModalError(null);
-                    }
-                  }}
-                  className={`border rounded-xl p-3 flex items-center justify-between select-none cursor-pointer transition-all ${
-                    isCaptchaChecked 
-                      ? darkMode
-                        ? 'bg-emerald-950/30 border-emerald-500/50 shadow-sm'
-                        : 'bg-emerald-50 border-emerald-300 shadow-sm'
-                      : darkMode 
-                        ? 'bg-[#091122] border-slate-700/80 hover:border-blue-500/60' 
-                        : 'bg-white border-slate-300 hover:border-blue-500/60'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`w-6 h-6 rounded border flex items-center justify-center transition-all ${
-                      isCaptchaChecked 
-                        ? 'bg-emerald-500 border-emerald-400 text-white' 
-                        : darkMode ? 'bg-slate-800 border-slate-600' : 'bg-slate-100 border-slate-300'
-                    }`}>
-                      {isCaptchaChecked && <Check className="w-4 h-4 text-white stroke-[3]" />}
-                    </div>
-                    <span className={`text-xs font-semibold ${
-                      isCaptchaChecked 
-                        ? 'text-emerald-500 font-bold' 
-                        : darkMode ? 'text-slate-200' : 'text-slate-700'
-                    }`}>
-                      {isCaptchaChecked ? 'Verified Human' : "I'm not a robot"}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">
-                    reCAPTCHA
-                  </span>
                 </div>
 
                 {/* Red Submit Button */}
