@@ -729,7 +729,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   <div className={`p-5 rounded-2xl border space-y-4 ${
                     darkMode ? 'bg-[#0f1b35] border-blue-900/40' : 'bg-slate-50 border-slate-200 shadow-sm'
                   }`}>
-                    <div className="flex items-center justify-between border-b pb-3 border-slate-800 dark:border-slate-800 border-slate-200">
+                    <div className={`flex items-center justify-between border-b pb-3 ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                       <h3 className="text-xs font-extrabold uppercase tracking-wider text-blue-500 flex items-center gap-2">
                         <ShieldCheck className="w-4 h-4 text-blue-400" />
                         ITO SA FINANCIAL SUBSIDY
