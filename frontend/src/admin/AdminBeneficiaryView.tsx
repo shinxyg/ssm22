@@ -673,7 +673,7 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                                 {b.totalCash > 0 ? b.totalCashFormatted : '₱0 (Non-Cash Aid)'}
                               </div>
                               <div className={`text-[10px] mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                {b.programsEnrolledCount} program{b.programsEnrolledCount > 1 ? 's' : ''} • {b.nonCashCount} service{b.nonCashCount > 1 ? 's' : ''}
+                                {b.programsEnrolledCount} program{b.programsEnrolledCount > 1 ? 's' : ''}
                               </div>
                             </div>
                           </td>

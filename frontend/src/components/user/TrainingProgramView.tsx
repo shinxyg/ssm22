@@ -1991,29 +1991,43 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
 
       {/* MODAL: SYLLABUS & VENUE DETAIL MODAL                                        */}
       {selectedScheduleModal && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn overflow-y-auto">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn overflow-y-auto">
           <div className={`relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-3xl border shadow-2xl overflow-hidden ${
             darkMode ? 'bg-[#0f192e] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
           }`}>
             {/* Sticky Header with Always-Visible Close Button */}
-            <div className="p-5 border-b border-slate-800/80 flex items-center justify-between shrink-0 bg-[#0f192e]/95 backdrop-blur-md z-10">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-blue-600/20 text-blue-400 rounded-2xl border border-blue-500/30 shrink-0">
+            <div className={`p-4 sm:p-5 border-b flex items-start justify-between gap-3 shrink-0 backdrop-blur-md z-10 ${
+              darkMode ? 'bg-[#0f192e]/95 border-slate-800/80' : 'bg-slate-50/95 border-slate-200'
+            }`}>
+              <div className="flex items-start gap-3 min-w-0 flex-1">
+                <div className={`p-2.5 rounded-2xl border shrink-0 mt-0.5 ${
+                  darkMode ? 'bg-blue-600/20 text-blue-400 border-blue-500/30' : 'bg-blue-50 text-blue-600 border-blue-200'
+                }`}>
                   <BookOpen className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="text-base font-extrabold text-white">{selectedScheduleModal.course}</h3>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xs font-bold text-blue-400">{selectedScheduleModal.category} • {selectedScheduleModal.batch}</span>
+                <div className="min-w-0 flex-1">
+                  <h3 className={`text-sm sm:text-base font-extrabold leading-snug break-words ${
+                    darkMode ? 'text-white' : 'text-slate-900'
+                  }`}>{selectedScheduleModal.course}</h3>
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1">
+                    <span className={`text-[11px] sm:text-xs font-bold ${
+                      darkMode ? 'text-blue-400' : 'text-blue-600'
+                    }`}>{selectedScheduleModal.category} • {selectedScheduleModal.batch}</span>
                     {(() => {
                       const sData = getCourseSlotData(selectedScheduleModal.course);
                       return (
-                        <span className={`text-[10px] font-bold border px-2.5 py-0.5 rounded-full ${
+                        <span className={`text-[10px] font-bold border px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0 ${
                           sData.isFull
-                            ? 'text-rose-400 bg-rose-950/60 border-rose-700/50'
+                            ? darkMode
+                              ? 'text-rose-400 bg-rose-950/60 border-rose-700/50'
+                              : 'text-rose-700 bg-rose-50 border-rose-300'
                             : sData.remainingSlots <= 5
-                            ? 'text-amber-400 bg-amber-950/60 border-amber-700/50'
-                            : 'text-emerald-400 bg-emerald-950/60 border-emerald-700/50'
+                            ? darkMode
+                              ? 'text-amber-400 bg-amber-950/60 border-amber-700/50'
+                              : 'text-amber-700 bg-amber-50 border-amber-300'
+                            : darkMode
+                            ? 'text-emerald-400 bg-emerald-950/60 border-emerald-700/50'
+                            : 'text-emerald-700 bg-emerald-50 border-emerald-300'
                         }`}>
                           {sData.badgeText}
                         </span>
@@ -2025,7 +2039,11 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedScheduleModal(null)}
-                className="p-2 text-slate-400 hover:text-white rounded-full bg-slate-800/80 hover:bg-slate-700 transition-all cursor-pointer"
+                className={`p-2 rounded-full transition-all cursor-pointer shrink-0 ${
+                  darkMode
+                    ? 'text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700'
+                    : 'text-slate-500 hover:text-slate-900 bg-slate-200/80 hover:bg-slate-300'
+                }`}
                 title="Close modal"
               >
                 <X className="w-5 h-5" />
@@ -2033,21 +2051,25 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
             </div>
 
             {/* Scrollable Modal Content Body */}
-            <div className="p-6 space-y-5 overflow-y-auto flex-1 custom-modal-scroll">
+            <div className={`p-4 sm:p-6 space-y-5 overflow-y-auto flex-1 custom-modal-scroll ${
+              darkMode ? 'bg-[#0f192e]' : 'bg-white'
+            }`}>
               {/* Venue & Time Overview */}
               <div className={`p-4 rounded-2xl border space-y-2.5 text-xs ${
                 darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
               }`}>
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+                <div className="flex items-start gap-2.5">
+                  <MapPin className={`w-4 h-4 shrink-0 mt-0.5 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                   <div>
                     <span className={`font-bold block ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedScheduleModal.venue}</span>
-                    <span className="text-slate-400 block text-[11px]">{selectedScheduleModal.address}</span>
+                    <span className={`block text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{selectedScheduleModal.address}</span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 pt-2 border-t border-slate-800/60">
-                  <Clock className="w-4 h-4 text-blue-400 shrink-0" />
+                <div className={`flex items-start gap-2.5 pt-2.5 border-t ${
+                  darkMode ? 'border-slate-800/60' : 'border-slate-200'
+                }`}>
+                  <Clock className={`w-4 h-4 shrink-0 mt-0.5 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
                   <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedScheduleModal.schedule} • ({selectedScheduleModal.duration})</span>
                 </div>
               </div>
@@ -2244,67 +2266,20 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
           </div>
 
           {/* Modal Bottom Actions */}
-          <div className="p-4 border-t border-slate-800 flex justify-end items-center gap-3 shrink-0 bg-[#0f192e]/95 backdrop-blur-md">
+          <div className={`p-3.5 sm:p-4 border-t flex justify-end items-center gap-3 shrink-0 backdrop-blur-md ${
+            darkMode ? 'bg-[#0f192e]/95 border-slate-800' : 'bg-slate-50/95 border-slate-200'
+          }`}>
             <button
               type="button"
               onClick={() => setSelectedScheduleModal(null)}
-              className={`px-5 py-2.5 rounded-xl border text-xs font-bold transition-all ${
-                darkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+              className={`w-full sm:w-auto px-6 py-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                darkMode
+                  ? 'border-slate-700 bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white'
+                  : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 shadow-sm'
               }`}
             >
               Close
             </button>
-
-            {activeApp ? (
-              activeApp.course_title === selectedScheduleModal.course || activeApp.assistance_type === selectedScheduleModal.course ? (
-                <button
-                  type="button"
-                  disabled
-                  className="px-5 py-2.5 bg-emerald-950/80 border border-emerald-500/50 text-emerald-400 text-xs font-extrabold rounded-xl cursor-not-allowed flex items-center gap-1.5"
-                >
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>Applied ({activeApp.status})</span>
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  disabled
-                  className="px-5 py-2.5 bg-slate-900/80 border border-slate-800 text-slate-500 text-xs font-bold rounded-xl cursor-not-allowed flex items-center gap-1.5"
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>Active Application Exists</span>
-                </button>
-              )
-            ) : (() => {
-              const modalSlotData = getCourseSlotData(selectedScheduleModal.course);
-              if (modalSlotData.isFull) {
-                return (
-                  <button
-                    type="button"
-                    disabled
-                    className="px-6 py-2.5 bg-rose-950/60 border border-rose-700/50 text-rose-300 text-xs font-bold rounded-xl cursor-not-allowed flex items-center gap-2"
-                  >
-                    <Lock className="w-4 h-4 text-rose-400" />
-                    <span>Batch Full (0 Slots Left)</span>
-                  </button>
-                );
-              }
-              return (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedCourseTitle(selectedScheduleModal.course);
-                    setSelectedScheduleModal(null);
-                    setApplyStep(2);
-                    setActiveTab(2);
-                  }}
-                  className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-blue-600/30 cursor-pointer"
-                >
-                  <span>Apply for this Training</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              );
-            })()}
           </div>
         </div>
       </div>,
