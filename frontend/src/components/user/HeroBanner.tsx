@@ -1,10 +1,10 @@
 import React from 'react';
-import { Search, HeartHandshake } from 'lucide-react';
+import { HeartHandshake } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 
 interface HeroBannerProps {
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
+  searchQuery?: string;
+  setSearchQuery?: (query: string) => void;
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
   onOpenTrackModal?: () => void;
@@ -13,8 +13,6 @@ interface HeroBannerProps {
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
-  searchQuery,
-  setSearchQuery,
   activeFilter,
   setActiveFilter,
   onOpenEligibilityModal,
@@ -25,7 +23,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   const filterPills = [
     { id: 'all', label: isTagalog ? 'Lahat ng Serbisyo' : 'All Services' },
-    { id: 'aics', label: isTagalog ? 'Tulong sa Kapus-Palad (AICS)' : 'AICS Crisis Aid (6 Types)' },
+    { id: 'aics', label: isTagalog ? 'Tulong sa Kapus-Palad (AICS)' : 'AICS Crisis Aid' },
     { id: 'pwd_senior', label: isTagalog ? 'PWD at Senior Citizen' : 'PWD & Senior Citizens' },
     { id: 'solo_child', label: isTagalog ? 'Solo Parent at Kalinga sa Bata' : 'Solo Parent & Child Welfare' },
     { id: 'livelihood_payout', label: isTagalog ? 'Pangkabuhayan at Pagsasanay' : 'Livelihood & Training' },
@@ -55,7 +53,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       </div>
 
       {/* Headline & Subtitle */}
-      <div className="relative z-10 max-w-3xl mb-4">
+      <div className="relative z-10 max-w-3xl mb-5">
         <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug mb-1.5">
           {isTagalog ? 'Maligayang Pagdating sa GovServe Portal!' : 'Welcome to GovServe Citizen Portal!'}
         </h2>
@@ -64,42 +62,6 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
             ? 'Alamin ang mga magagamit na programa ng tulong pampinansyal (AICS Medikal, Libing, Edukasyon), mga benepisyo sa sektor (PWD, Senior Citizen, Solo Parent), kalinga sa bata, at pondo sa pangkabuhayan.'
             : 'Explore available financial aid programs (AICS Medical, Funeral, Educational), special sector benefits (PWD, Senior Citizen, Solo Parent), child welfare support, and livelihood training grants before filing your digital application.'}
         </p>
-      </div>
-
-      {/* Search Input Bar */}
-      <div className="relative z-10 mb-5">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            const elem = document.getElementById('service-catalog');
-            if (elem) {
-              elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-          }}
-          className="relative max-w-3xl"
-        >
-          <div className="relative w-full">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <Search className="w-4 h-4 text-slate-400" />
-            </div>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={isTagalog ? "Maghanap ng serbisyo, kailangan, o benepisyo (hal. Medikal, Senior Booklet, PWD ID, Libing, Pangkabuhayan)..." : "Search services, requirements, or benefits (e.g. Medical, Senior Booklet, PWD ID, Funeral, Livelihood)..."}
-              className="w-full pl-10 pr-16 py-3 bg-[#0d162a] border border-slate-700/80 rounded-xl text-xs sm:text-sm text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/80 focus:border-blue-500 shadow-inner transition-colors"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </form>
       </div>
 
       {/* Filter Category Pills */}

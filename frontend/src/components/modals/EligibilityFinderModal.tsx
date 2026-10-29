@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { API_BASE_URL } from '../../config/api';
 
-interface RecommendedProgramItem {
+export interface RecommendedProgramItem {
   tabKey: string;
   programName: string;
   moduleLabel: string;
@@ -35,7 +35,7 @@ interface RecommendedProgramItem {
   requirements: string[];
 }
 
-interface AiAssessmentResult {
+export interface AiAssessmentResult {
   eligibilityStatus: 'HIGHLY_ELIGIBLE' | 'CONDITIONALLY_ELIGIBLE' | 'NOT_ELIGIBLE';
   statusBadge: string;
   matchScore: number;
@@ -51,6 +51,7 @@ interface EligibilityFinderModalProps {
   onClose: () => void;
   onApplyCategoryFilter?: (category: string) => void;
   onNavigateToProgram?: (tabKey: string) => void;
+  onSaveAssessmentResult?: (result: AiAssessmentResult) => void;
   darkMode?: boolean;
 }
 
@@ -59,6 +60,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
   onClose,
   onApplyCategoryFilter,
   onNavigateToProgram,
+  onSaveAssessmentResult,
   darkMode = true,
 }) => {
   const [currentStep, setCurrentStep] = useState<number>(1);
@@ -231,12 +233,15 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
       if (response.ok) {
         const data: AiAssessmentResult = await response.json();
         setAiResult(data);
+        if (onSaveAssessmentResult) {
+          onSaveAssessmentResult(data);
+        }
         setCurrentStep(4);
       } else {
         throw new Error('Backend returned non-200');
       }
     } catch {
-      setAiResult({
+      const fallbackData: AiAssessmentResult = {
         eligibilityStatus: 'HIGHLY_ELIGIBLE',
         statusBadge: 'High Eligibility Match Confirmed (Priority Indigent Category)',
         matchScore: 95,
@@ -275,7 +280,11 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
             ],
           },
         ],
-      });
+      };
+      setAiResult(fallbackData);
+      if (onSaveAssessmentResult) {
+        onSaveAssessmentResult(fallbackData);
+      }
       setCurrentStep(4);
     } finally {
       setIsAnalyzing(false);
