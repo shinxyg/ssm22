@@ -141,9 +141,11 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
     window.addEventListener('storage', updateUser);
     window.addEventListener('focus', updateUser);
+    window.addEventListener('govserve_profile_updated', updateUser);
     return () => {
       window.removeEventListener('storage', updateUser);
       window.removeEventListener('focus', updateUser);
+      window.removeEventListener('govserve_profile_updated', updateUser);
     };
   }, []);
 
@@ -615,9 +617,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             </div>
 
-            {/* Avatar Squircle Badge on the right (AD / JL) */}
-            <div className="relative w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-sky-400 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
-              {displayInitials}
+            {/* Avatar Squircle Badge on the right (AD / JL or uploaded Profile Photo) */}
+            <div className="relative w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-sky-400 text-white font-extrabold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+              {userRole !== 'admin' && (currentUserData?.profile_photo || currentUserData?.profilePhoto) ? (
+                <img
+                  src={currentUserData.profile_photo || currentUserData.profilePhoto}
+                  alt={displayName}
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              ) : (
+                displayInitials
+              )}
               {hasUnseenOtherDevices && (
                 <span className={`absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 animate-pulse ${darkMode ? 'ring-[#070e1b]' : 'ring-white'}`} />
               )}

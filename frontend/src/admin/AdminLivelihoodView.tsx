@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { API_BASE_URL } from '../config/api';
+import { useUsersProfilePhotos, matchApplicantPhoto, resolveApplicantDynamicName, getApplicantInitials } from '../utils/userProfilePhoto';
 import { 
   Search, 
   FileText, 
@@ -78,6 +79,7 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
 
   // Selected application for Detail/Inspection Modal
+  const usersPhotos = useUsersProfilePhotos();
   const [selectedApp, setSelectedApp] = useState<LivelihoodApplication | null>(null);
   const [inspectingDoc, setInspectingDoc] = useState<{ title: string; filename: string; url?: string } | null>(null);
 
@@ -603,17 +605,44 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
         <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
           <div className="bg-[#0e172a] text-slate-100 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-800 my-auto">
             {/* Header */}
-            <div className="p-5 bg-[#121e36] border-b border-slate-800 flex justify-between items-center shrink-0">
-              <div>
-                <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider">{selectedApp.reference_no}</span>
-                <h3 className="text-base font-extrabold text-white mt-0.5">
-                  {selectedApp.reference_no.startsWith('TRN-') || selectedApp.sector === 'Skills Training' ? 'Skills & Vocational Training Program' : 'Livelihood & Enterprise Assistance Program'}
-                </h3>
-              </div>
+            <div className="p-5 bg-[#121e36] border-b border-slate-800 flex justify-between items-center gap-4 shrink-0">
+              {(() => {
+                const dynName = resolveApplicantDynamicName(selectedApp);
+                const dynInitials = getApplicantInitials(dynName);
+                const photoUrl = matchApplicantPhoto(selectedApp, usersPhotos);
+                return (
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div
+                      onClick={() => {
+                        if (photoUrl) {
+                          setInspectingDoc({ title: `${dynName} — Applicant Profile Photo`, filename: 'profile_photo.jpg', url: photoUrl });
+                        }
+                      }}
+                      title={photoUrl ? 'Click to view applicant profile photo' : dynName}
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 ${photoUrl ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all' : ''}`}
+                    >
+                      {photoUrl ? (
+                        <img src={photoUrl} alt={dynName} className="w-full h-full object-cover" />
+                      ) : (
+                        dynInitials
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider block">{selectedApp.reference_no}</span>
+                      <h3 className="text-base font-extrabold text-white mt-0.5 truncate">
+                        {selectedApp.reference_no.startsWith('TRN-') || selectedApp.sector === 'Skills Training' ? 'Skills & Vocational Training Program' : 'Livelihood & Enterprise Assistance Program'}
+                      </h3>
+                      <p className="text-[11px] font-semibold text-slate-300 mt-0.5 truncate">
+                        Applicant: <span className="text-white font-extrabold">{dynName}</span>
+                      </p>
+                    </div>
+                  </div>
+                );
+              })()}
               <button
                 type="button"
                 onClick={() => setSelectedApp(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 shrink-0 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>

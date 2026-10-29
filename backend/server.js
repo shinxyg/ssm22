@@ -3463,7 +3463,7 @@ app.get('/api/user/profile', async (req, res) => {
 
   try {
     const cleanEmail = email.trim().toLowerCase();
-    const result = await pool.query('SELECT id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, COALESCE(is_online, FALSE) as is_online FROM users WHERE LOWER(email) = $1;', [cleanEmail]);
+    const result = await pool.query('SELECT id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, profile_photo, COALESCE(is_online, FALSE) as is_online FROM users WHERE LOWER(email) = $1;', [cleanEmail]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User profile not found' });
@@ -3472,6 +3472,34 @@ app.get('/api/user/profile', async (req, res) => {
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/user/profile-photo - Upload or update user profile photo
+app.post('/api/user/profile-photo', async (req, res) => {
+  const { email, profilePhoto } = req.body;
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'User email is required' });
+  }
+
+  try {
+    const cleanEmail = email.trim().toLowerCase();
+    const result = await pool.query(
+      `UPDATE users
+       SET profile_photo = $1, updated_at = CURRENT_TIMESTAMP
+       WHERE LOWER(email) = $2
+       RETURNING id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, profile_photo;`,
+      [profilePhoto || null, cleanEmail]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({ success: true, message: 'Profile photo updated successfully', user: result.rows[0] });
+  } catch (err) {
+    console.error('Error updating profile photo:', err);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -3492,7 +3520,8 @@ app.put('/api/user/profile', async (req, res) => {
     occupation,
     civilStatus,
     sex,
-    mobileNumber
+    mobileNumber,
+    profilePhoto
   } = req.body;
 
   if (!email) {
@@ -3517,9 +3546,10 @@ app.put('/api/user/profile', async (req, res) => {
         civil_status = COALESCE($12, civil_status),
         sex = COALESCE($13, sex),
         phone_number = COALESCE($14, phone_number),
+        profile_photo = COALESCE($15, profile_photo),
         updated_at = CURRENT_TIMESTAMP
-      WHERE LOWER(email) = $15
-      RETURNING id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city;
+      WHERE LOWER(email) = $16
+      RETURNING id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, profile_photo;
     `, [
       firstName,
       middleName,
@@ -3535,6 +3565,7 @@ app.put('/api/user/profile', async (req, res) => {
       civilStatus,
       sex,
       mobileNumber,
+      profilePhoto || null,
       cleanEmail
     ]);
 
@@ -3661,7 +3692,7 @@ app.get('/api/user/sessions/verify', async (req, res) => {
 app.get('/api/users', async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, COALESCE(status, 'Active') as status, COALESCE(is_online, FALSE) as is_online, created_at
+      SELECT id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, profile_photo, COALESCE(status, 'Active') as status, COALESCE(is_online, FALSE) as is_online, created_at
       FROM users
       ORDER BY id ASC;
     `);
@@ -3673,11 +3704,15 @@ app.get('/api/users', async (req, res) => {
       role: u.role === 'admin' ? 'Administrator' : 'User / Beneficiary',
       rawRole: u.role,
       name: `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email,
+      fullName: [u.first_name, u.middle_name, u.last_name, u.suffix].filter(Boolean).join(' ').trim() || u.email,
       firstName: u.first_name,
+      middleName: u.middle_name,
       lastName: u.last_name,
+      suffix: u.suffix,
       phoneNumber: u.phone_number || 'N/A',
       barangay: u.barangay || 'N/A',
       city: u.city || 'QUEZON CITY',
+      profilePhoto: u.profile_photo || null,
       status: u.status || 'Active',
       isOnline: u.is_online === true,
       presence: u.is_online === true ? 'Online' : 'Offline',
@@ -4279,11 +4314,40 @@ app.get('/api/beneficiaries', async (req, res) => {
         ? `${nameParts[0][0]}${nameParts[nameParts.length - 1][0]}`.toUpperCase()
         : (nameParts[0] ? nameParts[0].slice(0, 2).toUpperCase() : 'QC');
 
+      // Match profile_photo dynamically from registered users table
+      let matchedProfilePhoto = c.profilePhoto || null;
+      if (!matchedProfilePhoto && Array.isArray(usersRes.rows)) {
+        const cEmail = (c.email || '').trim().toLowerCase();
+        const cPhone = (c.phone || '').trim().replace(/[^0-9]/g, '');
+        const cNameParts = (c.rawName || c.name || '').trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(Boolean);
+        const cFirst = cNameParts[0] || '';
+        const cLast = cNameParts.length >= 2 ? cNameParts[cNameParts.length - 1] : '';
+
+        for (const u of usersRes.rows) {
+          if (!u.profile_photo) continue;
+          const uEmail = (u.email || '').trim().toLowerCase();
+          const uPhone = (u.phone_number || '').trim().replace(/[^0-9]/g, '');
+          const uFirst = (u.first_name || '').trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/)[0] || '';
+          const uLastParts = (u.last_name || '').trim().toLowerCase().replace(/[^a-z0-9\s]/g, '').split(/\s+/).filter(Boolean);
+          const uLast = uLastParts[uLastParts.length - 1] || '';
+
+          const emailMatch = cEmail && uEmail && cEmail === uEmail;
+          const phoneMatch = cPhone && uPhone && cPhone.slice(-10) === uPhone.slice(-10);
+          const nameMatch = cFirst && cLast && uFirst && uLast && cFirst === uFirst && cLast === uLast;
+
+          if (emailMatch || phoneMatch || nameMatch) {
+            matchedProfilePhoto = u.profile_photo;
+            break;
+          }
+        }
+      }
+
       return {
         id: c.id,
         citizenKey: c.key,
         name: c.name,
         initials,
+        profilePhoto: matchedProfilePhoto,
         age: c.age,
         dob: c.dob,
         gender: c.gender,

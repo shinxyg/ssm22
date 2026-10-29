@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Search, FileText, CheckCircle2, XCircle, Eye, Info, Clock, Check, X, User, Phone, MapPin, Calendar, Briefcase, Users, DollarSign, Home, HelpCircle } from 'lucide-react';
 import type { ApplicationRecord } from '../types';
+import { useUsersProfilePhotos, matchApplicantPhoto, resolveApplicantDynamicName, getApplicantInitials } from '../utils/userProfilePhoto';
 import { API_BASE_URL } from '../config/api';
 
 interface AdminPwdSeniorViewProps {
@@ -22,6 +23,7 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
   // DB Senior & PWD applications state
   const [dbSeniorApps, setDbSeniorApps] = useState<any[]>([]);
   const [dbPwdApps, setDbPwdApps] = useState<any[]>([]);
+  const usersPhotos = useUsersProfilePhotos();
   const [selectedApp, setSelectedApp] = useState<any | null>(null);
   const [rejectModalApp, setRejectModalApp] = useState<any | null>(null);
   const [rejectReason, setRejectReason] = useState<string>('');
@@ -586,38 +588,62 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
             <div className="bg-[#0e172a] border border-slate-700 rounded-2xl max-w-3xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-modal-scroll">
               
               {/* Header Bar */}
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800 uppercase">
-                      REF: {selectedApp.referenceNo}
-                    </span>
-                    {(() => {
-                      const st = selectedApp.status || '';
-                      const isApproved = st === 'APPROVED' || st === 'Approved' || st === 'Step 6: Completed';
-                      const isRejected = st === 'REJECTED' || st === 'Rejected' || st === 'Disapproved' || st.includes('Disapproved') || st.toUpperCase().includes('REJECT');
-                      return (
-                        <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded border uppercase ${
-                          isApproved
-                            ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                            : isRejected
-                            ? 'bg-red-950 text-red-400 border-red-800'
-                            : 'bg-amber-950 text-amber-400 border-amber-800'
-                        }`}>
-                          {selectedApp.status}
-                        </span>
-                      );
-                    })()}
-                  </div>
-                  <h3 className="text-xl font-extrabold text-white mt-1">
-                    {pInfo.firstName ? `${pInfo.firstName} ${pInfo.middleName || ''} ${pInfo.lastName}`.trim() : (selectedApp.applicantName || raw.applicant_name)}
-                  </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">{selectedApp.serviceName}</p>
-                </div>
+              <div className="flex items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                {(() => {
+                  const dynName = resolveApplicantDynamicName(selectedApp);
+                  const dynInitials = getApplicantInitials(dynName);
+                  const photoUrl = matchApplicantPhoto(selectedApp, usersPhotos);
+                  return (
+                    <div className="flex items-center gap-3.5 min-w-0">
+                      <div
+                        onClick={() => {
+                          if (photoUrl) {
+                            setViewingDoc({ title: `${dynName} — Applicant Profile Photo`, fileName: 'profile_photo.jpg', dataUrl: photoUrl, url: photoUrl });
+                          }
+                        }}
+                        title={photoUrl ? 'Click to view applicant profile photo' : dynName}
+                        className={`w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 ${photoUrl ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all' : ''}`}
+                      >
+                        {photoUrl ? (
+                          <img src={photoUrl} alt={dynName} className="w-full h-full object-cover" />
+                        ) : (
+                          dynInitials
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider">
+                            {selectedApp.referenceNo}
+                          </span>
+                          {(() => {
+                            const st = selectedApp.status || '';
+                            const isApproved = st === 'APPROVED' || st === 'Approved' || st === 'Step 6: Completed';
+                            const isRejected = st === 'REJECTED' || st === 'Rejected' || st === 'Disapproved' || st.includes('Disapproved') || st.toUpperCase().includes('REJECT');
+                            return (
+                              <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border uppercase ${
+                                isApproved
+                                  ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                                  : isRejected
+                                  ? 'bg-red-950 text-red-400 border-red-800'
+                                  : 'bg-amber-950 text-amber-400 border-amber-800'
+                              }`}>
+                                {selectedApp.status}
+                              </span>
+                            );
+                          })()}
+                        </div>
+                        <h3 className="text-base font-extrabold text-white mt-0.5 truncate">{selectedApp.serviceName}</h3>
+                        <p className="text-[11px] font-semibold text-slate-300 mt-0.5 truncate">
+                          Applicant: <span className="text-white font-extrabold">{dynName}</span>
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })()}
                 <button
                   type="button"
                   onClick={() => setSelectedApp(null)}
-                  className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white border border-slate-700 cursor-pointer"
+                  className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white border border-slate-700 shrink-0 cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>

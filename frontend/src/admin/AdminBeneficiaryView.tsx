@@ -8,6 +8,7 @@ import {
   ZoomIn, ZoomOut, RotateCcw, ArrowLeft
 } from 'lucide-react';
 import { maskPhoneNumber, maskIdNumber, maskAddressHouseStreet, maskName, maskEmail, logDataUnmaskEvent } from '../utils/masking';
+import { useUsersProfilePhotos, matchApplicantPhoto } from '../utils/userProfilePhoto';
 
 export interface AssistanceHistoryItem {
   program: string;
@@ -26,6 +27,7 @@ export interface Beneficiary {
   citizenKey: string;
   name: string;
   initials: string;
+  profilePhoto?: string | null;
   age: string;
   dob: string;
   gender: string;
@@ -67,6 +69,7 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
   const [verificationFilter, setVerificationFilter] = useState<string>('All Statuses');
 
   // Live state
+  const usersPhotos = useUsersProfilePhotos();
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -471,9 +474,18 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${getBadgeGradient(b.initials)} flex items-center justify-center font-extrabold text-sm shadow-md shrink-0`}>
-                            {b.initials}
-                          </div>
+                          {(() => {
+                            const photoUrl = b.profilePhoto || matchApplicantPhoto(b, usersPhotos);
+                            return (
+                              <div className={`w-10 h-10 rounded-xl bg-gradient-to-tr ${getBadgeGradient(b.initials)} flex items-center justify-center font-extrabold text-sm shadow-md shrink-0 overflow-hidden`}>
+                                {photoUrl ? (
+                                  <img src={photoUrl} alt={b.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  b.initials
+                                )}
+                              </div>
+                            );
+                          })()}
                           <div className="truncate">
                             <div className={`font-extrabold text-sm truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                               {b.name}
@@ -557,9 +569,18 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
                           {/* Beneficiary Name & Avatar */}
                           <td className="py-3.5 px-4">
                             <div className="flex items-center gap-3">
-                              <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${getBadgeGradient(b.initials)} flex items-center justify-center font-extrabold text-xs shadow-md shrink-0`}>
-                                {b.initials}
-                              </div>
+                              {(() => {
+                                const photoUrl = b.profilePhoto || matchApplicantPhoto(b, usersPhotos);
+                                return (
+                                  <div className={`w-9 h-9 rounded-xl bg-gradient-to-tr ${getBadgeGradient(b.initials)} flex items-center justify-center font-extrabold text-xs shadow-md shrink-0 overflow-hidden`}>
+                                    {photoUrl ? (
+                                      <img src={photoUrl} alt={b.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                      b.initials
+                                    )}
+                                  </div>
+                                );
+                              })()}
                               <div>
                                 <div className={`font-extrabold text-sm ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                                   {b.name}
@@ -719,9 +740,26 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
               <div className={`p-5 rounded-2xl border flex items-start gap-4 ${
                 darkMode ? 'bg-[#0e1726] border-slate-800' : 'bg-slate-50 border-slate-200 shadow-sm'
               }`}>
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${getBadgeGradient(selectedBeneficiary.initials)} flex items-center justify-center font-black text-xl shadow-lg shrink-0`}>
-                  {selectedBeneficiary.initials}
-                </div>
+                {(() => {
+                  const photoUrl = selectedBeneficiary.profilePhoto || matchApplicantPhoto(selectedBeneficiary, usersPhotos);
+                  return (
+                    <div
+                      onClick={() => {
+                        if (photoUrl) {
+                          openDocPreview(photoUrl, `${selectedBeneficiary.name} – Profile Photo`);
+                        }
+                      }}
+                      title={photoUrl ? 'Click to view full profile photo' : selectedBeneficiary.name}
+                      className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${getBadgeGradient(selectedBeneficiary.initials)} flex items-center justify-center font-black text-xl shadow-lg shrink-0 overflow-hidden ${photoUrl ? 'cursor-pointer ring-2 ring-blue-500/40 hover:ring-blue-400 transition-all' : ''}`}
+                    >
+                      {photoUrl ? (
+                        <img src={photoUrl} alt={selectedBeneficiary.name} className="w-full h-full object-cover" />
+                      ) : (
+                        selectedBeneficiary.initials
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <div className="space-y-1 flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">

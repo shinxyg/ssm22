@@ -115,6 +115,9 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
   const [mobileNumber, setMobileNumber] = useState<string>('09155582122');
 
   const [showQcidModal, setShowQcidModal] = useState<boolean>(false);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [photoUploadMsg, setPhotoUploadMsg] = useState<string | null>(null);
+  const photoInputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Device Management & Sessions State
   interface UserSession {
@@ -291,15 +294,35 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
         if (u.sex) setSex(u.sex);
         if (u.phone_number || u.mobileNumber) setMobileNumber(u.phone_number || u.mobileNumber);
         if (u.working_in_qc !== undefined) setWorkingInQC(u.working_in_qc);
+        if (u.profile_photo || u.profilePhoto) setProfilePhoto(u.profile_photo || u.profilePhoto);
         if (u.session_token) setCurrentSessionToken(u.session_token);
-        if (u.email) {
-          setEmail(u.email);
-          fetchSessions(u.email);
-        } else {
-          fetchSessions(userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
-        }
+        const resolvedEmail = u.email || (userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
+        setEmail(resolvedEmail);
+        fetchSessions(resolvedEmail);
+        fetch(`${API_BASE_URL}/api/user/profile?email=${encodeURIComponent(resolvedEmail)}`)
+          .then(r => r.ok ? r.json() : null)
+          .then(dbUser => {
+            if (dbUser && dbUser.profile_photo) {
+              setProfilePhoto(dbUser.profile_photo);
+              try {
+                const curr = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                localStorage.setItem('currentUser', JSON.stringify({ ...curr, profile_photo: dbUser.profile_photo }));
+                window.dispatchEvent(new Event('govserve_profile_updated'));
+              } catch {}
+            }
+          })
+          .catch(() => {});
       } else {
-        fetchSessions(userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
+        const defaultEmail = userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com';
+        fetchSessions(defaultEmail);
+        fetch(`${API_BASE_URL}/api/user/profile?email=${encodeURIComponent(defaultEmail)}`)
+          .then(r => r.ok ? r.json() : null)
+          .then(dbUser => {
+            if (dbUser && dbUser.profile_photo) {
+              setProfilePhoto(dbUser.profile_photo);
+            }
+          })
+          .catch(() => {});
       }
     } catch (err) {
       console.warn('Error reading currentUser from localStorage:', err);
@@ -435,7 +458,66 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     }
   };
 
-  const isSystemAdmin = userRole === 'admin';
+  const isSystemAdmin = userRole === 'admin' || (firstName.trim().toLowerCase() === 'system' && lastName.trim().toLowerCase() === 'admin');
+
+  const handlePhotoUploadChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const rawDataUrl = ev.target?.result as string;
+      if (!rawDataUrl) return;
+
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        const maxDim = 320;
+        let w = img.width;
+        let h = img.height;
+        if (w > h && w > maxDim) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else if (h >= w && h > maxDim) {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, w, h);
+        }
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        setProfilePhoto(compressedDataUrl);
+
+        const targetEmail = email || (userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
+        try {
+          const savedStr = localStorage.getItem('currentUser');
+          const parsed = savedStr ? JSON.parse(savedStr) : { email: targetEmail, first_name: firstName, middle_name: middleName, last_name: lastName };
+          const updatedUser = { ...parsed, profile_photo: compressedDataUrl };
+          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+          window.dispatchEvent(new Event('storage'));
+          window.dispatchEvent(new Event('govserve_profile_updated'));
+        } catch {}
+
+        try {
+          await fetch(`${API_BASE_URL}/api/user/profile-photo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: targetEmail, profilePhoto: compressedDataUrl }),
+          });
+          setPhotoUploadMsg('Profile photo updated successfully!');
+          setTimeout(() => setPhotoUploadMsg(null), 3500);
+        } catch (err) {
+          console.error('Error saving profile photo to backend:', err);
+        }
+      };
+      img.src = rawDataUrl;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto animate-in fade-in duration-300 pb-12">
@@ -453,26 +535,49 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
               darkMode ? 'bg-[#070e1b] border-slate-800' : 'bg-slate-100 border-slate-300'
             }`}>
               <div className="flex items-center gap-3.5">
-                <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-500/50 flex items-center justify-center font-bold text-lg shrink-0 ${
-                  darkMode ? 'bg-slate-800 text-slate-300' : 'bg-white text-slate-700'
-                }`}>
-                  <User className={`w-6 h-6 sm:w-7 sm:h-7 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`} />
+                <div
+                  onClick={() => photoInputRef.current?.click()}
+                  title="Click to upload profile photo"
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-500/50 flex items-center justify-center font-bold text-lg shrink-0 overflow-hidden cursor-pointer ${
+                    darkMode ? 'bg-slate-800 text-slate-300' : 'bg-white text-slate-700'
+                  }`}
+                >
+                  {profilePhoto ? (
+                    <img src={profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className={`w-6 h-6 sm:w-7 sm:h-7 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`} />
+                  )}
                 </div>
                 <div className="min-w-0">
                   <h4 className={`text-sm sm:text-base font-extrabold truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                     {isSystemAdmin ? 'SYSTEM ADMINISTRATOR' : `${firstName} ${middleName} ${lastName} ${suffix}`.replace(/\s+/g, ' ').trim() || 'JEFFERSON FERNANDO LEE'}
                   </h4>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className={`text-xs font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Status:</span>
                     <span className="inline-flex items-center px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-[10px] font-extrabold rounded-full">
                       Active
                     </span>
+                    {photoUploadMsg && (
+                      <span className="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        {photoUploadMsg}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoUploadChange}
+                className="hidden"
+              />
+
               <button
                 type="button"
+                onClick={() => photoInputRef.current?.click()}
                 className={`w-full sm:w-auto justify-center px-3.5 py-2 text-xs font-semibold rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
                   darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
                 }`}
