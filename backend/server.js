@@ -4162,15 +4162,21 @@ app.get('/api/beneficiaries', async (req, res) => {
         assignCitizenIdDoc(c, soloDoc.dataUrl, soloDoc.name || 'Solo Parent ID (SPIC)', 'Solo Parent ID (SPIC)');
       }
 
-      const amt = parseFloat(sp.amount) || 3000;
+      const refNo = String(sp.reference_no || '');
+      const isSoloEdu =
+        refNo.toUpperCase().includes('SP-EDU') ||
+        (sp.category || '').toLowerCase().includes('edu') ||
+        (sp.service_name || '').toLowerCase().includes('edu');
+
+      const amt = parseFloat(sp.amount) || (isSoloEdu ? 5000 : 3000);
       if (isApprovedStatus(sp.status)) c.totalCash += amt;
 
       c.history.push({
-        program: 'Solo Parent Financial Subsidy',
+        program: isSoloEdu ? 'Solo Parent Educational Assistance' : 'Solo Parent Financial Subsidy',
         category: 'solo_parent',
         referenceNo: sp.reference_no,
         date: sp.date_submitted || sp.created_at,
-        type: 'Cash Subsidy',
+        type: isSoloEdu ? 'Educational Cash Grant' : 'Cash Subsidy',
         amountFormatted: `₱${amt.toLocaleString()}`,
         amountNumber: amt,
         status: sp.status || 'Pending Document Verification',
@@ -4183,7 +4189,13 @@ app.get('/api/beneficiaries', async (req, res) => {
       const name = edu.applicant_name || `${edu.first_name || ''} ${edu.last_name || ''}`.trim() || 'Edu Assistance';
       const key = normalizeCitizenKey(name, edu.phone_number);
       const c = getOrCreateCitizen(key, name, edu);
-      const isCw = (edu.category || '').toLowerCase().includes('child') || (edu.reference_no || '').startsWith('CW-');
+      const refNo = String(edu.reference_no || '');
+      if (refNo && c.history.some(h => h.referenceNo === refNo)) return;
+
+      const isSoloEdu =
+        refNo.toUpperCase().includes('SP-EDU') ||
+        (edu.category || '').toLowerCase().includes('solo');
+      const isCw = (edu.category || '').toLowerCase().includes('child') || refNo.startsWith('CW-');
       c.sectors.add(isCw ? 'Child Welfare' : 'Edu Assistance');
 
       const docs = edu.uploaded_documents || edu.details?.uploadedDocData || {};
@@ -4196,7 +4208,7 @@ app.get('/api/beneficiaries', async (req, res) => {
       if (isApprovedStatus(edu.status)) c.totalCash += amt;
 
       c.history.push({
-        program: isCw ? 'Child Welfare Educational Aid' : 'Solo Parent Educational Assistance',
+        program: isSoloEdu ? 'Solo Parent Educational Assistance' : 'Educational Aid (Indigent Youth)',
         category: 'educational',
         referenceNo: edu.reference_no,
         date: edu.date_submitted || edu.created_at,
@@ -4210,9 +4222,14 @@ app.get('/api/beneficiaries', async (req, res) => {
 
     // 6. Process Child Welfare Applications
     cwRes.rows.forEach(cw => {
+      const refNo = String(cw.reference_no || '');
+      if (refNo.toUpperCase().startsWith('QC-EDU-')) return;
+
       const name = cw.applicant_name || `${cw.first_name || ''} ${cw.last_name || ''}`.trim() || 'Child Welfare Ward';
       const key = normalizeCitizenKey(name, cw.phone_number);
       const c = getOrCreateCitizen(key, name, cw);
+      if (refNo && c.history.some(h => h.referenceNo === refNo)) return;
+
       c.sectors.add('Child Welfare');
       c.idType = 'PSA Birth Certificate / Referral';
       c.nonCashCount += 1;
