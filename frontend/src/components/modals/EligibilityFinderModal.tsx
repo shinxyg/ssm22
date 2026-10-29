@@ -23,6 +23,7 @@ import {
   XCircle
 } from 'lucide-react';
 import { API_BASE_URL } from '../../config/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 export interface RecommendedProgramItem {
   tabKey: string;
@@ -46,6 +47,164 @@ export interface AiAssessmentResult {
   engineSource?: string;
 }
 
+export function localizeStatusBadge(badge: string, eligibilityStatus: string, isTagalog: boolean): string {
+  if (isTagalog) {
+    if (eligibilityStatus === 'HIGHLY_ELIGIBLE') {
+      return 'Kumpirmadong Kwalipikado (Prayoridad na Indigent Category)';
+    }
+    if (eligibilityStatus === 'CONDITIONALLY_ELIGIBLE') {
+      return 'Conditionally Eligible (Dadaan sa Social Worker Validation)';
+    }
+    return 'Labas sa Sakop o Lagpas sa Income Threshold (Hindi Kwalipikado)';
+  }
+  if (eligibilityStatus === 'HIGHLY_ELIGIBLE') {
+    return 'High Eligibility Match Confirmed (Priority Indigent Category)';
+  }
+  if (eligibilityStatus === 'CONDITIONALLY_ELIGIBLE') {
+    return 'Conditionally Eligible (Subject to Social Worker Case Validation)';
+  }
+  return badge || 'Outside MSWDO System Scope / Not Eligible';
+}
+
+export function localizeAssessmentSummary(summary: string, eligibilityStatus: string, isTagalog: boolean): string {
+  const hasTagalogWords = /\b(base sa|ng inyong|ang inyong|sambahayan|narito|maaari|kayo|tugma)\b/i.test(summary || '');
+  if (isTagalog) {
+    if (hasTagalogWords) return summary;
+    if (eligibilityStatus === 'HIGHLY_ELIGIBLE') {
+      return 'Base sa AI Pre-Screening ng inyong household profile at salaysay sa Step 3, ang inyong sambahayan ay PASOK sa Indigent Priority Criteria ng MSWDO. Narito ang mga opisyal na programa sa loob ng ating system na direktang tumutugon sa inyong sitwasyon.';
+    }
+    if (eligibilityStatus === 'CONDITIONALLY_ELIGIBLE') {
+      return 'Base sa AI Pre-Screening, ang inyong sambahayan ay CONDITIONALLY ELIGIBLE. Maaari kayong magpasa ng aplikasyon sa mga inirekomendang programa sa ibaba, ngunit dadaan ito sa karagdagang case validation ng MSWDO Social Worker.';
+    }
+    return 'Ang inyong inilagay na sitwasyon ay labas sa sakop o lagpas sa indigent income threshold ng MSWDO.';
+  } else {
+    if (!hasTagalogWords && summary) return summary;
+    const parenMatch = (summary || '').match(/household profile \(([^)]+)\)/i);
+    const details = parenMatch ? ` (${parenMatch[1]})` : '';
+    if (eligibilityStatus === 'HIGHLY_ELIGIBLE') {
+      return `Based on the AI Pre-Screening of your household profile${details} and your narrative statement in Step 3, your household meets the MSWDO Indigent Priority Criteria. Below are the official social assistance programs in our system that directly address your situation.`;
+    }
+    if (eligibilityStatus === 'CONDITIONALLY_ELIGIBLE') {
+      return `Based on the AI Pre-Screening, your household${details} is CONDITIONALLY ELIGIBLE. You may submit an application for the recommended programs below, subject to further case validation by an MSWDO Social Worker.`;
+    }
+    return 'Based on the AI Pre-Screening, the submitted profile or request falls outside the MSWDO Indigent Priority Criteria.';
+  }
+}
+
+export function localizeProgramName(tabKey: string, defaultName: string, isTagalog: boolean): string {
+  if (!isTagalog) return defaultName;
+  switch (tabKey) {
+    case 'aics-medical': return 'AICS Tulong Medikal at Pagpapa-ospital';
+    case 'aics-funeral': return 'AICS Tulong sa Libing at Punerarya';
+    case 'aics-educational': return 'Tulong Pang-Edukasyon para sa Kabataan';
+    case 'childwelfare-form': return 'Serbisyo sa Kalinga at Proteksyon ng Bata';
+    case 'pwd-form': return 'Tulong Pinansyal at Kagamitan para sa PWD';
+    case 'senior-form': return 'Tulong Pinansyal at Medikal para sa Senior Citizen';
+    case 'soloparent-financial-form':
+    case 'soloparent-form': return 'Buwanang Tulong Pinansyal para sa Solo Parent';
+    case 'soloparent-edu-form': return 'Tulong Pang-Edukasyon para sa Anak ng Solo Parent';
+    case 'livelihood': return 'Puhunan Pangkabuhayan (Livelihood Capital Grant)';
+    case 'skills-training': return 'Libreng Pagsasanay Bokasyonal (Skills Training)';
+    default: return defaultName;
+  }
+}
+
+export function localizeModuleLabel(tabKey: string, defaultLabel: string, isTagalog: boolean): string {
+  if (!isTagalog) return defaultLabel;
+  switch (tabKey) {
+    case 'aics-medical':
+    case 'aics-funeral': return 'Modyul ng AICS';
+    case 'aics-educational':
+    case 'childwelfare-form': return 'Modyul sa Kalinga ng Bata';
+    case 'pwd-form': return 'Modyul ng PWD';
+    case 'senior-form': return 'Modyul ng Senior Citizen';
+    case 'soloparent-financial-form':
+    case 'soloparent-form':
+    case 'soloparent-edu-form': return 'Modyul ng Solo Parent';
+    case 'livelihood':
+    case 'skills-training': return 'Modyul sa Pangkabuhayan';
+    default: return defaultLabel;
+  }
+}
+
+export function localizeBenefitAmount(tabKey: string, defaultBenefit: string, isTagalog: boolean): string {
+  if (!isTagalog) return defaultBenefit;
+  switch (tabKey) {
+    case 'aics-medical': return '₱5,000 – ₱20,000 Guarantee Letter / Tulong Pinansyal';
+    case 'aics-funeral': return 'Hanggang ₱10,000 Guarantee Letter sa Punerarya';
+    case 'aics-educational': return '₱5,000 Tulong Pang-Edukasyon';
+    case 'childwelfare-form': return 'Proteksyon, Nutrisyon at Kalinga sa Bata';
+    case 'pwd-form': return '₱3,000 Tulong Pinansyal at Assistive Device';
+    case 'senior-form': return '₱4,000 Tulong Pinansyal at Medikal sa Senior';
+    case 'soloparent-financial-form':
+    case 'soloparent-form': return '₱3,000 Tulong Pinansyal sa Solo Parent';
+    case 'soloparent-edu-form': return '₱5,000 Educational Grant sa Anak ng Solo Parent';
+    case 'livelihood': return '₱15,000 Puhunan sa Maliit na Negosyo';
+    case 'skills-training': return 'Libreng Kurso Bokasyonal at Starter Kit';
+    default: return defaultBenefit;
+  }
+}
+
+export function localizeMatchReason(tabKey: string, reason: string, isTagalog: boolean): string {
+  const hasTagalogWords = /\b(tugma|inyong|direktang|sagot|gastusin|punerarya|libing|pumanaw|tulong|para sa|buwanan|nagtataguyod|nakalaan|nag-aaral|puhunan|angkop|libreng|upang|madagdagan|miyembro|pamilya|kapansanan|taong gulang|sambahayan)\b/i.test(reason || '');
+
+  if (isTagalog) {
+    if (hasTagalogWords && reason) return reason;
+    switch (tabKey) {
+      case 'aics-medical':
+        return 'Tugma sa inyong medikal o hospitalization crisis at low-income household profile.';
+      case 'aics-funeral':
+        return 'Direktang sagot para sa gastusin sa punerarya at libing ng pumanaw na kapamilya sa ilalim ng AICS.';
+      case 'aics-educational':
+        return 'Tulong pang-edukasyon para sa nag-aaral na dependent mula sa low-income na sambahayan.';
+      case 'childwelfare-form':
+        return 'Para sa proteksyon, nutrisyon, at kapakanan ng mga bata sa sambahayan.';
+      case 'pwd-form':
+        return 'Statutory financial at assistive support para sa miyembro ng pamilya na may kapansanan (PWD).';
+      case 'senior-form':
+        return 'Tulong pinansyal at pang-medikal para sa indigent Senior Citizen (60+ taong gulang).';
+      case 'soloparent-financial-form':
+      case 'soloparent-form':
+        return 'Buwanan o crisis financial subsidy para sa Solo Parent na mag-isang nagtataguyod ng anak.';
+      case 'soloparent-edu-form':
+        return 'Educational grant na nakalaan para sa nag-aaral na anak ng rehistradong Solo Parent.';
+      case 'livelihood':
+        return 'Puhunan pang-kabuhayan (₱15,000) na angkop sa kasalukuyang employment at income status ng sambahayan.';
+      case 'skills-training':
+        return 'Libreng vocational at skills training upang madagdagan ang kakayahan at kita ng pamilya.';
+      default:
+        return reason;
+    }
+  } else {
+    if (!hasTagalogWords && reason) return reason;
+    switch (tabKey) {
+      case 'aics-medical':
+        return 'Directly matches your medical or hospitalization crisis and low-income household profile for urgent AICS support.';
+      case 'aics-funeral':
+        return 'Provides immediate burial and funeral parlor financial assistance for a deceased family member under AICS.';
+      case 'aics-educational':
+        return 'Provides educational financial support for studying dependents from a low-income household.';
+      case 'childwelfare-form':
+        return 'Dedicated to child protection, nutrition, and developmental welfare support for vulnerable children in the household.';
+      case 'pwd-form':
+        return 'Provides statutory financial subsidy and assistive device support for a household member with a disability (PWD).';
+      case 'senior-form':
+        return 'Provides social pension and medical welfare support for an indigent Senior Citizen (60 years old and above).';
+      case 'soloparent-financial-form':
+      case 'soloparent-form':
+        return 'Provides monthly or crisis financial subsidy for a verified Solo Parent supporting dependent children alone.';
+      case 'soloparent-edu-form':
+        return 'Provides an educational assistance grant dedicated to the studying child of a registered Solo Parent.';
+      case 'livelihood':
+        return 'Provides a ₱15,000 micro-enterprise capital grant suited to your household employment and income profile.';
+      case 'skills-training':
+        return 'Offers free vocational and skills training courses to improve employability and household income.';
+      default:
+        return 'Matched against MSWDO social welfare eligibility criteria for your household profile.';
+    }
+  }
+}
+
 interface EligibilityFinderModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -63,6 +222,8 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
   onSaveAssessmentResult,
   darkMode = true,
 }) => {
+  const { language } = useLanguage();
+  const isTagalog = language === 'Tagalog';
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
   const [aiResult, setAiResult] = useState<AiAssessmentResult | null>(null);
@@ -227,6 +388,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
           selectedHardships,
           narrative,
           specialCircumstances,
+          language,
         }),
       });
 
@@ -243,12 +405,17 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
     } catch {
       const fallbackData: AiAssessmentResult = {
         eligibilityStatus: 'HIGHLY_ELIGIBLE',
-        statusBadge: 'High Eligibility Match Confirmed (Priority Indigent Category)',
+        statusBadge: isTagalog
+          ? 'Kumpirmadong Kwalipikado (Prayoridad na Indigent Category)'
+          : 'High Eligibility Match Confirmed (Priority Indigent Category)',
         matchScore: 95,
-        priorityLevel: 'Priority Category 1 (Indigent / Crisis)',
-        aiAssessmentSummary:
-          'Base sa AI Pre-Screening ng inyong household profile at narrative statement, ang inyong sambahayan ay pasok sa MSWDO Indigent Vulnerability Criteria. Narito ang mga opisyal na programa sa loob ng system na tugma sa inyong pangangailangan.',
-        policyNotes: `Evaluated under MSWDO Social Case Intake Guidelines for ${barangay}.`,
+        priorityLevel: isTagalog ? 'Prayoridad Kategorya 1 (Indigent / Krisis)' : 'Priority Category 1 (Indigent / Crisis)',
+        aiAssessmentSummary: isTagalog
+          ? 'Base sa AI Pre-Screening ng inyong household profile at salaysay sa Step 3, ang inyong sambahayan ay PASOK sa Indigent Priority Criteria ng MSWDO. Narito ang mga opisyal na programa sa loob ng ating system na direktang tumutugon sa inyong sitwasyon.'
+          : 'Based on the AI Pre-Screening of your household profile and your narrative statement in Step 3, your household meets the MSWDO Indigent Priority Criteria. Below are the official social assistance programs in our system that directly address your situation.',
+        policyNotes: isTagalog
+          ? `Sinuri sa ilalim ng MSWDO Social Case Intake Guidelines para sa ${barangay}.`
+          : `Evaluated under MSWDO Social Case Intake Guidelines for ${barangay}.`,
         recommendedPrograms: [
           {
             tabKey: 'aics-medical',
@@ -257,7 +424,9 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
             benefitAmount: '₱5,000 – ₱20,000 Guarantee Letter / Cash Aid',
             matchConfidence: 96,
             eligibilityTag: 'Primary AI Match',
-            matchReason: 'Tugma sa inyong medikal/hospitalization crisis at low-income household profile.',
+            matchReason: isTagalog
+              ? 'Tugma sa inyong medikal o hospitalization crisis at low-income household profile.'
+              : 'Directly matches your medical or hospitalization crisis and low-income household profile for urgent AICS support.',
             requirements: [
               'Valid Government / QCitizen ID',
               'Medical Certificate / Clinical Abstract',
@@ -272,7 +441,9 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
             benefitAmount: '₱15,000 Micro-Enterprise Capital Grant',
             matchConfidence: 90,
             eligibilityTag: 'Recommended Support',
-            matchReason: 'Puhunan pang-kabuhayan para sa informal o daily wage earner ng pamilya.',
+            matchReason: isTagalog
+              ? 'Puhunan pang-kabuhayan (₱15,000) na angkop sa kasalukuyang employment at income status ng sambahayan.'
+              : 'Provides a ₱15,000 micro-enterprise capital grant suited to your household employment and income profile.',
             requirements: [
               'Valid Government / QCitizen ID',
               'Simple Micro-Business Proposal',
@@ -927,7 +1098,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                     </div>
                     <div>
                       <h4 className={`text-sm font-extrabold ${darkMode ? 'text-emerald-200' : 'text-emerald-900'}`}>
-                        {aiResult.statusBadge}
+                        {localizeStatusBadge(aiResult.statusBadge, aiResult.eligibilityStatus, isTagalog)}
                       </h4>
                       <p className={`text-xs mt-0.5 ${darkMode ? 'text-emerald-300/80' : 'text-emerald-700'}`}>
                         {aiResult.priorityLevel}
@@ -941,7 +1112,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                         : 'bg-emerald-100 border-emerald-300 text-emerald-800'
                     }`}
                   >
-                    <span>{aiResult.matchScore}% Policy Match</span>
+                    <span>{aiResult.matchScore}% {isTagalog ? 'Tugma sa Patakaran' : 'Policy Match'}</span>
                   </div>
                 </div>
               )}
@@ -955,11 +1126,11 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                 <div className="flex items-center justify-between">
                   <span className={`text-xs font-extrabold uppercase tracking-wider flex items-center gap-1.5 ${darkMode ? 'text-blue-300' : 'text-blue-800'}`}>
                     <FileText className="w-3.5 h-3.5" />
-                    AI Social Case Evaluation Summary
+                    {isTagalog ? 'Buod ng Pagsusuri ng AI Social Case' : 'AI Social Case Evaluation Summary'}
                   </span>
                 </div>
                 <p className={`text-xs sm:text-sm leading-relaxed ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
-                  {aiResult.aiAssessmentSummary}
+                  {localizeAssessmentSummary(aiResult.aiAssessmentSummary, aiResult.eligibilityStatus, isTagalog)}
                 </p>
                 {aiResult.policyNotes && (
                   <p className={`text-[11px] italic pt-1 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
@@ -972,7 +1143,9 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
               {aiResult.recommendedPrograms && aiResult.recommendedPrograms.length > 0 ? (
                 <div className="space-y-3">
                   <h4 className={`text-xs font-bold uppercase tracking-wider ${darkMode ? 'text-slate-200' : 'text-slate-700'}`}>
-                    Recommended MSWDO System Programs ({aiResult.recommendedPrograms.length} Matched):
+                    {isTagalog
+                      ? `Inirekomendang Programa ng MSWDO System (${aiResult.recommendedPrograms.length} Tugma):`
+                      : `Recommended MSWDO System Programs (${aiResult.recommendedPrograms.length} Matched):`}
                   </h4>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
@@ -993,10 +1166,10 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                                   darkMode ? 'bg-slate-800 text-blue-300' : 'bg-blue-50 text-blue-700'
                                 }`}
                               >
-                                {prog.moduleLabel}
+                                {localizeModuleLabel(prog.tabKey, prog.moduleLabel, isTagalog)}
                               </span>
                               <h5 className={`text-xs sm:text-sm font-extrabold leading-snug ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                                {prog.programName}
+                                {localizeProgramName(prog.tabKey, prog.programName, isTagalog)}
                               </h5>
                             </div>
                             <span
@@ -1006,22 +1179,22 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                                   : 'bg-emerald-50 text-emerald-700 border-emerald-300'
                               }`}
                             >
-                              {prog.matchConfidence}% Match
+                              {prog.matchConfidence}% {isTagalog ? 'Tugma' : 'Match'}
                             </span>
                           </div>
 
                           <div className={`text-xs font-bold ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
-                            Benefit: {prog.benefitAmount}
+                            {isTagalog ? 'Benepisyo:' : 'Benefit:'} {localizeBenefitAmount(prog.tabKey, prog.benefitAmount, isTagalog)}
                           </div>
 
                           <p className={`text-xs leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                            {prog.matchReason}
+                            {localizeMatchReason(prog.tabKey, prog.matchReason, isTagalog)}
                           </p>
 
                           {prog.requirements && prog.requirements.length > 0 && (
                             <div className={`pt-1.5 border-t ${darkMode ? 'border-slate-800' : 'border-slate-100'}`}>
                               <span className={`block text-[10px] font-bold uppercase mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                                Key Requirements to Prepare:
+                                {isTagalog ? 'Mga Pangunahing Requirements:' : 'Key Requirements to Prepare:'}
                               </span>
                               <ul className="space-y-0.5">
                                 {prog.requirements.slice(0, 3).map((req, rIdx) => (
@@ -1045,7 +1218,7 @@ export const EligibilityFinderModal: React.FC<EligibilityFinderModalProps> = ({
                           }}
                           className="w-full mt-1 py-2 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
                         >
-                          <span>Apply Now / Proceed to Form</span>
+                          <span>{isTagalog ? 'Mag-apply Ngayon / Pumunta sa Form' : 'Apply Now / Proceed to Form'}</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </button>
                       </div>

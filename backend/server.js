@@ -4482,9 +4482,11 @@ function buildRuleBasedEligibilityAssessment(payload) {
     residencyCondition = '',
     selectedHardships = [],
     narrative = '',
-    specialCircumstances = []
+    specialCircumstances = [],
+    language = 'English'
   } = payload || {};
 
+  const isTagalog = language === 'Tagalog';
   const text = `${narrative} ${(specialCircumstances || []).join(' ')}`.toLowerCase();
   const isHighIncome = householdIncome.includes('Above ₱30,000');
   const isModerateIncome = householdIncome.includes('₱20,001 to ₱30,000');
@@ -4513,11 +4515,17 @@ function buildRuleBasedEligibilityAssessment(payload) {
   if (hasOutOfScopeKeyword && !hasWelfareKeyword) {
     return {
       eligibilityStatus: 'NOT_ELIGIBLE',
-      statusBadge: 'Outside MSWDO System Scope / Not Eligible',
+      statusBadge: isTagalog
+        ? 'Labas sa Sakop ng MSWDO System / Hindi Kwalipikado'
+        : 'Outside MSWDO System Scope / Not Eligible',
       matchScore: 12,
-      priorityLevel: 'Non-Qualifying Request',
-      aiAssessmentSummary: 'Ang inyong inilagay na sitwasyon sa Narrative Statement ay labas sa sakop ng Municipal Social Welfare and Development Office (MSWDO). Ang system na ito ay mahigpit na nakalaan lamang para sa opisyal na Social Assistance Programs (AICS Medical, AICS Funeral, Educational, PWD, Senior Citizen, Solo Parent, Child Welfare, Livelihood, at Skills Training).',
-      policyNotes: 'Strict MSWDO Policy Guardrail: Only verified social welfare crises and statutory vulnerable sectors within the system catalog are eligible for assessment.',
+      priorityLevel: isTagalog ? 'Hindi Kwalipikadong Kahilingan' : 'Non-Qualifying Request',
+      aiAssessmentSummary: isTagalog
+        ? 'Ang inyong inilagay na sitwasyon sa Narrative Statement ay labas sa sakop ng Municipal Social Welfare and Development Office (MSWDO). Ang system na ito ay mahigpit na nakalaan lamang para sa opisyal na Social Assistance Programs (AICS Medical, AICS Funeral, Educational, PWD, Senior Citizen, Solo Parent, Child Welfare, Livelihood, at Skills Training).'
+        : 'The situation described in your Narrative Statement falls outside the scope of the Municipal Social Welfare and Development Office (MSWDO). This system is strictly dedicated to official Social Assistance Programs (AICS Medical, AICS Funeral, Educational, PWD, Senior Citizen, Solo Parent, Child Welfare, Livelihood, and Skills Training).',
+      policyNotes: isTagalog
+        ? 'Patakaran ng MSWDO: Tanging mga lehitimong krisis at bulnerableng sektor sa loob ng system catalog ang maaaring ma-assess.'
+        : 'Strict MSWDO Policy Guardrail: Only verified social welfare crises and statutory vulnerable sectors within the system catalog are eligible for assessment.',
       recommendedPrograms: [],
       engineSource: 'strict-guardrail'
     };
@@ -4566,11 +4574,17 @@ function buildRuleBasedEligibilityAssessment(payload) {
   if (isHighIncome && !matchedKeys.has('pwd-form') && !matchedKeys.has('senior-form') && !matchedKeys.has('aics-medical') && !matchedKeys.has('aics-funeral')) {
     return {
       eligibilityStatus: 'NOT_ELIGIBLE',
-      statusBadge: 'Above Indigent Income Threshold (Not Eligible)',
+      statusBadge: isTagalog
+        ? 'Lagpas sa Indigent Income Threshold (Hindi Kwalipikado)'
+        : 'Above Indigent Income Threshold (Not Eligible)',
       matchScore: 25,
-      priorityLevel: 'Above Indigent Threshold',
-      aiAssessmentSummary: `Base sa inyong idineklarang buwanang kita (${householdIncome}), lagpas ang sambahayan sa indigent income ceiling ng MSWDO para sa regular cash grants. Tanging mga kagyat na medikal/funeral crisis o statutory sectors (PWD / Senior Citizen) ang maaaring isailalim sa espesyal na social worker evaluation.`,
-      policyNotes: 'MSWDO Indigency Policy: Priority financial grants require monthly household income within the indigent or low-income threshold.',
+      priorityLevel: isTagalog ? 'Lagpas sa Indigent Threshold' : 'Above Indigent Threshold',
+      aiAssessmentSummary: isTagalog
+        ? `Base sa inyong idineklarang buwanang kita (${householdIncome}), lagpas ang sambahayan sa indigent income ceiling ng MSWDO para sa regular cash grants. Tanging mga kagyat na medikal/funeral crisis o statutory sectors (PWD / Senior Citizen) ang maaaring isailalim sa espesyal na social worker evaluation.`
+        : `Based on your declared monthly household income (${householdIncome}), your household exceeds the MSWDO indigent income ceiling for regular cash grants. Only acute medical or funeral crises or statutory welfare sectors (PWD / Senior Citizen) may qualify for special social worker evaluation.`,
+      policyNotes: isTagalog
+        ? 'Patakaran sa Indigency ng MSWDO: Ang mga prayoridad na tulong pinansyal ay para sa mga sambahayang pasok sa indigent o low-income threshold.'
+        : 'MSWDO Indigency Policy: Priority financial grants require monthly household income within the indigent or low-income threshold.',
       recommendedPrograms: [],
       engineSource: 'rule-based'
     };
@@ -4592,34 +4606,54 @@ function buildRuleBasedEligibilityAssessment(payload) {
     let matchReason = '';
     switch (key) {
       case 'aics-medical':
-        matchReason = `Tugma sa inyong medikal/hospitalization crisis at ${householdIncome} income profile (${urgencyTimeline}).`;
+        matchReason = isTagalog
+          ? `Tugma sa inyong medikal/hospitalization crisis at ${householdIncome} income profile (${urgencyTimeline}).`
+          : `Directly matches your medical/hospitalization crisis and ${householdIncome} household income profile (${urgencyTimeline}).`;
         break;
       case 'aics-funeral':
-        matchReason = 'Direktang sagot para sa gastusin sa punerarya at libing ng pumanaw na kapamilya sa ilalim ng AICS.';
+        matchReason = isTagalog
+          ? 'Direktang sagot para sa gastusin sa punerarya at libing ng pumanaw na kapamilya sa ilalim ng AICS.'
+          : 'Provides immediate burial and funeral parlor financial assistance for a deceased family member under AICS.';
         break;
       case 'aics-educational':
-        matchReason = `Tulong pang-edukasyon para sa dependent (${dependentMembers}) ng low-income household.`;
+        matchReason = isTagalog
+          ? `Tulong pang-edukasyon para sa dependent (${dependentMembers}) ng low-income household.`
+          : `Provides educational financial support for studying dependents (${dependentMembers}) from a low-income household.`;
         break;
       case 'childwelfare-form':
-        matchReason = 'Para sa proteksyon, nutrisyon, at kapakanan ng mga bata sa sambahayan.';
+        matchReason = isTagalog
+          ? 'Para sa proteksyon, nutrisyon, at kapakanan ng mga bata sa sambahayan.'
+          : 'Dedicated to child protection, nutrition, and developmental welfare support for vulnerable children in the household.';
         break;
       case 'pwd-form':
-        matchReason = 'Statutory financial at assistive support para sa miyembro ng pamilya na may kapansanan (PWD).';
+        matchReason = isTagalog
+          ? 'Statutory financial at assistive support para sa miyembro ng pamilya na may kapansanan (PWD).'
+          : 'Provides statutory financial subsidy and assistive device support for a household member with a disability (PWD).';
         break;
       case 'senior-form':
-        matchReason = 'Tulong pinansyal at pang-medikal para sa indigent Senior Citizen (60+ taong gulang).';
+        matchReason = isTagalog
+          ? 'Tulong pinansyal at pang-medikal para sa indigent Senior Citizen (60+ taong gulang).'
+          : 'Provides social pension and medical welfare support for an indigent Senior Citizen (60 years old and above).';
         break;
       case 'soloparent-financial-form':
-        matchReason = 'Buwanan/crisis financial subsidy para sa Solo Parent na mag-isang nagtataguyod ng anak.';
+        matchReason = isTagalog
+          ? 'Buwanan/crisis financial subsidy para sa Solo Parent na mag-isang nagtataguyod ng anak.'
+          : 'Provides monthly or crisis financial subsidy for a verified Solo Parent supporting dependent children alone.';
         break;
       case 'soloparent-edu-form':
-        matchReason = 'Educational grant na nakalaan para sa nag-aaral na anak ng rehistradong Solo Parent.';
+        matchReason = isTagalog
+          ? 'Educational grant na nakalaan para sa nag-aaral na anak ng rehistradong Solo Parent.'
+          : 'Provides an educational assistance grant dedicated to the studying child of a registered Solo Parent.';
         break;
       case 'livelihood':
-        matchReason = `Puhunan pang-kabuhayan (₱15,000) na angkop sa inyong employment status (${employmentStatus}).`;
+        matchReason = isTagalog
+          ? `Puhunan pang-kabuhayan (₱15,000) na angkop sa inyong employment status (${employmentStatus}).`
+          : `Provides a ₱15,000 micro-enterprise capital grant suited to your current employment status (${employmentStatus}).`;
         break;
       case 'skills-training':
-        matchReason = 'Libreng vocational at TESDA-style skills training upang madagdagan ang kita ng pamilya.';
+        matchReason = isTagalog
+          ? 'Libreng vocational at TESDA-style skills training upang madagdagan ang kita ng pamilya.'
+          : 'Offers free vocational and skills training courses to improve employability and household income.';
         break;
     }
 
@@ -4638,20 +4672,32 @@ function buildRuleBasedEligibilityAssessment(payload) {
   const topScore = recommendedPrograms[0]?.matchConfidence || 90;
   const eligibilityStatus = isLowIncome ? 'HIGHLY_ELIGIBLE' : 'CONDITIONALLY_ELIGIBLE';
   const statusBadge = isLowIncome
-    ? 'High Eligibility Match Confirmed (Priority Indigent Category)'
-    : 'Conditionally Eligible (Subject to Social Worker Case Validation)';
+    ? (isTagalog
+        ? 'Kumpirmadong Kwalipikado (Prayoridad na Indigent Category)'
+        : 'High Eligibility Match Confirmed (Priority Indigent Category)')
+    : (isTagalog
+        ? 'Conditionally Eligible (Dadaan sa Social Worker Validation)'
+        : 'Conditionally Eligible (Subject to Social Worker Case Validation)');
 
   const aiAssessmentSummary = isLowIncome
-    ? `Base sa AI Pre-Screening ng inyong household profile (${householdIncome}, ${dependentMembers}, ${employmentStatus}) at sa inyong salaysay sa Step 3, ang inyong sambahayan ay PASOK sa Indigent Priority Criteria ng MSWDO. Narito ang mga opisyal na programa sa loob ng ating system na direktang tumutugon sa inyong sitwasyon.`
-    : `Base sa AI Pre-Screening, ang inyong sambahayan (${householdIncome}) ay CONDITIONALLY ELIGIBLE. Maaari kayong magpasa ng aplikasyon sa mga inirekomendang programa sa ibaba, ngunit dadaan ito sa karagdagang case validation ng MSWDO Social Worker.`;
+    ? (isTagalog
+        ? `Base sa AI Pre-Screening ng inyong household profile (${householdIncome}, ${dependentMembers}, ${employmentStatus}) at sa inyong salaysay sa Step 3, ang inyong sambahayan ay PASOK sa Indigent Priority Criteria ng MSWDO. Narito ang mga opisyal na programa sa loob ng ating system na direktang tumutugon sa inyong sitwasyon.`
+        : `Based on the AI Pre-Screening of your household profile (${householdIncome}, ${dependentMembers}, ${employmentStatus}) and your narrative statement in Step 3, your household meets the MSWDO Indigent Priority Criteria. Below are the official social assistance programs in our system that directly address your situation.`)
+    : (isTagalog
+        ? `Base sa AI Pre-Screening, ang inyong sambahayan (${householdIncome}) ay CONDITIONALLY ELIGIBLE. Maaari kayong magpasa ng aplikasyon sa mga inirekomendang programa sa ibaba, ngunit dadaan ito sa karagdagang case validation ng MSWDO Social Worker.`
+        : `Based on the AI Pre-Screening, your household (${householdIncome}) is CONDITIONALLY ELIGIBLE. You may submit an application for the recommended programs below, subject to further case validation by an MSWDO Social Worker.`);
 
   return {
     eligibilityStatus,
     statusBadge,
     matchScore: topScore,
-    priorityLevel: isLowIncome ? 'Priority Category 1 (Indigent / Crisis)' : 'Category 2 (Secondary Evaluation)',
+    priorityLevel: isLowIncome
+      ? (isTagalog ? 'Prayoridad Kategorya 1 (Indigent / Krisis)' : 'Priority Category 1 (Indigent / Crisis)')
+      : (isTagalog ? 'Kategorya 2 (Pangalawang Pagsusuri)' : 'Category 2 (Secondary Evaluation)'),
     aiAssessmentSummary,
-    policyNotes: `Evaluated under MSWDO Social Case Intake Guidelines for ${barangay} (${welfareProgramStatus}).`,
+    policyNotes: isTagalog
+      ? `Sinuri sa ilalim ng MSWDO Social Case Intake Guidelines para sa ${barangay} (${welfareProgramStatus}).`
+      : `Evaluated under MSWDO Social Case Intake Guidelines for ${barangay} (${welfareProgramStatus}).`,
     recommendedPrograms,
     engineSource: 'mswdo-rule-engine'
   };
@@ -4659,6 +4705,7 @@ function buildRuleBasedEligibilityAssessment(payload) {
 
 app.post('/api/ai/eligibility-assessment', async (req, res) => {
   const payload = req.body || {};
+  const isTagalog = payload.language === 'Tagalog';
   const fallbackResult = buildRuleBasedEligibilityAssessment(payload);
 
   // If strict guardrail already caught an obvious out-of-scope keyword, return immediately
@@ -4675,6 +4722,10 @@ app.post('/api/ai/eligibility-assessment', async (req, res) => {
     .map(p => `- tabKey: "${p.tabKey}" | Program Name: "${p.programName}" | Module: "${p.moduleLabel}" | Benefit: "${p.benefitAmount}"`)
     .join('\n');
 
+  const languageRule = isTagalog
+    ? 'Write "statusBadge", "aiAssessmentSummary", "policyNotes", and each program\'s "matchReason" entirely in clear, respectful Tagalog.'
+    : 'Write "statusBadge", "aiAssessmentSummary", "policyNotes", and each program\'s "matchReason" strictly in 100% clear, professional English (do NOT use Tagalog or Taglish words).';
+
   const systemInstruction = `You are the Official AI Eligibility Assessment and Assistance Recommendation Engine for the Municipal Social Welfare and Development Office (MSWDO) Social Assistance Management Information System.
 
 STRICT SYSTEM-ONLY GUARDRAIL RULES (MANDATORY):
@@ -4686,9 +4737,9 @@ ${catalogListText}
    - Set "eligibilityStatus" to "NOT_ELIGIBLE"
    - Set "matchScore" between 5 and 30
    - Set "recommendedPrograms" to an empty array []
-   - Explain clearly in Taglish/English in "aiAssessmentSummary" why the request is outside the MSWDO system's scope or above the indigent income threshold.
+   - Explain clearly why the request is outside the MSWDO system's scope or above the indigent income threshold.
 4. Otherwise, select between 1 and 4 of the most relevant programs from the 10 allowed tabKeys based on the applicant's Step 1 demographics, Step 2 selected hardships, and Step 3 narrative statement.
-5. Write "aiAssessmentSummary" and each program's "matchReason" in clear, empathetic, professional Taglish or English tailored specifically to the applicant's narrative and household profile.
+5. ${languageRule}
 
 Return ONLY valid JSON matching this exact structure:
 {

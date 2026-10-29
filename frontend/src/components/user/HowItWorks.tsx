@@ -1,43 +1,55 @@
 import React from 'react';
 import { FileSearch, FileEdit, UserCheck, CreditCard } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface HowItWorksProps {
   darkMode?: boolean;
 }
 
 export const HowItWorks: React.FC<HowItWorksProps> = ({ darkMode = true }) => {
+  const { language } = useLanguage();
+  const isTagalog = language === 'Tagalog';
+
+  const uniformBlueIconClass = darkMode
+    ? 'bg-blue-600/20 border-blue-500/40 text-blue-400'
+    : 'bg-blue-100 border-blue-300 text-blue-600';
+
   const steps = [
     {
       stepNumber: '01',
-      title: 'Select Service & Requirements',
-      description:
-        'Choose the service you need (AICS Aid, PWD, Senior Citizen, Solo Parent, Child Welfare, Livelihood & Training) and prepare digital document files.',
+      title: isTagalog ? 'Pumili ng Serbisyo at Requirements' : 'Select Service & Requirements',
+      description: isTagalog
+        ? 'Piliin ang kailangang tulong (AICS Aid, PWD, Senior Citizen, Solo Parent, Child Welfare, Livelihood & Training) at ihanda ang mga digital na dokumento.'
+        : 'Choose the service you need (AICS Aid, PWD, Senior Citizen, Solo Parent, Child Welfare, Livelihood & Training) and prepare digital document files.',
       icon: FileSearch,
-      iconBg: darkMode ? 'bg-blue-600/20 border-blue-500/40 text-blue-400' : 'bg-blue-100 border-blue-300 text-blue-600',
+      iconBg: uniformBlueIconClass,
     },
     {
       stepNumber: '02',
-      title: 'Fill Online Form & Upload',
-      description:
-        'Provide your citizen details, barangay address, and upload legible scanned copies or photos of supporting requirements.',
+      title: isTagalog ? 'Sagutan ang Online Form at Mag-upload' : 'Fill Online Form & Upload',
+      description: isTagalog
+        ? 'Ilagay ang iyong detalye, barangay address, at i-upload ang malinaw na kopya o larawan ng mga kailangang dokumento.'
+        : 'Provide your citizen details, barangay address, and upload legible scanned copies or photos of supporting requirements.',
       icon: FileEdit,
-      iconBg: darkMode ? 'bg-indigo-600/20 border-indigo-500/40 text-indigo-400' : 'bg-indigo-100 border-indigo-300 text-indigo-600',
+      iconBg: uniformBlueIconClass,
     },
     {
       stepNumber: '03',
-      title: 'Social Worker Assessment',
-      description:
-        'Assigned City Social Workers review your submission, evaluate financial eligibility, and approve assistance grants or ID cards.',
+      title: isTagalog ? 'Pagsusuri ng Social Worker' : 'Social Worker Assessment',
+      description: isTagalog
+        ? 'Susuriin ng nakatalagang Social Worker ang iyong aplikasyon, titingnan ang kwalipikasyon, at aaprubahan ang tulong o ID.'
+        : 'Assigned City Social Workers review your submission, evaluate financial eligibility, and approve assistance grants or ID cards.',
       icon: UserCheck,
-      iconBg: darkMode ? 'bg-purple-600/20 border-purple-500/40 text-purple-400' : 'bg-purple-100 border-purple-300 text-purple-600',
+      iconBg: uniformBlueIconClass,
     },
     {
       stepNumber: '04',
-      title: 'Approval & Payout / ID Claim',
-      description:
-        'Receive real-time status update, official QR Claim Voucher for financial payout, or notification to pick up your ID booklet.',
+      title: isTagalog ? 'Pag-apruba at Payout / Pagkuha ng ID' : 'Approval & Payout / ID Claim',
+      description: isTagalog
+        ? 'Makatanggap ng real-time status update, opisyal na QR Claim Voucher para sa financial payout, o abiso sa pagkuha ng iyong ID booklet.'
+        : 'Receive real-time status update, official QR Claim Voucher for financial payout, or notification to pick up your ID booklet.',
       icon: CreditCard,
-      iconBg: darkMode ? 'bg-teal-600/20 border-teal-500/40 text-teal-400' : 'bg-teal-100 border-teal-300 text-teal-600',
+      iconBg: uniformBlueIconClass,
     },
   ];
 
@@ -46,10 +58,12 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ darkMode = true }) => {
       {/* Title Header */}
       <div className="text-center mb-8">
         <h3 className={`text-xl sm:text-2xl font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-          How the Social Services Application Works
+          {isTagalog ? 'Paano Gumagana ang Aplikasyon sa Social Services' : 'How the Social Services Application Works'}
         </h3>
         <p className={`text-xs sm:text-sm mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-          Four simple steps from application filing to official payout and ID releasing.
+          {isTagalog
+            ? 'Apat na simpleng hakbang mula sa pagpasa ng aplikasyon hanggang sa opisyal na payout at pag-release ng ID.'
+            : 'Four simple steps from application filing to official payout and ID releasing.'}
         </p>
       </div>
 
@@ -96,7 +110,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ darkMode = true }) => {
               <div className={`mt-4 pt-3 border-t flex items-center text-[11px] font-semibold text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity ${
                 darkMode ? 'border-slate-800/60' : 'border-slate-200'
               }`}>
-                <span>Learn more</span>
+                <span>{isTagalog ? 'Alamin pa' : 'Learn more'}</span>
                 <span className="ml-1">→</span>
               </div>
             </div>

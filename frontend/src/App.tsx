@@ -11,7 +11,16 @@ import { LivelihoodProgramView } from './components/user/LivelihoodProgramView';
 import { TrainingProgramView } from './components/user/TrainingProgramView';
 import { DisbursementView } from './components/user/DisbursementView';
 import { TrackApplicationsModal } from './components/modals/TrackApplicationsModal';
-import { EligibilityFinderModal, type AiAssessmentResult } from './components/modals/EligibilityFinderModal';
+import {
+  EligibilityFinderModal,
+  type AiAssessmentResult,
+  localizeStatusBadge,
+  localizeAssessmentSummary,
+  localizeProgramName,
+  localizeModuleLabel,
+  localizeBenefitAmount,
+  localizeMatchReason
+} from './components/modals/EligibilityFinderModal';
 import { ServiceDetailModal } from './components/modals/ServiceDetailModal';
 import { MedicalAssistanceView } from './components/user/MedicalAssistanceView';
 import { FuneralAssistanceView } from './components/user/FuneralAssistanceView';
@@ -1501,126 +1510,133 @@ export default function App() {
                 darkMode={darkMode}
               />
 
-              {savedAiAssessment && savedAiAssessment.recommendedPrograms && savedAiAssessment.recommendedPrograms.length > 0 && (
-                <section
-                  className={`rounded-2xl border p-5 sm:p-6 shadow-lg transition-all ${
-                    darkMode
-                      ? 'bg-gradient-to-br from-[#0d1b33] via-[#0e172a] to-[#0a1222] border-emerald-500/40 text-slate-100'
-                      : 'bg-gradient-to-br from-emerald-50/70 via-white to-blue-50/40 border-emerald-300 text-slate-900 shadow-sm'
-                  }`}
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-700/40">
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2 mb-1">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${
-                            savedAiAssessment.eligibilityStatus === 'HIGHLY_ELIGIBLE'
-                              ? darkMode
-                                ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                                : 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                              : darkMode
-                                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                                : 'bg-amber-100 text-amber-800 border-amber-300'
+              {savedAiAssessment && savedAiAssessment.recommendedPrograms && savedAiAssessment.recommendedPrograms.length > 0 && (() => {
+                const isTagalog = language === 'Tagalog';
+                return (
+                  <section
+                    className={`rounded-2xl border p-5 sm:p-6 shadow-lg transition-all ${
+                      darkMode
+                        ? 'bg-gradient-to-br from-[#0d1b33] via-[#0e172a] to-[#0a1222] border-emerald-500/40 text-slate-100'
+                        : 'bg-gradient-to-br from-emerald-50/70 via-white to-blue-50/40 border-emerald-300 text-slate-900 shadow-sm'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-700/40">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <span
+                            className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider border ${
+                              savedAiAssessment.eligibilityStatus === 'HIGHLY_ELIGIBLE'
+                                ? darkMode
+                                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+                                  : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                : darkMode
+                                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                                  : 'bg-amber-100 text-amber-800 border-amber-300'
+                            }`}
+                          >
+                            {savedAiAssessment.eligibilityStatus === 'HIGHLY_ELIGIBLE'
+                              ? (isTagalog ? 'KWALIPIKADO' : 'ELIGIBLE')
+                              : (isTagalog ? 'CONDITIONALLY ELIGIBLE' : 'CONDITIONALLY ELIGIBLE')}
+                          </span>
+                          <span className={`text-xs font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                            {localizeStatusBadge(savedAiAssessment.statusBadge, savedAiAssessment.eligibilityStatus, isTagalog)}
+                          </span>
+                        </div>
+                        <h3 className={`text-base sm:text-lg font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                          {isTagalog ? 'Inirekomendang Tulong Para sa Iyo' : 'Recommended Assistance For You'}
+                        </h3>
+                        <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                          {localizeAssessmentSummary(savedAiAssessment.aiAssessmentSummary, savedAiAssessment.eligibilityStatus, isTagalog)}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => setIsEligibilityModalOpen(true)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                            darkMode
+                              ? 'bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border-blue-500/40'
+                              : 'bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border-blue-300'
                           }`}
                         >
-                          {savedAiAssessment.eligibilityStatus === 'HIGHLY_ELIGIBLE' ? 'ELIGIBLE' : 'CONDITIONALLY ELIGIBLE'}
-                        </span>
-                        <span className={`text-xs font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                          {savedAiAssessment.statusBadge}
-                        </span>
+                          {isTagalog ? 'Mag-assess Muli' : 'Re-assess'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveAiAssessment(null)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
+                            darkMode
+                              ? 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border-slate-700'
+                              : 'bg-white hover:bg-slate-100 text-slate-600 border-slate-300'
+                          }`}
+                        >
+                          {isTagalog ? 'Alisin' : 'Clear'}
+                        </button>
                       </div>
-                      <h3 className={`text-base sm:text-lg font-extrabold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                        Recommended Assistance For You
-                      </h3>
-                      <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                        {savedAiAssessment.aiAssessmentSummary}
-                      </p>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        type="button"
-                        onClick={() => setIsEligibilityModalOpen(true)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
-                          darkMode
-                            ? 'bg-blue-600/20 hover:bg-blue-600 text-blue-300 hover:text-white border-blue-500/40'
-                            : 'bg-blue-50 hover:bg-blue-600 text-blue-700 hover:text-white border-blue-300'
-                        }`}
-                      >
-                        Re-assess
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleSaveAiAssessment(null)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
-                          darkMode
-                            ? 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border-slate-700'
-                            : 'bg-white hover:bg-slate-100 text-slate-600 border-slate-300'
-                        }`}
-                      >
-                        Clear
-                      </button>
-                    </div>
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      {savedAiAssessment.recommendedPrograms.map((prog, idx) => (
+                        <div
+                          key={prog.tabKey + idx}
+                          className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${
+                            darkMode
+                              ? 'bg-[#0b1324]/90 border-slate-700/80 hover:border-emerald-500/50'
+                              : 'bg-white border-slate-200 hover:border-emerald-400 shadow-sm'
+                          }`}
+                        >
+                          <div>
+                            <div className="flex items-center justify-between gap-2 mb-1.5">
+                              <span
+                                className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
+                                  idx === 0
+                                    ? darkMode
+                                      ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
+                                      : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                                    : darkMode
+                                      ? 'bg-blue-950 text-blue-300 border-blue-500/40'
+                                      : 'bg-blue-100 text-blue-800 border-blue-300'
+                                }`}
+                              >
+                                {idx === 0
+                                  ? (isTagalog ? 'Pangunahing Rekomendasyon' : 'Primary Recommendation')
+                                  : (isTagalog ? 'Pangalawang Rekomendasyon' : 'Secondary Recommendation')} • {localizeModuleLabel(prog.tabKey, prog.moduleLabel, isTagalog)}
+                              </span>
+                              <span className={`text-xs font-extrabold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
+                                {prog.matchConfidence}% {isTagalog ? 'Tugma' : 'Match'}
+                              </span>
+                            </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    {savedAiAssessment.recommendedPrograms.map((prog, idx) => (
-                      <div
-                        key={prog.tabKey + idx}
-                        className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${
-                          darkMode
-                            ? 'bg-[#0b1324]/90 border-slate-700/80 hover:border-emerald-500/50'
-                            : 'bg-white border-slate-200 hover:border-emerald-400 shadow-sm'
-                        }`}
-                      >
-                        <div>
-                          <div className="flex items-center justify-between gap-2 mb-1.5">
-                            <span
-                              className={`text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full border ${
-                                idx === 0
-                                  ? darkMode
-                                    ? 'bg-emerald-950 text-emerald-300 border-emerald-500/40'
-                                    : 'bg-emerald-100 text-emerald-800 border-emerald-300'
-                                  : darkMode
-                                    ? 'bg-blue-950 text-blue-300 border-blue-500/40'
-                                    : 'bg-blue-100 text-blue-800 border-blue-300'
-                              }`}
+                            <h4 className={`text-sm sm:text-base font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                              {localizeProgramName(prog.tabKey, prog.programName, isTagalog)}
+                            </h4>
+
+                            <div className="text-xs font-bold text-amber-500 mt-1">
+                              {localizeBenefitAmount(prog.tabKey, prog.benefitAmount, isTagalog)}
+                            </div>
+
+                            <p className={`text-xs mt-2 leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                              {localizeMatchReason(prog.tabKey, prog.matchReason, isTagalog)}
+                            </p>
+                          </div>
+
+                          <div className="pt-2 border-t border-slate-800/40 flex items-center justify-end">
+                            <button
+                              type="button"
+                              onClick={() => setActiveTab(prog.tabKey)}
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
                             >
-                              {idx === 0 ? 'Primary Recommendation' : 'Secondary Recommendation'} • {prog.moduleLabel}
-                            </span>
-                            <span className={`text-xs font-extrabold ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
-                              {prog.matchConfidence}% Match
-                            </span>
+                              <span>{isTagalog ? 'Mag-apply Ngayon' : 'Apply Now'}</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </button>
                           </div>
-
-                          <h4 className={`text-sm sm:text-base font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-                            {prog.programName}
-                          </h4>
-
-                          <div className="text-xs font-bold text-amber-500 mt-1">
-                            {prog.benefitAmount}
-                          </div>
-
-                          <p className={`text-xs mt-2 leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-                            {prog.matchReason}
-                          </p>
                         </div>
-
-                        <div className="pt-2 border-t border-slate-800/40 flex items-center justify-end">
-                          <button
-                            type="button"
-                            onClick={() => setActiveTab(prog.tabKey)}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm transition-all cursor-pointer"
-                          >
-                            <span>Apply Now</span>
-                            <ArrowRight className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </section>
-              )}
+                      ))}
+                    </div>
+                  </section>
+                );
+              })()}
 
               <HowItWorks darkMode={darkMode} />
 

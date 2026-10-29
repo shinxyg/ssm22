@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { ServiceItem } from '../../types';
-import { RecommendedProgramItem } from '../modals/EligibilityFinderModal';
+import { RecommendedProgramItem, localizeMatchReason } from '../modals/EligibilityFinderModal';
+import { useLanguage } from '../../context/LanguageContext';
 import { 
   Stethoscope, 
   GraduationCap, 
@@ -33,6 +34,9 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
   darkMode = true,
   recommendedPrograms = [],
 }) => {
+  const { language } = useLanguage();
+  const isTagalog = language === 'Tagalog';
+
   const getIcon = (iconName?: string) => {
     switch (iconName) {
       case 'medical': return Stethoscope;
@@ -100,16 +104,20 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className={`text-lg font-bold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-            {filterTitle}
+            {isTagalog && filterTitle === "Available Social Services Programs"
+              ? "Mga Magagamit na Programa ng Social Services"
+              : filterTitle}
           </h3>
           <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            Select a service to view qualifications, required documents, or file your digital application.
+            {isTagalog
+              ? "Pumili ng serbisyo upang makita ang kwalipikasyon, kailangang dokumento, o magpasa ng digital na aplikasyon."
+              : "Select a service to view qualifications, required documents, or file your digital application."}
           </p>
         </div>
         <span className={`text-xs px-3 py-1 rounded-full font-mono border ${
           darkMode ? 'bg-slate-800 text-blue-400 border-slate-700' : 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
         }`}>
-          {sortedServices.length} Programs Found
+          {sortedServices.length} {isTagalog ? "Programa" : "Programs Found"}
         </span>
       </div>
 
@@ -118,9 +126,13 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
           darkMode ? 'bg-[#0e172a]/60 border-slate-800' : 'bg-white border-slate-200 shadow-sm'
         }`}>
           <ShieldAlert className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-          <h4 className={`text-base font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>No Services Found</h4>
+          <h4 className={`text-base font-semibold ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+            {isTagalog ? "Walang Nahanap na Serbisyo" : "No Services Found"}
+          </h4>
           <p className={`text-xs max-w-sm mx-auto mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-            Try adjusting your filter category above to browse available programs.
+            {isTagalog
+              ? "Subukang palitan ang piniling kategorya sa itaas upang makita ang mga programa."
+              : "Try adjusting your filter category above to browse available programs."}
           </p>
         </div>
       ) : (
@@ -158,11 +170,13 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
                       <div className="flex items-center gap-1.5 min-w-0">
                         <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
                         <span className="text-[10px] font-extrabold uppercase tracking-wider truncate">
-                          AI Recommended For You • {isPrimaryRec ? 'Primary Recommendation' : 'Secondary Recommendation'}
+                          {isTagalog
+                            ? `Inirekomenda ng AI • ${isPrimaryRec ? 'Pangunahing Rekomendasyon' : 'Pangalawang Rekomendasyon'}`
+                            : `AI Recommended For You • ${isPrimaryRec ? 'Primary Recommendation' : 'Secondary Recommendation'}`}
                         </span>
                       </div>
                       <span className="text-[10px] font-extrabold shrink-0">
-                        {matchedRec.item.matchConfidence}% Match
+                        {matchedRec.item.matchConfidence}% {isTagalog ? 'Tugma' : 'Match'}
                       </span>
                     </div>
                   )}
@@ -211,9 +225,9 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
                         : 'bg-emerald-50 border-emerald-200 text-emerald-900'
                     }`}>
                       <span className="font-extrabold uppercase tracking-wider text-[10px] block mb-0.5">
-                        Why Recommended For You:
+                        {isTagalog ? 'Bakit Inirekomenda Para sa Iyo:' : 'Why Recommended For You:'}
                       </span>
-                      {matchedRec.item.matchReason}
+                      {localizeMatchReason(matchedRec.item.tabKey, matchedRec.item.matchReason, isTagalog)}
                     </div>
                   )}
 
@@ -227,7 +241,7 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
                     darkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
                   }`}>
                     <span className={`text-[10px] font-bold uppercase tracking-wider block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                      Required Documents:
+                      {isTagalog ? 'Mga Kailangang Dokumento:' : 'Required Documents:'}
                     </span>
                     {service.requirements.slice(0, 2).map((req, idx) => (
                       <div key={idx} className={`flex items-center gap-1.5 text-[11px] truncate ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
@@ -237,7 +251,7 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
                     ))}
                     {service.requirements.length > 2 && (
                       <span className="text-[10px] text-blue-500 pl-4 block font-medium">
-                        +{service.requirements.length - 2} more requirements
+                        +{service.requirements.length - 2} {isTagalog ? 'iba pang requirements' : 'more requirements'}
                       </span>
                     )}
                   </div>
@@ -258,7 +272,7 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
                         : 'text-blue-500 hover:text-white bg-blue-600/20 hover:bg-blue-600 border border-blue-500/30'
                     }`}
                   >
-                    <span>Apply / Details</span>
+                    <span>{isTagalog ? 'Mag-apply / Detalye' : 'Apply / Details'}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
