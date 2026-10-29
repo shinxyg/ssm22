@@ -381,7 +381,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                   <h3 className={`text-base sm:text-lg font-extrabold leading-snug tracking-wide ${
                     darkMode ? 'text-white' : 'text-blue-950'
                   }`}>
-                    Gov Service Livelihood Program
+                    Livelihood Program
                   </h3>
                 </div>
 
@@ -390,7 +390,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                   <p className={`text-xs sm:text-sm leading-relaxed font-medium ${
                     darkMode ? 'text-slate-300' : 'text-slate-700'
                   }`}>
-                    Official government service for Livelihood and Enterprise Assistance of Gov Service.
+                    Provides livelihood starter kits, micro-enterprise seed capital, and small business support for qualified residents to help establish or sustain their source of income.
                   </p>
                 </div>
               </div>
