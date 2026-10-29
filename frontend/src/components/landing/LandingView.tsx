@@ -20,6 +20,14 @@ export const LandingView: React.FC<LandingViewProps> = ({
   darkMode = false,
   onToggleDarkMode,
 }) => {
+  const uniformBlueIconClass = darkMode
+    ? 'bg-blue-600/20 text-blue-400 border border-blue-500/40'
+    : 'bg-blue-50 text-blue-600 border border-blue-200';
+
+  const uniformCardClass = darkMode
+    ? 'bg-[#0b1324] border-[#141e33] hover:bg-[#101b33] hover:border-blue-500/40 hover:shadow-2xl'
+    : 'bg-white border-slate-200/90 hover:border-blue-300 hover:shadow-lg';
+
   return (
     <div className={`min-h-screen w-full flex flex-col font-['Plus_Jakarta_Sans',sans-serif] transition-colors duration-300 ${
       darkMode ? 'bg-[#050a14] text-slate-100' : 'bg-slate-50 text-slate-900'
@@ -96,78 +104,54 @@ export const LandingView: React.FC<LandingViewProps> = ({
         <div className="mt-10 max-w-[500px] mx-auto w-full">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {/* Card 1: AICS */}
-            <div className={`border rounded-2xl p-4 text-left transition-all duration-300 cursor-pointer group ${
-              darkMode 
-                ? 'bg-[#0b1324] border-[#141e33] hover:bg-[#101b33] hover:border-slate-700/80 hover:shadow-2xl' 
-                : 'bg-white border-slate-200/90 hover:border-blue-300 hover:shadow-lg'
-            }`}>
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 ${
-                darkMode ? 'bg-[#181932] text-[#a78bfa] border border-[#2c2858]' : 'bg-purple-50 text-purple-600 border border-purple-200'
-              }`}>
+            <div className={`border rounded-2xl p-4 text-left transition-all duration-300 cursor-pointer group ${uniformCardClass}`}>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 ${uniformBlueIconClass}`}>
                 <MapPin className="w-4 h-4 stroke-[2.2]" />
               </div>
               <h3 className={`font-bold text-xs sm:text-sm mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 AICS
               </h3>
               <p className={`text-[11px] font-normal leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                Crisis assistance for medical, burial, and educational needs
+                Emergency guarantee letters and crisis aid for medical and funeral needs
               </p>
             </div>
 
             {/* Card 2: PWD & Senior Citizen */}
-            <div className={`border rounded-2xl p-4 text-left transition-all duration-300 cursor-pointer group ${
-              darkMode 
-                ? 'bg-[#0b1324] border-[#141e33] hover:bg-[#101b33] hover:border-slate-700/80 hover:shadow-2xl' 
-                : 'bg-white border-slate-200/90 hover:border-emerald-300 hover:shadow-lg'
-            }`}>
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 ${
-                darkMode ? 'bg-[#122728] text-[#34d399] border border-[#1b4344]' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
-              }`}>
+            <div className={`border rounded-2xl p-4 text-left transition-all duration-300 cursor-pointer group ${uniformCardClass}`}>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 ${uniformBlueIconClass}`}>
                 <Home className="w-4 h-4 stroke-[2.2]" />
               </div>
               <h3 className={`font-bold text-xs sm:text-sm mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 PWD & Senior Citizen
               </h3>
               <p className={`text-[11px] font-normal leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                ID issuance and social pension enrollment
+                Financial subsidies, social pension, and medical or assistive support
               </p>
             </div>
 
             {/* Card 3: Solo Parent & Child Welfare */}
-            <div className={`border rounded-2xl p-4 text-left transition-all duration-300 cursor-pointer group ${
-              darkMode 
-                ? 'bg-[#0b1324] border-[#141e33] hover:bg-[#101b33] hover:border-slate-700/80 hover:shadow-2xl' 
-                : 'bg-white border-slate-200/90 hover:border-rose-300 hover:shadow-lg'
-            }`}>
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 ${
-                darkMode ? 'bg-[#291522] text-[#f43f5e] border border-[#481e39]' : 'bg-rose-50 text-rose-600 border border-rose-200'
-              }`}>
+            <div className={`border rounded-2xl p-4 text-left transition-all duration-300 cursor-pointer group ${uniformCardClass}`}>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 ${uniformBlueIconClass}`}>
                 <FileText className="w-4 h-4 stroke-[2.2]" />
               </div>
               <h3 className={`font-bold text-xs sm:text-sm mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Solo Parent & Child Welfare
               </h3>
               <p className={`text-[11px] font-normal leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                Solo parent and child welfare monitoring
+                Solo parent cash subsidy, educational assistance, and child welfare services
               </p>
             </div>
 
             {/* Card 4: Livelihood & Training */}
-            <div className={`border rounded-2xl p-4 text-left transition-all duration-300 cursor-pointer group ${
-              darkMode 
-                ? 'bg-[#0b1324] border-[#141e33] hover:bg-[#101b33] hover:border-slate-700/80 hover:shadow-2xl' 
-                : 'bg-white border-slate-200/90 hover:border-amber-300 hover:shadow-lg'
-            }`}>
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 ${
-                darkMode ? 'bg-[#271f16] text-[#fbbf24] border border-[#46321b]' : 'bg-amber-50 text-amber-600 border border-amber-200'
-              }`}>
+            <div className={`border rounded-2xl p-4 text-left transition-all duration-300 cursor-pointer group ${uniformCardClass}`}>
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 ${uniformBlueIconClass}`}>
                 <ClipboardList className="w-4 h-4 stroke-[2.2]" />
               </div>
               <h3 className={`font-bold text-xs sm:text-sm mb-1 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Livelihood & Training
               </h3>
               <p className={`text-[11px] font-normal leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                Skills training and starter kit assistance
+                Livelihood seed capital grants and free vocational skills training
               </p>
             </div>
           </div>
