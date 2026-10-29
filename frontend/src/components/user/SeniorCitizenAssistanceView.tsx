@@ -783,7 +783,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={firstName || 'JEFFERSON'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -794,7 +794,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={middleName || 'FERNANDO'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -805,7 +805,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={lastName || 'LEE'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -817,7 +817,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     disabled
                     placeholder="Suffix (Jr., Sr., III, etc.)"
                     value={suffix}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -828,7 +828,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={nationality || 'FILIPINO'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -839,7 +839,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value="27/09/2004"
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -850,7 +850,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={age || '22'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 font-bold text-blue-400`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -859,7 +859,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                   <select
                     disabled
                     value={gender || 'Male'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   >
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -871,7 +871,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                   <select
                     disabled
                     value={civilStatus || 'Single'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   >
                     <option value="Single">Single</option>
                     <option value="Married">Married</option>
@@ -887,7 +887,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={houseNo || '176'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -898,7 +898,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={street || '23'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -909,7 +909,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={barangay || 'Bagong Silangan'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 
@@ -920,7 +920,7 @@ export const SeniorCitizenAssistanceView: React.FC<SeniorCitizenAssistanceViewPr
                     readOnly
                     disabled
                     value={phone || '09155582122'}
-                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                    className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                   />
                 </div>
 

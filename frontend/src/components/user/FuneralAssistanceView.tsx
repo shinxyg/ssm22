@@ -892,7 +892,7 @@ export const FuneralAssistanceView: React.FC<FuneralAssistanceViewProps> = ({
                     disabled
                     value={age || '22'}
                     className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold cursor-not-allowed ${
-                      darkMode ? 'bg-slate-950 border border-slate-800 text-blue-400' : 'bg-slate-100 border border-slate-300 text-blue-700'
+                      darkMode ? 'bg-slate-950 border border-slate-800 text-slate-300' : 'bg-slate-100 border border-slate-300 text-slate-800'
                     }`}
                   />
                 </div>
@@ -901,7 +901,7 @@ export const FuneralAssistanceView: React.FC<FuneralAssistanceViewProps> = ({
                   <select
                     disabled
                     value={gender || 'Male'}
-                    className={`w-full px-3 py-2.5 rounded-xl text-xs font-semibold cursor-not-allowed ${
+                    className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-not-allowed appearance-none ${
                       darkMode ? 'bg-slate-950 border border-slate-800 text-slate-300' : 'bg-slate-100 border border-slate-300 text-slate-800'
                     }`}
                   >
@@ -915,7 +915,7 @@ export const FuneralAssistanceView: React.FC<FuneralAssistanceViewProps> = ({
                   <select
                     disabled
                     value={civilStatus || 'Single'}
-                    className={`w-full px-3 py-2.5 rounded-xl text-xs font-semibold cursor-not-allowed ${
+                    className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-semibold cursor-not-allowed appearance-none ${
                       darkMode ? 'bg-slate-950 border border-slate-800 text-slate-300' : 'bg-slate-100 border border-slate-300 text-slate-800'
                     }`}
                   >

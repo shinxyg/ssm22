@@ -982,7 +982,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={applicantFirstName || 'JEFFERSON'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -993,7 +993,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={applicantMiddleName || 'FERNANDO'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1004,7 +1004,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={applicantLastName || 'LEE'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1016,7 +1016,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   disabled
                   placeholder={isTagalog ? 'Dugtong sa Pangalan (Jr., Sr., III, atbp.)' : 'Suffix (Jr., Sr., III, etc.)'}
                   value={applicantSuffix}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1027,7 +1027,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={applicantNationality || 'FILIPINO'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1038,7 +1038,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value="27/09/2004"
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1049,7 +1049,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={applicantAge || '22'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 font-bold text-blue-400`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1058,7 +1058,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                 <select
                   disabled
                   value={applicantGender || 'Male'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 >
                   <option value="Male">{isTagalog ? 'Lalaki' : 'Male'}</option>
                   <option value="Female">{isTagalog ? 'Babae' : 'Female'}</option>
@@ -1070,7 +1070,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                 <select
                   disabled
                   value={applicantCivilStatus || (mode === 'soloparent' ? 'Solo Parent' : 'Single')}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 >
                   <option value="Single">{isTagalog ? 'Walang asawa' : 'Single'}</option>
                   <option value="Married">{isTagalog ? 'May asawa' : 'Married'}</option>
@@ -1087,7 +1087,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={applicantHouseNo || '176'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1098,7 +1098,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={applicantStreet || '23'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1109,7 +1109,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={applicantBarangay || 'Bagong Silangan'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1120,7 +1120,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={contactNumber || '09155582122'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -1131,7 +1131,7 @@ export const EducationalAssistanceView: React.FC<EducationalAssistanceViewProps>
                   readOnly
                   disabled
                   value={emailAddress || 'jeffersonlee1234@gmail.com'}
-                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90`}
+                  className={`${inputClass} select-none cursor-not-allowed border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 

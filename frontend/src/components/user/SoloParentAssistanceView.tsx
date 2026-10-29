@@ -783,7 +783,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={firstName || 'JEFFERSON'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
@@ -797,7 +797,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={middleName || 'FERNANDO'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
@@ -811,7 +811,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={lastName || 'LEE'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
@@ -826,7 +826,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       disabled
                       placeholder="Suffix (Jr., Sr., III, etc.)"
                       value={suffix}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300 placeholder-slate-600' : 'bg-slate-100 border-slate-300 text-slate-800 placeholder-slate-400'
                       }`}
                     />
@@ -840,7 +840,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={nationality}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-700'
                       }`}
                     />
@@ -854,7 +854,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={dob ? '27/09/2004' : '27/09/2004'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
@@ -869,7 +869,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       disabled
                       value={age || '22'}
                       className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-bold cursor-not-allowed ${
-                        darkMode ? 'bg-slate-950 border-slate-800 text-blue-400' : 'bg-slate-100 border-slate-300 text-blue-700'
+                        darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
                   </div>
@@ -880,7 +880,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                     <select
                       disabled
                       value={gender || 'Male'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     >
@@ -896,7 +896,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                     <select
                       disabled
                       value={civilStatus || 'Single'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     >
@@ -916,7 +916,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={houseNo || '176'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
@@ -930,7 +930,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={street || '23'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
@@ -944,7 +944,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={barangay || 'Bagong Silangan'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
@@ -958,7 +958,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={phone || '09155582122'}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />
@@ -972,7 +972,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                       readOnly
                       disabled
                       value={emailAddress}
-                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed ${
+                      className={`w-full px-3.5 py-2.5 rounded-xl border text-xs font-semibold cursor-not-allowed appearance-none ${
                         darkMode ? 'bg-slate-950 border-slate-800 text-slate-300' : 'bg-slate-100 border-slate-300 text-slate-800'
                       }`}
                     />

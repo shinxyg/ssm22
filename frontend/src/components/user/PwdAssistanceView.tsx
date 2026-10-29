@@ -648,7 +648,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={firstName || 'JEFFERSON'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -659,7 +659,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={middleName || 'FERNANDO'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -670,7 +670,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={lastName || 'LEE'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -682,7 +682,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   disabled
                   placeholder={isTagalog ? 'Sufiks (Jr., Sr., III, atbp.)' : 'Suffix (Jr., Sr., III, etc.)'}
                   value={suffix}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -693,7 +693,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={nationality || 'FILIPINO'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -704,7 +704,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value="27/09/2004"
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -715,7 +715,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={age || '22'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 font-bold text-blue-400`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -724,7 +724,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                 <select
                   disabled
                   value={gender || 'Male'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 >
                   <option value="Male">{isTagalog ? 'Lalaki' : 'Male'}</option>
                   <option value="Female">{isTagalog ? 'Babae' : 'Female'}</option>
@@ -736,7 +736,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                 <select
                   disabled
                   value={civilStatus || 'Single'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 >
                   <option value="Single">{isTagalog ? 'Walang asawa (Single)' : 'Single'}</option>
                   <option value="Married">{isTagalog ? 'May asawa (Married)' : 'Married'}</option>
@@ -752,7 +752,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={houseNo || '176'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -763,7 +763,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={street || '23'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -774,7 +774,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={barangay || 'Bagong Silangan'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
@@ -785,7 +785,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={phone || '09155582122'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90`}
+                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
                 />
               </div>
 
