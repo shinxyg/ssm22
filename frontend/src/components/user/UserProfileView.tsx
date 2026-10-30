@@ -41,7 +41,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       const path = (window.location.pathname || '').toLowerCase();
       if (path.endsWith('/personal')) return 'personal';
       if (path.endsWith('/devices')) return 'devices';
-      if (path.endsWith('/language')) return 'language';
+      if (path.endsWith('/language') && userRole !== 'admin') return 'language';
     } catch {}
     return 'account';
   });
@@ -68,7 +68,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       const path = (window.location.pathname || '').toLowerCase();
       if (path.endsWith('/personal')) setActiveTab('personal');
       else if (path.endsWith('/devices')) setActiveTab('devices');
-      else if (path.endsWith('/language')) setActiveTab('language');
+      else if (path.endsWith('/language') && userRole !== 'admin') setActiveTab('language');
       else if (path.endsWith('/account') || path.endsWith('/profile')) setActiveTab('account');
     };
     window.addEventListener('popstate', handleProfilePopState);
@@ -616,7 +616,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
               { id: 'account', label: t('profile.tab_account') },
               { id: 'personal', label: t('profile.tab_personal') },
               { id: 'devices', label: t('profile.tab_devices') },
-              { id: 'language', label: t('profile.tab_language') },
+              ...(!isSystemAdmin ? [{ id: 'language', label: t('profile.tab_language') }] : []),
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
