@@ -5,7 +5,7 @@ import {
   CheckCircle2, 
   Clock, 
   Users, 
-  Shield, 
+
   FileText, 
   Check, 
   Printer, 
@@ -261,7 +261,7 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
       </div>
 
       {/* SUMMARY METRIC CARDS - 2 COLUMNS ON MOBILE */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className={`border rounded-2xl p-3.5 sm:p-5 shadow-lg flex justify-between items-start ${
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
@@ -294,7 +294,7 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
             <div className="text-2xl sm:text-3xl font-extrabold text-blue-400 tracking-tight mt-1 sm:mt-2">{disbursementRecords.length}</div>
           </div>
           <div className={`p-1.5 sm:p-2 rounded-full shrink-0 ${darkMode ? 'bg-blue-950/60 border border-blue-500/30 text-blue-400' : 'bg-blue-100 border border-blue-200 text-blue-600'}`}>
-            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />{/*
           </div>
         </div>
 
@@ -302,12 +302,12 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
           darkMode ? 'bg-[#0e1726] border-slate-800/90 text-white' : 'bg-white border-slate-200/90 text-slate-900'
         }`}>
           <div>
-            <span className={`text-[9px] sm:text-[11px] font-bold tracking-wider uppercase block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>AUTOMATIC ARCHIVE</span>
-            <div className="text-xs sm:text-sm font-extrabold text-blue-400 tracking-tight mt-1 sm:mt-2">RELEASED ➔ HISTORY</div>
-            <span className={`text-[9px] sm:text-[10px] font-medium mt-1 block ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Auto-moves to History</span>
+
+
+
           </div>
-          <div className={`p-1.5 sm:p-2 rounded-full shrink-0 ${darkMode ? 'bg-purple-950/60 border border-purple-500/30 text-purple-400' : 'bg-purple-100 border border-purple-200 text-purple-600'}`}>
-            <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+
+            */}
           </div>
         </div>
       </div>
