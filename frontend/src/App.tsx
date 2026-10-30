@@ -365,6 +365,8 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem('govserve_theme_mode', darkMode ? 'dark' : 'light');
+      document.documentElement.classList.toggle('dark', darkMode);
+      document.body.classList.toggle('dark', darkMode);
     } catch (e) {}
   }, [darkMode]);
 
@@ -1096,7 +1098,7 @@ export default function App() {
 
     return (
       <div className={`h-screen max-h-screen overflow-hidden flex flex-row font-['Plus_Jakarta_Sans',sans-serif] ${
-        darkMode ? 'bg-[#070e1b] text-slate-100' : 'bg-slate-100 text-slate-900'
+        darkMode ? 'dark bg-[#070e1b] text-slate-100' : 'bg-slate-100 text-slate-900'
       }`}>
         {/* Mobile Backdrop for Admin */}
         {sidebarOpen && (
@@ -1428,7 +1430,7 @@ export default function App() {
 
           {/* Admin Main Content Area (With bottom safe-scroll clearance for mobile browser navigation bars) */}
           <main className={`flex-1 px-3 sm:px-6 pt-3 sm:pt-6 pb-28 sm:pb-8 overflow-y-auto transition-colors duration-200 ${
-            darkMode ? 'bg-[#070e1b] text-slate-100' : 'bg-slate-100 text-slate-900'
+            darkMode ? 'dark bg-[#070e1b] text-slate-100' : 'bg-slate-100 text-slate-900'
           }`}>
             {adminTab === 'profile' ? (
               <UserProfileView darkMode={darkMode} userRole="admin" />
