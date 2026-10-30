@@ -321,7 +321,9 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
         if (mod.includes('pwd') && !(cat.includes('pwd') || serv.includes('pwd'))) return false;
         if (mod.includes('senior') && !(cat.includes('senior') || serv.includes('senior'))) return false;
         if (mod.includes('solo parent') && !(cat.includes('solo') || serv.includes('solo'))) return false;
+        if (mod.includes('child welfare') && !(cat.includes('child') || cat.includes('educational') || serv.includes('child') || (app.referenceNo || '').startsWith('QC-CW') || (app.referenceNo || '').startsWith('QC-EDU'))) return false;
         if (mod.includes('livelihood') && !(cat.includes('livelihood') || serv.includes('livelihood'))) return false;
+        if (mod.includes('training') && !(cat.includes('training') || serv.includes('training') || (app.referenceNo || '').startsWith('TRN-'))) return false;
       }
 
       // Status Filter
@@ -492,7 +494,9 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                 <option value="PWD">PWD Welfare</option>
                 <option value="Senior Citizen">Senior Citizen</option>
                 <option value="Solo Parent">Solo Parent</option>
+                <option value="Child Welfare">Child Welfare</option>
                 <option value="Livelihood Program">Livelihood Program</option>
+                <option value="Skills Training Program">Skills Training Program</option>
               </select>
               <ChevronDown className={`w-4 h-4 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
             </div>
