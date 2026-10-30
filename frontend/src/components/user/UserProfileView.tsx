@@ -232,6 +232,19 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       if (res.ok) {
         setSessionNotice(`Successfully logged out ${session.os_name}.`);
         setSessions(prev => prev.filter(s => s.id !== session.id && s.session_token !== session.session_token));
+        const removedKeys = [
+          session.session_token,
+          String(session.id),
+          `${(session.os_name || '').trim().toLowerCase()}__${(session.browser_name || '').trim().toLowerCase()}`
+        ];
+        setSeenDeviceTokens(prev => {
+          const next = prev.filter(k => !removedKeys.includes(k));
+          try {
+            localStorage.setItem('govserve_seen_device_tokens', JSON.stringify(next));
+            window.dispatchEvent(new Event('govserve_devices_seen'));
+          } catch {}
+          return next;
+        });
         setTimeout(() => setSessionNotice(null), 4000);
       }
     } catch (err) {
@@ -252,6 +265,11 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       if (res.ok) {
         setSessionNotice('Logged out of all other devices successfully.');
         setSessions(prev => prev.filter(s => s.session_token === currentSessionToken));
+        setSeenDeviceTokens([]);
+        try {
+          localStorage.setItem('govserve_seen_device_tokens', JSON.stringify([]));
+          window.dispatchEvent(new Event('govserve_devices_seen'));
+        } catch {}
         setTimeout(() => setSessionNotice(null), 4000);
       }
     } catch (err) {
@@ -346,7 +364,8 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
 
   const hasUnseenOtherDevices = otherDeviceSessions.some(s => {
     const tokenKey = s.session_token || String(s.id);
-    return !seenDeviceTokens.includes(tokenKey);
+    const deviceSig = `${(s.os_name || '').trim().toLowerCase()}__${(s.browser_name || '').trim().toLowerCase()}`;
+    return !seenDeviceTokens.includes(tokenKey) && !seenDeviceTokens.includes(deviceSig);
   });
 
   useEffect(() => {
@@ -365,7 +384,10 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
   // Mark all other device sessions as seen once the user opens the Devices & History tab
   useEffect(() => {
     if (activeTab === 'devices' && otherDeviceSessions.length > 0) {
-      const currentOtherKeys = otherDeviceSessions.map(s => s.session_token || String(s.id));
+      const currentOtherKeys = otherDeviceSessions.flatMap(s => [
+        s.session_token || String(s.id),
+        `${(s.os_name || '').trim().toLowerCase()}__${(s.browser_name || '').trim().toLowerCase()}`
+      ]);
       const merged = Array.from(new Set([...seenDeviceTokens, ...currentOtherKeys]));
       if (merged.length !== seenDeviceTokens.length) {
         setSeenDeviceTokens(merged);
