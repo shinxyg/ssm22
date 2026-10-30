@@ -206,7 +206,7 @@ export const AdminDisbursementView: React.FC<AdminDisbursementViewProps> = ({
       benefitText = 'Pharmacy Voucher / Reseta Authorization';
       locationText = 'Accredited Partner Pharmacy';
     } else if (s.includes('funeral') || s.includes('burial')) {
-      benefitText = 'Up to ₱25,000 Funeral Guarantee';
+      benefitText = 'Funeral Guarantee Letter (GL)';
       locationText = 'Partner Funeral Parlor';
     } else if (s.includes('pwd') || cat.includes('pwd')) {
       benefitText = '₱1,500.00 Quarterly Pension & Financial Aid';
