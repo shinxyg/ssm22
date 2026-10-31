@@ -1,22 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  ArrowLeft, 
-  Eye, 
-  EyeOff, 
-  X, 
-  CheckCircle2, 
-  RotateCw, 
-  Headphones, 
-  Volume2, 
-  Image as ImageIcon, 
-  Info, 
-  Check, 
-  Play, 
-  ShieldCheck,
-  Lock,
-  KeyRound
+import {
+  ArrowLeft,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  X,
+  CheckCircle2,
+  RotateCw,
+  Headphones,
+  Volume2,
+  Image as ImageIcon,
+  Info,
+  Check,
+  Globe,
 } from 'lucide-react';
 import { API_BASE_URL } from '../../config/api';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface LoginViewProps {
   onLoginSuccess: (role: 'user' | 'admin') => void;
@@ -59,8 +58,10 @@ const CHALLENGE_TOPICS = [
 export const LoginView: React.FC<LoginViewProps> = ({
   onLoginSuccess,
   onBackToHome,
-  darkMode = false,
 }) => {
+  const { language, setLanguage } = useLanguage();
+  const isFil = language === 'Tagalog';
+
   const [viewMode, setViewMode] = useState<'login' | 'forgot_password' | 'verify_code' | 'reset_password'>(() => {
     try {
       const path = (window.location.pathname || '').toLowerCase();
@@ -138,7 +139,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
   // Forgot Password States
   const [resetEmail, setResetEmail] = useState<string>('');
-  const [isCaptchaChecked, setIsCaptchaChecked] = useState<boolean>(false);
+  const [, setIsCaptchaChecked] = useState<boolean>(false);
   const [isSubmittingReset, setIsSubmittingReset] = useState<boolean>(false);
 
   // Stage 2 OTP Verification & Stage 3 Password Reset States
@@ -157,12 +158,12 @@ export const LoginView: React.FC<LoginViewProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Progressive Lockout States (English, No Emojis/Icons)
+  // Progressive Lockout States
   const [isLocked, setIsLocked] = useState<boolean>(initialLockout?.isLocked || false);
   const [lockoutStage, setLockoutStage] = useState<number>(initialLockout?.lockoutStage || 0);
   const [lockoutUntil, setLockoutUntil] = useState<string | null>(initialLockout?.lockoutUntil || null);
   const [remainingSeconds, setRemainingSeconds] = useState<number>(initialLockout?.remainingSeconds || 0);
-  const [remainingAttempts, setRemainingAttempts] = useState<number | null>(null);
+  const [, setRemainingAttempts] = useState<number | null>(null);
 
   // Instant Unlock via Email OTP Modal States
   const [isUnlockModalOpen, setIsUnlockModalOpen] = useState<boolean>(false);
@@ -482,7 +483,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
         }, 1200);
       }
     } else {
-      // Audio / Voice Code mode
       if (voiceCodeInput.trim() === voiceCode) {
         setIsCaptchaChecked(true);
         setIsCaptchaModalOpen(false);
@@ -541,7 +541,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
     const cleanPassword = password.trim();
 
     if (!cleanEmail || !cleanPassword) {
-      setErrorMessage('Please enter your email and password.');
+      setErrorMessage(isFil ? 'Pakilagay ang iyong email at password.' : 'Please enter your email and password.');
       return;
     }
 
@@ -589,7 +589,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
         localStorage.removeItem('govserve_session_expired');
         localStorage.setItem('govserve_last_activity', Date.now().toString());
         localStorage.setItem('currentUser', JSON.stringify(data.user));
-        setSuccessMessage('Login successful! Redirecting...');
+        setSuccessMessage(isFil ? 'Matagumpay na naka-sign in! Nire-redirect...' : 'Login successful! Redirecting...');
         setTimeout(() => {
           onLoginSuccess(data.user.role === 'admin' ? 'admin' : 'user');
         }, 500);
@@ -645,7 +645,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
     setOtpDigits(updated);
     if (errorMessage) setErrorMessage(null);
 
-    // Auto-focus next PIN box
     if (digit && index < 5) {
       otpInputRefs.current[index + 1]?.focus();
     }
@@ -672,59 +671,44 @@ export const LoginView: React.FC<LoginViewProps> = ({
     }
   };
 
-  // Helper for generating high-end official responsive HTML email template for password reset OTP matching user screenshot
   const getResetCodeEmailTemplate = (targetEmail: string, code: string) => {
     const rawCode = (code || '000000').padStart(6, '0');
 
     return `
-      <!-- Gmail / Mobile Snippet Preheader: triggers the native 'Copy code: XXXXXX' pill in Gmail -->
       <div style="display:none;font-size:1px;color:#ffffff;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;mso-hide:all;">
         Your verification code is: ${rawCode}. Valid for 2 minutes. Use this code to verify your GovServe password reset request.
       </div>
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #060b17; color: #f8fafc; padding: 40px 15px; width: 100%; box-sizing: border-box;">
         <div style="max-width: 580px; margin: 0 auto; background-color: #0b1426; border: 1px solid #1e293b; border-radius: 20px; padding: 36px 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);">
-          
-          <!-- Top Branding Header -->
           <div style="margin-bottom: 20px;">
             <h1 style="margin: 0 0 6px 0; font-size: 24px; font-weight: 800; color: #3b82f6; letter-spacing: -0.3px;">QC GovServe Social Services</h1>
             <p style="margin: 0; font-size: 13px; font-weight: 500; color: #94a3b8;">Community Care & Welfare Portal</p>
           </div>
-
           <div style="border-bottom: 1px solid #1e293b; margin-bottom: 28px;"></div>
-
-          <!-- Title & Paragraph -->
           <h2 style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #22c55e;">Password Reset Verification Request</h2>
           <p style="margin: 0 0 26px 0; font-size: 14px; line-height: 1.6; color: #e2e8f0;">
             We received a password reset request for your GovServe account registered under 
             <a href="mailto:${targetEmail}" style="color: #3b82f6; text-decoration: underline; font-weight: 600;">${targetEmail}</a>.
           </p>
-
-          <!-- 6-Digit Code Card Box with 1-Click Auto Select & Copy Pill -->
           <div style="background-color: #131f37; border: 1px solid #1e2e4a; border-radius: 16px; padding: 26px 20px; margin-bottom: 28px; text-align: center;">
             <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 1.5px; margin-bottom: 14px;">
               YOUR 6-DIGIT PASSWORD RESET CODE
             </div>
-            
             <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 40px; font-weight: 800; color: #38bdf8; letter-spacing: 8px; margin: 0; padding: 8px 0; -webkit-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all; cursor: pointer;" title="Click to select code">
               ${rawCode}
             </div>
           </div>
-
-          <!-- Instructions & Security Note -->
           <p style="margin: 0 0 14px 0; font-size: 14px; line-height: 1.5; color: #e2e8f0;">
             Please enter this 6-digit code on the password reset screen within <strong>2 minutes</strong>.
           </p>
           <p style="margin: 0 0 32px 0; font-size: 13.5px; line-height: 1.5; color: #94a3b8;">
             If you did not initiate this request, you can safely ignore this email.
           </p>
-
-          <!-- Footer -->
           <div style="border-top: 1px solid #1e293b; padding-top: 22px; text-align: text-left;">
             <p style="margin: 0; font-size: 11px; color: #64748b; font-weight: 500; text-align: center;">
               Quezon City Social Services Department • Official Automated Notification
             </p>
           </div>
-
         </div>
       </div>
     `;
@@ -750,7 +734,6 @@ export const LoginView: React.FC<LoginViewProps> = ({
 
     setIsSubmittingReset(true);
 
-    // Verify account exists in database (rejects random/unregistered emails)
     try {
       const checkRes = await fetch(`${API_BASE_URL}/api/auth/check-email?email=${encodeURIComponent(trimmedEmail)}`);
       if (checkRes.ok) {
@@ -900,156 +883,146 @@ export const LoginView: React.FC<LoginViewProps> = ({
   };
 
   return (
-    <div className={`min-h-screen md:h-screen md:max-h-screen md:overflow-hidden overflow-y-auto w-full flex flex-col md:flex-row font-['Plus_Jakarta_Sans',sans-serif] ${
-      darkMode ? 'bg-[#050a14] text-slate-100' : 'bg-slate-100 text-slate-900'
-    }`}>
-      {/* Left Column: Branding / Official Seal Area (Visible on Desktop md:flex, Hidden on Mobile) */}
-      <div className="hidden md:flex md:w-1/2 h-full relative flex-col justify-between p-6 sm:p-8 lg:p-10 bg-[#070e1b] border-r border-slate-800/80 overflow-hidden select-none">
-        
-        {/* Top Header Action: Back to Home */}
-        <div className="relative z-10">
-          <button
-            type="button"
-            onClick={onBackToHome}
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Home</span>
-          </button>
+    <div className="grid min-h-dvh w-full bg-[#f8f9fb] text-[16px] leading-[1.6] text-[#1b2436] antialiased min-[901px]:h-dvh min-[901px]:grid-cols-2 min-[901px]:overflow-hidden">
+      {/* LEFT ASIDE: Official Deep Navy Branding Column (Matches govservedrrm.up.railway.app/login on Desktop & CP) */}
+      <aside className="relative flex flex-col justify-center gap-[9.6px] overflow-hidden bg-[linear-gradient(180deg,#10305e_0%,#0f2c59_55%,#0b2348_100%)] px-[20px] py-8 text-white min-[901px]:h-dvh min-[901px]:gap-[19.2px] min-[901px]:p-[clamp(32px,5vw,64px)]">
+        <img
+          src="/Government Service Integrity Seal.png"
+          alt="GovServe"
+          className="pointer-events-none absolute top-1/2 left-1/2 hidden w-[min(80%,520px)] -translate-x-1/2 -translate-y-1/2 opacity-20 mix-blend-screen select-none min-[901px]:block"
+        />
+
+        <div className="relative z-[1] text-[12px] uppercase tracking-[1.28px] opacity-85">
+          {isFil
+            ? 'Pamamahala sa Serbisyong Panlipunan at Kagalingan'
+            : 'Social Services & Welfare Management'}
         </div>
 
-        {/* Center: Large Official Circular Government Seal Logo with Overlay Text */}
-        <div className="relative z-10 flex flex-col items-center justify-center text-center my-auto py-4">
-          <div className="relative w-80 h-80 sm:w-[380px] sm:h-[380px] md:w-[440px] md:h-[440px] flex items-center justify-center">
-            
-            {/* Official Government Service Integrity Seal Image */}
-            <img
-              src="/Government Service Integrity Seal.png"
-              alt="Government Service Integrity Seal"
-              className="w-full h-full object-contain mix-blend-multiply opacity-30 select-none pointer-events-none filter brightness-90"
-            />
+        <h1 className="relative z-[1] m-auto text-center text-[clamp(30.4px,3.2vw,44.8px)] font-extrabold leading-[1.08] tracking-[-0.02em] text-white">
+          {isFil ? (
+            <>
+              Pamamahala sa Serbisyong
+              <br />
+              Panlipunan at Kagalingan
+            </>
+          ) : (
+            <>
+              Social Services and
+              <br />
+              Welfare Management
+            </>
+          )}
+        </h1>
 
-            {/* Overlay Title & Description directly over Seal graphic */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center z-10 space-y-3">
-              <h2 className="font-extrabold text-white tracking-tight leading-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.99)]">
-                <span className="block whitespace-nowrap text-xl sm:text-2xl md:text-3xl lg:text-[35px]">
-                  Social Services
-                </span>
-                <span className="block whitespace-nowrap text-xl sm:text-2xl md:text-3xl lg:text-[35px] mt-1">
-                  Management Portal
-                </span>
-              </h2>
+        <p className="relative z-[1] m-auto max-w-[44ch] text-center text-[15.2px] leading-[1.6] text-[#e7eefc]/85">
+          {isFil
+            ? 'Isang sentralisadong digital platform para sa ligtas na pamamahala ng mga programa sa serbisyong panlipunan, crisis intervention, at pamamahagi ng tulong pinansyal sa lokal na pamahalaan.'
+            : 'A centralized digital platform for securely managing local government social welfare programs, crisis intervention, and financial aid disbursements.'}
+        </p>
 
-              <p className="max-w-xs sm:max-w-sm text-xs sm:text-sm text-slate-200 font-normal leading-relaxed pt-1 drop-shadow-[0_2px_8px_rgba(0,0,0,0.99)]">
-                Streamlining community welfare, financial aid, and support programs for residents in need.
-              </p>
+        <div className="relative z-[1] text-[12px] uppercase tracking-[1.28px] opacity-85">
+          {isFil
+            ? 'Republika ng Pilipinas • Lokal na Pamahalaan'
+            : 'Republic of the Philippines • Local Government Unit'}
+        </div>
+      </aside>
+
+      {/* RIGHT COLUMN: Sign In / Forgot Password Container */}
+      <div className="flex justify-center bg-[#f9fafc] px-[20px] py-[clamp(24px,5vw,56px)] min-[901px]:h-dvh min-[901px]:overflow-y-auto">
+        <div className="my-auto flex w-full flex-col items-center">
+          {/* Top-right Language Switcher Pill */}
+          <div className="mb-3 flex w-full justify-end min-[901px]:w-[min(392px,100%)]">
+            <div
+              className="inline-flex items-center gap-[3.2px] rounded-full border border-[#e5eaf2] bg-[#f8fafc] p-[3.2px]"
+              role="group"
+              aria-label="Language switcher"
+            >
+              <span className="inline-flex items-center pl-[7.2px] text-[#61708a]" aria-hidden="true">
+                <Globe className="h-[13.5px] w-[13.5px]" />
+              </span>
+              <button
+                type="button"
+                onClick={() => setLanguage('English')}
+                aria-pressed={!isFil}
+                className={`cursor-pointer rounded-full border-none px-[9.6px] py-[4.8px] text-[12px] font-semibold leading-none transition-colors duration-150 ${
+                  !isFil
+                    ? 'bg-[#1870d5] text-white shadow-[0_2px_6px_rgba(24,112,213,0.28)]'
+                    : 'bg-transparent text-[#61708a] hover:text-[#1b2436]'
+                }`}
+              >
+                English
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('Tagalog')}
+                aria-pressed={isFil}
+                className={`cursor-pointer rounded-full border-none px-[9.6px] py-[4.8px] text-[12px] font-semibold leading-none transition-colors duration-150 ${
+                  isFil
+                    ? 'bg-[#1870d5] text-white shadow-[0_2px_6px_rgba(24,112,213,0.28)]'
+                    : 'bg-transparent text-[#61708a] hover:text-[#1b2436]'
+                }`}
+              >
+                Filipino
+              </button>
             </div>
           </div>
-        </div>
 
-        {/* Bottom Footer Credit */}
-        <div className="relative z-10 text-center text-[11px] text-slate-500 font-medium">
-          © Social Services Management System • Community Care Portal
-        </div>
-      </div>
+          {viewMode === 'reset_password' ? (
+            /* STEP 3: SET NEW PASSWORD CARD */
+            <div className="relative w-full rounded-[14px] border border-[#edf0f4] bg-white px-[27.2px] pt-[30.4px] pb-[25.6px] shadow-[0_18px_45px_rgba(15,44,88,0.09)] min-[901px]:w-[min(392px,100%)]">
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode('login');
+                  setErrorMessage(null);
+                  setSuccessMessage(null);
+                }}
+                className="mb-[14px] inline-flex cursor-pointer items-center gap-[5.6px] rounded-full border border-[#e3eaf5] bg-[#f4f7fc] px-[11.2px] py-[5.6px] text-[12.5px] font-semibold text-[#1870d5] transition-colors duration-150 hover:border-[#c8d9f2] hover:bg-[#eaf1fb]"
+              >
+                <ArrowLeft className="h-[14px] w-[14px]" />
+                <span>{isFil ? 'Bumalik sa Sign in' : 'Back to Sign in'}</span>
+              </button>
 
-      {/* Right Column: Login or Forgot Password Form Card Container */}
-      <div className={`w-full md:w-1/2 min-h-screen md:h-full flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 overflow-y-auto md:overflow-hidden relative transition-colors duration-300 ${
-        darkMode ? 'bg-[#050a14]' : 'bg-slate-100/80'
-      }`}>
-        {/* Mobile Top Header: Back to Home (Mobile ONLY) */}
-        <div className="w-full max-w-sm mb-4 flex items-center md:hidden shrink-0">
-          <button
-            type="button"
-            onClick={onBackToHome}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer p-1.5 -ml-1.5 rounded-lg active:bg-slate-800/60"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Home</span>
-          </button>
-        </div>
-        {viewMode === 'reset_password' ? (
-          /* STEP 3: SET NEW PASSWORD CARD */
-          <div className={`w-full max-w-sm border rounded-3xl p-6 sm:p-7 shadow-2xl backdrop-blur-sm animate-in fade-in duration-300 relative ${
-            darkMode ? 'bg-[#0d1628]/95 border-slate-800/90 text-white' : 'bg-white border-slate-200 text-slate-900'
-          }`}>
-            <button
-              type="button"
-              onClick={() => {
-                setViewMode('login');
-                setErrorMessage(null);
-                setSuccessMessage(null);
-              }}
-              className={`absolute top-5 right-5 transition-colors cursor-pointer ${
-                darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
-              }`}
-              title="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="text-center mb-4 pr-4">
-              <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight mb-1 ${
-                darkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-                Set New Password
+              <h1 className="m-0 mb-[4.8px] text-[26px] font-extrabold tracking-[-0.02em] text-[#0f2c58]">
+                {isFil ? 'Magtakda ng Bagong Password' : 'Set New Password'}
               </h1>
-              <p className={`text-xs font-normal leading-relaxed px-1 ${
-                darkMode ? 'text-slate-300' : 'text-slate-600'
-              }`}>
-                Create a strong new password for your account.
+              <p className="m-0 mb-[16px] text-[13.5px] leading-[1.5] text-[#61708a]">
+                {isFil
+                  ? 'Gumawa ng matibay na bagong password para sa iyong GovServe account.'
+                  : 'Create a strong new password for your GovServe account.'}
               </p>
-            </div>
 
-            {/* Email Verified Toast Badge */}
-            <div className={`mb-4 p-2.5 border rounded-xl text-xs font-semibold flex items-center justify-between ${
-              darkMode
-                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
-                : 'bg-emerald-50 border-emerald-200 text-emerald-700'
-            }`}>
-              <div className="flex items-center gap-2 truncate">
-                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                <span className="truncate">Email: <strong>{resetEmail}</strong></span>
+              {/* Email Verified Badge */}
+              <div className="mb-3.5 flex items-center justify-between rounded-[8px] border border-emerald-200 bg-emerald-50 p-2.5 text-[12px] font-semibold text-emerald-700">
+                <div className="flex items-center gap-2 truncate">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <span className="truncate">
+                    Email: <strong>{resetEmail}</strong>
+                  </span>
+                </div>
+                <span className="shrink-0 rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold uppercase text-emerald-700">
+                  Verified
+                </span>
               </div>
-              <span className={`text-[9px] px-2 py-0.5 rounded-full uppercase font-bold shrink-0 ${
-                darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-100 text-emerald-700'
-              }`}>Verified</span>
-            </div>
 
-            {errorMessage && (
-              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                darkMode
-                  ? 'bg-red-950/50 border-red-500/40 text-red-300'
-                  : 'bg-red-50 border-red-200 text-red-700'
-              }`}>
-                <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+              {errorMessage && (
+                <div className="mb-3.5 flex items-center gap-2 rounded-[8px] border border-red-200 bg-red-50 p-2.5 text-[12.5px] font-semibold text-red-700">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            {successMessage && (
-              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                darkMode
-                  ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300'
-                  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
-              }`}>
-                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                <span>{successMessage}</span>
-              </div>
-            )}
+              {successMessage && (
+                <div className="mb-3.5 flex items-center gap-2 rounded-[8px] border border-emerald-200 bg-emerald-50 p-2.5 text-[12.5px] font-semibold text-emerald-700">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <span>{successMessage}</span>
+                </div>
+              )}
 
-            <div className={`border rounded-2xl p-4 sm:p-5 ${
-              darkMode ? 'bg-[#121d33]/90 border-slate-800/80' : 'bg-slate-50 border-slate-200'
-            }`}>
-              <form onSubmit={handleFinalResetPassword} className="space-y-4">
-                {/* New Password Field */}
-                <div>
-                  <label className={`text-[11px] font-bold tracking-wider uppercase mb-1 block ${
-                    darkMode ? 'text-slate-300' : 'text-slate-700'
-                  }`}>
-                    NEW PASSWORD
-                  </label>
-                  <div className="relative">
+              <form onSubmit={handleFinalResetPassword} className="grid gap-[13.6px]">
+                <label className="grid gap-[5.6px] text-[13.6px] font-semibold text-[#1b2436]">
+                  <span>{isFil ? 'Bagong Password' : 'New Password'}</span>
+                  <div className="relative flex items-center">
                     <input
                       type={showNewPassword ? 'text' : 'password'}
                       value={newPassword}
@@ -1057,32 +1030,23 @@ export const LoginView: React.FC<LoginViewProps> = ({
                         setNewPassword(e.target.value);
                         if (errorMessage) setErrorMessage(null);
                       }}
-                      placeholder="At least 6 characters"
+                      placeholder={isFil ? 'Hindi bababa sa 6 na karakter' : 'At least 6 characters'}
                       required
-                      className={`w-full px-3.5 py-2.5 border rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 ${
-                        darkMode 
-                          ? 'bg-[#091122] border-slate-700 text-white placeholder-slate-500' 
-                          : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
-                      }`}
+                      className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-[12.8px] py-[10.4px] pr-[42px] text-[15.2px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                      className="absolute right-[10px] inline-flex cursor-pointer items-center justify-center rounded-[6px] border-none bg-transparent p-[6px] text-[#61708a] hover:bg-[#1870d5]/10 hover:text-[#1870d5]"
                     >
-                      {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showNewPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
                     </button>
                   </div>
-                </div>
+                </label>
 
-                {/* Confirm New Password Field */}
-                <div>
-                  <label className={`text-[11px] font-bold tracking-wider uppercase mb-1 block ${
-                    darkMode ? 'text-slate-300' : 'text-slate-700'
-                  }`}>
-                    CONFIRM NEW PASSWORD
-                  </label>
-                  <div className="relative">
+                <label className="grid gap-[5.6px] text-[13.6px] font-semibold text-[#1b2436]">
+                  <span>{isFil ? 'Kumpirmahin ang Bagong Password' : 'Confirm New Password'}</span>
+                  <div className="relative flex items-center">
                     <input
                       type={showConfirmPassword ? 'text' : 'password'}
                       value={confirmNewPassword}
@@ -1090,25 +1054,21 @@ export const LoginView: React.FC<LoginViewProps> = ({
                         setConfirmNewPassword(e.target.value);
                         if (errorMessage) setErrorMessage(null);
                       }}
-                      placeholder="Re-enter new password"
+                      placeholder={isFil ? 'I-type muli ang bagong password' : 'Re-enter new password'}
                       required
-                      className={`w-full px-3.5 py-2.5 border rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10 ${
-                        darkMode 
-                          ? 'bg-[#091122] border-slate-700 text-white placeholder-slate-500' 
-                          : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
-                      }`}
+                      className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-[12.8px] py-[10.4px] pr-[42px] text-[15.2px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                      className="absolute right-[10px] inline-flex cursor-pointer items-center justify-center rounded-[6px] border-none bg-transparent p-[6px] text-[#61708a] hover:bg-[#1870d5]/10 hover:text-[#1870d5]"
                     >
-                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      {showConfirmPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
                     </button>
                   </div>
-                </div>
+                </label>
 
-                {/* Real-Time Password Strength Meter & Validation Checklist */}
+                {/* Real-Time Password Strength Meter */}
                 {(() => {
                   const hasMinLength = newPassword.length >= 6;
                   const hasUppercase = /[A-Z]/.test(newPassword);
@@ -1118,44 +1078,51 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   const score = [hasMinLength, hasUppercase, hasNumber, hasSpecialChar].filter(Boolean).length;
 
                   return (
-                    <div className="space-y-2 pt-1">
-                      <div className="flex items-center justify-between text-[11px] font-medium">
-                        <span className="text-slate-400">Password Strength:</span>
-                        <span className={`font-bold ${
-                          score === 0 ? 'text-slate-500' :
-                          score <= 2 ? 'text-red-400' :
-                          score === 3 ? 'text-amber-400' : 'text-emerald-400'
-                        }`}>
+                    <div className="space-y-1.5 rounded-[8px] border border-[#e5eaf2] bg-[#f8fafc] p-3 text-[11.5px]">
+                      <div className="flex items-center justify-between font-medium">
+                        <span className="text-[#61708a]">Password Strength:</span>
+                        <span
+                          className={`font-bold ${
+                            score === 0
+                              ? 'text-slate-400'
+                              : score <= 2
+                              ? 'text-red-500'
+                              : score === 3
+                              ? 'text-amber-500'
+                              : 'text-emerald-600'
+                          }`}
+                        >
                           {score === 0 ? 'None' : score <= 2 ? 'Weak' : score === 3 ? 'Medium' : 'Strong'}
                         </span>
                       </div>
-                      <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                        <div className={`h-full transition-all duration-300 ${
-                          score === 0 ? 'w-0' :
-                          score <= 2 ? 'w-1/3 bg-red-500' :
-                          score === 3 ? 'w-2/3 bg-amber-500' : 'w-full bg-emerald-500'
-                        }`} />
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                        <div
+                          className={`h-full transition-all duration-300 ${
+                            score === 0
+                              ? 'w-0'
+                              : score <= 2
+                              ? 'w-1/3 bg-red-500'
+                              : score === 3
+                              ? 'w-2/3 bg-amber-500'
+                              : 'w-full bg-emerald-500'
+                          }`}
+                        />
                       </div>
-
-                      <div className="space-y-1 pt-1 text-[11px]">
-                        <div className={`flex items-center gap-1.5 ${hasMinLength ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
-                          <Check className="w-3.5 h-3.5" />
+                      <div className="grid grid-cols-1 gap-1 pt-1">
+                        <div className={`flex items-center gap-1.5 ${hasMinLength ? 'font-semibold text-emerald-600' : 'text-[#61708a]'}`}>
+                          <Check className="h-3.5 w-3.5" />
                           <span>At least 6 characters</span>
                         </div>
-                        <div className={`flex items-center gap-1.5 ${hasUppercase ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
-                          <Check className="w-3.5 h-3.5" />
+                        <div className={`flex items-center gap-1.5 ${hasUppercase ? 'font-semibold text-emerald-600' : 'text-[#61708a]'}`}>
+                          <Check className="h-3.5 w-3.5" />
                           <span>One uppercase letter (A-Z)</span>
                         </div>
-                        <div className={`flex items-center gap-1.5 ${hasNumber ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
-                          <Check className="w-3.5 h-3.5" />
+                        <div className={`flex items-center gap-1.5 ${hasNumber ? 'font-semibold text-emerald-600' : 'text-[#61708a]'}`}>
+                          <Check className="h-3.5 w-3.5" />
                           <span>One number (0-9)</span>
                         </div>
-                        <div className={`flex items-center gap-1.5 ${hasSpecialChar ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
-                          <Check className="w-3.5 h-3.5" />
-                          <span>One special character (!@#$%^&*)</span>
-                        </div>
-                        <div className={`flex items-center gap-1.5 ${isMatching ? 'text-emerald-400 font-semibold' : 'text-slate-500'}`}>
-                          <Check className="w-3.5 h-3.5" />
+                        <div className={`flex items-center gap-1.5 ${isMatching ? 'font-semibold text-emerald-600' : 'text-[#61708a]'}`}>
+                          <Check className="h-3.5 w-3.5" />
                           <span>Passwords match</span>
                         </div>
                       </div>
@@ -1163,232 +1130,156 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   );
                 })()}
 
-                {/* Primary Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmittingNewPassword}
-                  className={`w-full py-3 px-6 bg-[#e5383b] hover:bg-[#d90429] active:bg-[#b7094c] text-white font-extrabold text-sm rounded-xl transition-all shadow-lg shadow-red-900/20 ${
-                    isSubmittingNewPassword ? 'opacity-70 cursor-wait' : 'cursor-pointer'
-                  }`}
+                  className="mt-[3.2px] inline-flex cursor-pointer items-center justify-center gap-[8px] rounded-full border-none bg-[#1870d5] px-[19.2px] py-[11.5px] text-[15.2px] font-bold text-white shadow-[0_8px_20px_rgba(24,112,213,0.28)] transition-all duration-150 hover:bg-[#125bb0] disabled:cursor-wait disabled:opacity-70"
                 >
-                  {isSubmittingNewPassword ? 'RESETTING PASSWORD...' : 'RESET PASSWORD & LOGIN'}
+                  <span>
+                    {isSubmittingNewPassword
+                      ? isFil
+                        ? 'Pinapalitan ang Password...'
+                        : 'Resetting Password...'
+                      : isFil
+                      ? 'I-save ang Password at Mag-sign in'
+                      : 'Reset Password & Sign in'}
+                  </span>
+                  <ArrowRight className="h-[16px] w-[16px]" />
                 </button>
               </form>
             </div>
-          </div>
-        ) : viewMode === 'verify_code' ? (
-          /* STEP 2: ENTER 6-DIGIT OTP CODE CARD */
-          <div className={`w-full max-w-md border rounded-3xl p-7 sm:p-8 shadow-2xl backdrop-blur-md animate-in fade-in duration-300 relative ${
-            darkMode ? 'bg-[#0d1628]/95 border-slate-800/90 text-white' : 'bg-white border-slate-200 text-slate-900'
-          }`}>
-            {/* Top Right Close X Button */}
-            <button
-              type="button"
-              onClick={() => {
-                setViewMode('login');
-                setErrorMessage(null);
-                setSuccessMessage(null);
-              }}
-              className={`absolute top-6 right-6 transition-colors cursor-pointer ${
-                darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
-              }`}
-              title="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
+          ) : viewMode === 'verify_code' ? (
+            /* STEP 2: ENTER 6-DIGIT OTP CODE CARD */
+            <div className="relative w-full rounded-[14px] border border-[#edf0f4] bg-white px-[27.2px] pt-[30.4px] pb-[25.6px] shadow-[0_18px_45px_rgba(15,44,88,0.09)] min-[901px]:w-[min(392px,100%)]">
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode('forgot_password');
+                  setErrorMessage(null);
+                  setSuccessMessage(null);
+                }}
+                className="mb-[14px] inline-flex cursor-pointer items-center gap-[5.6px] rounded-full border border-[#e3eaf5] bg-[#f4f7fc] px-[11.2px] py-[5.6px] text-[12.5px] font-semibold text-[#1870d5] transition-colors duration-150 hover:border-[#c8d9f2] hover:bg-[#eaf1fb]"
+              >
+                <ArrowLeft className="h-[14px] w-[14px]" />
+                <span>{isFil ? 'Bumalik sa Email Input' : 'Back to Email Input'}</span>
+              </button>
 
-            {/* Header Title */}
-            <div className="text-center mb-6">
-              <h1 className={`text-2xl font-extrabold tracking-tight mb-1.5 ${
-                darkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-                Enter 6-Digit Code
+              <h1 className="m-0 mb-[4.8px] text-[26px] font-extrabold tracking-[-0.02em] text-[#0f2c58]">
+                {isFil ? 'Ilagay ang 6-Digit Code' : 'Enter 6-Digit Code'}
               </h1>
-              <p className={`text-xs font-medium leading-relaxed max-w-xs mx-auto ${
-                darkMode ? 'text-slate-400' : 'text-slate-600'
-              }`}>
-                We sent a verification code to{' '}
-                <strong className="text-blue-400 font-bold block sm:inline mt-0.5 sm:mt-0">{resetEmail || 'your email'}</strong>
+              <p className="m-0 mb-[16px] text-[13.5px] leading-[1.5] text-[#61708a]">
+                {isFil ? 'Nagpadala kami ng verification code sa ' : 'We sent a verification code to '}
+                <strong className="font-bold text-[#1870d5]">{resetEmail || 'your email'}</strong>
               </p>
-            </div>
 
-            {/* Error Message */}
-            {errorMessage && (
-              <div className={`mb-5 p-3.5 border rounded-2xl text-xs font-semibold flex items-center gap-2.5 shadow-sm animate-in fade-in ${
-                darkMode
-                  ? 'bg-red-950/60 border-red-500/40 text-red-300'
-                  : 'bg-red-50 border-red-200 text-red-700'
-              }`}>
-                <span className="w-2 h-2 rounded-full bg-red-500 shrink-0 animate-pulse" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+              {errorMessage && (
+                <div className="mb-3.5 flex items-center gap-2 rounded-[8px] border border-red-200 bg-red-50 p-2.5 text-[12.5px] font-semibold text-red-700">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            {successMessage && (
-              <div className={`mb-5 p-3.5 border rounded-2xl text-xs font-semibold flex items-center gap-2.5 shadow-sm animate-in fade-in ${
-                darkMode
-                  ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
-                  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
-              }`}>
-                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                <span>{successMessage}</span>
-              </div>
-            )}
+              {successMessage && (
+                <div className="mb-3.5 flex items-center gap-2 rounded-[8px] border border-emerald-200 bg-emerald-50 p-2.5 text-[12.5px] font-semibold text-emerald-700">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <span>{successMessage}</span>
+                </div>
+              )}
 
-            {/* Form & PIN Boxes Container */}
-            <form onSubmit={handleVerifyCodeSubmit} className="space-y-5">
-              <div className={`border rounded-2xl p-5 sm:p-6 text-center ${
-                darkMode ? 'bg-[#091122]/90 border-slate-800/90' : 'bg-slate-50 border-slate-200'
-              }`}>
-                <label className={`text-[11px] font-extrabold tracking-wider uppercase mb-3 block text-center ${
-                  darkMode ? 'text-slate-400' : 'text-slate-600'
-                }`}>
-                  VERIFICATION CODE
-                </label>
-
-                {/* 6 Clean PIN Boxes without dots or box shadow */}
-                <div className="flex items-center justify-center gap-2 sm:gap-2.5 my-3">
-                  {otpDigits.map((digit, idx) => (
-                    <input
-                      key={idx}
-                      ref={(el) => (otpInputRefs.current[idx] = el)}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(idx, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
-                      onPaste={handleOtpPaste}
-                      className={`w-11 h-14 sm:w-12 sm:h-14 text-center text-2xl font-mono font-bold border rounded-xl transition-all outline-none ${
-                        digit
-                          ? darkMode
-                            ? 'bg-blue-950/80 border-blue-500 text-blue-300'
-                            : 'bg-blue-50 border-blue-500 text-blue-700'
-                          : darkMode
-                          ? 'bg-[#101b33] border-slate-700/80 text-white focus:border-blue-400 focus:bg-blue-950/40'
-                          : 'bg-white border-slate-300 text-slate-900 focus:border-blue-500'
-                      }`}
-                    />
-                  ))}
+              <form onSubmit={handleVerifyCodeSubmit} className="grid gap-[14px]">
+                <div className="rounded-[10px] border border-[#e5eaf2] bg-[#f8fafc] p-4 text-center">
+                  <label className="mb-2.5 block text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#61708a]">
+                    {isFil ? 'VERIFICATION CODE' : 'VERIFICATION CODE'}
+                  </label>
+                  <div className="my-2 flex items-center justify-center gap-1.5 sm:gap-2">
+                    {otpDigits.map((digit, idx) => (
+                      <input
+                        key={idx}
+                        ref={(el) => (otpInputRefs.current[idx] = el)}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(idx, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                        onPaste={handleOtpPaste}
+                        className={`h-12 w-10 sm:w-11 rounded-[8px] border text-center font-mono text-xl font-bold outline-none transition-all ${
+                          digit
+                            ? 'border-[#1870d5] bg-[#1870d5]/10 text-[#0f2c58]'
+                            : 'border-[#d9dee7] bg-white text-[#1b2436] focus:border-[#1870d5] focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)]'
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
 
-              </div>
+                <div className="flex items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={timerSeconds > 0 || isResending}
+                    className="flex h-11 w-1/2 items-center justify-center rounded-full border border-[#d9dee7] bg-[#f8fafc] px-3 text-[12.5px] font-bold text-[#1b2436] transition-colors hover:bg-[#eef2f8] disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isResending
+                      ? 'Resending...'
+                      : timerSeconds > 0
+                      ? `Resend (${Math.floor(timerSeconds / 60)}:${(timerSeconds % 60).toString().padStart(2, '0')})`
+                      : isFil
+                      ? 'Ipadala Muli'
+                      : 'Resend Code'}
+                  </button>
 
-              {/* Action Buttons: Resend Code & Verify Code */}
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={handleResendCode}
-                  disabled={timerSeconds > 0 || isResending}
-                  className={`w-1/2 py-3 px-4 border rounded-xl text-xs font-bold transition-all h-11 flex items-center justify-center ${
-                    timerSeconds > 0 || isResending
-                      ? darkMode
-                        ? 'bg-slate-800/40 border-slate-700/40 text-slate-500 cursor-not-allowed'
-                        : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed'
-                      : darkMode
-                        ? 'bg-slate-800 hover:bg-slate-700 border-slate-600 text-white cursor-pointer active:scale-98 shadow-sm'
-                        : 'bg-slate-200 hover:bg-slate-300 border-slate-300 text-slate-800 cursor-pointer active:scale-98 shadow-sm'
-                  }`}
-                >
-                  {isResending ? 'Resending...' : timerSeconds > 0 ? `Resend (${Math.floor(timerSeconds / 60)}:${(timerSeconds % 60).toString().padStart(2, '0')})` : 'Resend Code'}
-                </button>
-
-                <button
-                  type="submit"
-                  className="w-1/2 py-3 px-4 bg-[#e5383b] hover:bg-[#d90429] active:bg-[#b7094c] text-white font-extrabold text-xs rounded-xl transition-all cursor-pointer h-11 flex items-center justify-center shadow-lg shadow-red-900/20 active:scale-98"
-                >
-                  VERIFY CODE
-                </button>
-              </div>
-
-              {/* Back to Email Input Link */}
-              <div className="text-center pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setViewMode('forgot_password');
-                    setErrorMessage(null);
-                    setSuccessMessage(null);
-                  }}
-                  className={`inline-flex items-center gap-1.5 text-xs font-semibold transition-colors cursor-pointer ${
-                    darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Back to <span className="font-bold text-blue-400 hover:underline">Email Input</span></span>
-                </button>
-              </div>
-            </form>
-          </div>
-        ) : viewMode === 'forgot_password' ? (
-          /* FORGOT PASSWORD CARD (Matching Reference Image) */
-          <div className={`w-full max-w-sm border rounded-3xl p-6 sm:p-7 shadow-2xl backdrop-blur-sm animate-in fade-in duration-300 relative ${
-            darkMode ? 'bg-[#0d1628]/95 border-slate-800/90 text-white' : 'bg-white border-slate-200 text-slate-900'
-          }`}>
-            {/* Top Right Close X Button */}
-            <button
-              type="button"
-              onClick={() => {
-                setViewMode('login');
-                setErrorMessage(null);
-                setSuccessMessage(null);
-              }}
-              className={`absolute top-5 right-5 transition-colors cursor-pointer ${
-                darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
-              }`}
-              title="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            {/* Title & Subtitle */}
-            <div className="text-center mb-5 pr-4">
-              <h1 className={`text-xl sm:text-2xl font-extrabold tracking-tight mb-1.5 ${
-                darkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-                Forgot your password?
-              </h1>
-              <p className={`text-xs font-normal leading-relaxed px-1 ${
-                darkMode ? 'text-slate-300' : 'text-slate-600'
-              }`}>
-                No worries! Simply provide your registered email to reset your password.
-              </p>
+                  <button
+                    type="submit"
+                    className="flex h-11 w-1/2 cursor-pointer items-center justify-center rounded-full border-none bg-[#1870d5] px-4 text-[13px] font-bold text-white shadow-[0_8px_20px_rgba(24,112,213,0.28)] transition-all hover:bg-[#125bb0]"
+                  >
+                    {isFil ? 'I-verify ang Code' : 'Verify Code'}
+                  </button>
+                </div>
+              </form>
             </div>
+          ) : viewMode === 'forgot_password' ? (
+            /* STEP 1: FORGOT PASSWORD CARD */
+            <div className="relative w-full rounded-[14px] border border-[#edf0f4] bg-white px-[27.2px] pt-[30.4px] pb-[25.6px] shadow-[0_18px_45px_rgba(15,44,88,0.09)] min-[901px]:w-[min(392px,100%)]">
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode('login');
+                  setErrorMessage(null);
+                  setSuccessMessage(null);
+                }}
+                className="mb-[14px] inline-flex cursor-pointer items-center gap-[5.6px] rounded-full border border-[#e3eaf5] bg-[#f4f7fc] px-[11.2px] py-[5.6px] text-[12.5px] font-semibold text-[#1870d5] transition-colors duration-150 hover:border-[#c8d9f2] hover:bg-[#eaf1fb]"
+              >
+                <ArrowLeft className="h-[14px] w-[14px]" />
+                <span>{isFil ? 'Bumalik sa Sign in' : 'Back to Sign in'}</span>
+              </button>
 
-            {/* Alert Messages */}
-            {errorMessage && (
-              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                darkMode
-                  ? 'bg-red-950/50 border-red-500/40 text-red-300'
-                  : 'bg-red-50 border-red-200 text-red-700'
-              }`}>
-                <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
+              <h1 className="m-0 mb-[4.8px] text-[28px] font-extrabold tracking-[-0.02em] text-[#0f2c58]">
+                {isFil ? 'Nakalimutan ang password?' : 'Forgot password?'}
+              </h1>
+              <p className="m-0 mb-[19.2px] text-[13.5px] leading-[1.5] text-[#61708a]">
+                {isFil
+                  ? 'Ilagay ang iyong rehistradong email address upang makatanggap ng 6-digit password reset code.'
+                  : 'Provide your registered email address to receive a 6-digit password reset verification code.'}
+              </p>
 
-            {successMessage && (
-              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                darkMode
-                  ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300'
-                  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
-              }`}>
-                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                <span>{successMessage}</span>
-              </div>
-            )}
+              {errorMessage && (
+                <div className="mb-3.5 flex items-center gap-2 rounded-[8px] border border-red-200 bg-red-50 p-2.5 text-[12.5px] font-semibold text-red-700">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-            {/* Inner Dark Card Container */}
-            <div className={`border rounded-2xl p-4 sm:p-5 ${
-              darkMode ? 'bg-[#121d33]/90 border-slate-800/80' : 'bg-slate-50 border-slate-200'
-            }`}>
-              <form onSubmit={handleForgotPasswordSubmit} className="space-y-4">
-                <div>
-                  <label className={`text-xs sm:text-sm font-bold block text-center mb-3 ${
-                    darkMode ? 'text-slate-200' : 'text-slate-800'
-                  }`}>
-                    Please enter your registered Email Address
-                  </label>
+              {successMessage && (
+                <div className="mb-3.5 flex items-center gap-2 rounded-[8px] border border-emerald-200 bg-emerald-50 p-2.5 text-[12.5px] font-semibold text-emerald-700">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <span>{successMessage}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleForgotPasswordSubmit} className="grid gap-[13.6px]">
+                <label className="grid gap-[5.6px] text-[13.6px] font-semibold text-[#1b2436]">
+                  <span>{isFil ? 'Rehistradong Email Address' : 'Registered Email Address'}</span>
                   <input
                     type="email"
                     value={resetEmail}
@@ -1396,194 +1287,155 @@ export const LoginView: React.FC<LoginViewProps> = ({
                       setResetEmail(e.target.value);
                       if (errorMessage) setErrorMessage(null);
                     }}
-                    placeholder="Input your E-Mail Address"
+                    placeholder="you@domain.gov.ph"
                     required
                     autoComplete="email"
-                    className={`w-full px-3.5 py-3 border rounded-xl text-xs sm:text-sm transition-all font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                      darkMode 
-                        ? 'bg-[#091122] border-slate-700/80 text-white placeholder-slate-500' 
-                        : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'
-                    }`}
+                    className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-[12.8px] py-[10.4px] text-[15.2px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none"
                   />
-                </div>
+                </label>
 
-                {/* Red Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmittingReset}
-                  className={`w-full py-3 px-6 bg-[#e5383b] hover:bg-[#d90429] active:bg-[#b7094c] text-white font-extrabold text-sm rounded-xl transition-all ${
-                    isSubmittingReset ? 'opacity-70 cursor-wait' : 'cursor-pointer'
-                  }`}
+                  className="mt-[3.2px] inline-flex cursor-pointer items-center justify-center gap-[8px] rounded-full border-none bg-[#1870d5] px-[19.2px] py-[11.5px] text-[15.2px] font-bold text-white shadow-[0_8px_20px_rgba(24,112,213,0.28)] transition-all duration-150 hover:bg-[#125bb0] disabled:cursor-wait disabled:opacity-70"
                 >
-                  {isSubmittingReset ? 'Sending Reset Email...' : 'Submit'}
+                  <span>
+                    {isSubmittingReset
+                      ? isFil
+                        ? 'Ipinapadala ang Code...'
+                        : 'Sending Reset Code...'
+                      : isFil
+                      ? 'Magpadala ng Reset Code'
+                      : 'Send Reset Code'}
+                  </span>
+                  <ArrowRight className="h-[16px] w-[16px]" />
                 </button>
-
-                {/* Bottom link: Go back to Login page */}
-                <div className="text-center pt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setViewMode('login');
-                      setErrorMessage(null);
-                      setSuccessMessage(null);
-                    }}
-                    className={`text-xs font-medium transition-colors cursor-pointer ${
-                      darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    Go back to <span className="font-bold text-blue-500 hover:underline">Login page</span>
-                  </button>
-                </div>
               </form>
             </div>
-          </div>
-        ) : (
-          /* DEFAULT LOGIN CARD */
-          <div className={`w-full max-w-sm border rounded-3xl p-6 sm:p-7 shadow-2xl backdrop-blur-sm animate-in fade-in duration-300 ${
-            darkMode ? 'bg-[#0d1628]/90 border-slate-800/90 text-white' : 'bg-white border-slate-200 text-slate-900'
-          }`}>
-            
-            {/* Card Header */}
-            <div className="space-y-1 mb-5 text-center">
-              {/* Mini seal logo inside card on mobile for clean official look */}
-              <div className="flex justify-center mb-2.5 md:hidden">
-                <img
-                  src="/Government Service Integrity Seal.png"
-                  alt="GovSeal"
-                  className="w-12 h-12 object-contain drop-shadow-md"
-                />
-              </div>
-              <h1 className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${
-                darkMode ? 'text-white' : 'text-slate-900'
-              }`}>
-                Welcome Back
+          ) : (
+            /* DEFAULT SIGN IN CARD (Exact match to govservedrrm.up.railway.app/login) */
+            <div className="w-full rounded-[14px] border border-[#edf0f4] bg-white px-[27.2px] pt-[30.4px] pb-[25.6px] shadow-[0_18px_45px_rgba(15,44,88,0.09)] min-[901px]:w-[min(392px,100%)]">
+              <button
+                type="button"
+                onClick={onBackToHome}
+                className="mb-[14px] inline-flex cursor-pointer items-center gap-[5.6px] rounded-full border border-[#e3eaf5] bg-[#f4f7fc] px-[11.2px] py-[5.6px] text-[12.5px] font-semibold text-[#1870d5] transition-colors duration-150 hover:border-[#c8d9f2] hover:bg-[#eaf1fb]"
+              >
+                <ArrowLeft className="h-[14px] w-[14px]" />
+                <span>{isFil ? 'Bumalik sa homepage' : 'Back to homepage'}</span>
+              </button>
+
+              <h1 className="m-0 mb-[4.8px] text-[32px] font-extrabold tracking-[-0.02em] text-[#0f2c58]">
+                {isFil ? 'Mag-sign in' : 'Sign in'}
               </h1>
-              <p className={`text-xs font-medium ${
-                darkMode ? 'text-slate-400' : 'text-slate-500'
-              }`}>
-                Sign in to access your social service dashboard
+
+              <p className="m-0 mb-[19.2px] text-[13.5px] leading-[1.5] text-[#61708a]">
+                {isFil
+                  ? 'Dito nagsa-sign in ang citizen at MSWDO admin account — bubuksan namin ang tamang dashboard para sa account mo.'
+                  : 'Citizen and MSWDO admin accounts all sign in here — we open the right dashboard for your account.'}
               </p>
-            </div>
 
-            {/* Alert Messages */}
-            {errorMessage && (
-              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                darkMode
-                  ? 'bg-red-950/50 border-red-500/40 text-red-300'
-                  : 'bg-red-50 border-red-200 text-red-700'
-              }`}>
-                <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                <span>{errorMessage}</span>
-              </div>
-            )}
-
-            {successMessage && (
-              <div className={`mb-4 p-3 border rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                darkMode
-                  ? 'bg-emerald-950/50 border-emerald-500/40 text-emerald-300'
-                  : 'bg-emerald-50 border-emerald-200 text-emerald-700'
-              }`}>
-                <CheckCircle2 className={`w-4 h-4 shrink-0 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
-                <span>{successMessage}</span>
-              </div>
-            )}
-
-            {/* Lockout Screen Box (English, Clean Text, Compact) */}
-            {isLocked && (
-              <div className={`mb-3.5 p-3 rounded-xl border text-left space-y-2 ${
-                darkMode
-                  ? 'border-red-500/40 bg-red-950/30'
-                  : 'border-red-200 bg-red-50'
-              }`}>
-                <div className="flex items-center justify-between">
-                  <h3 className={`text-[11px] font-extrabold tracking-wider uppercase ${
-                    darkMode ? 'text-red-400' : 'text-red-600'
-                  }`}>
-                    ACCOUNT TEMPORARILY LOCKED
-                  </h3>
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${
-                    darkMode
-                      ? 'bg-red-500/20 text-red-300 border-red-500/30'
-                      : 'bg-red-100 text-red-700 border-red-200'
-                  }`}>
-                    Stage {lockoutStage} of 4
-                  </span>
+              {/* Alert Messages */}
+              {errorMessage && (
+                <div className="mb-3.5 flex items-center gap-2 rounded-[8px] border border-red-200 bg-red-50 p-2.5 text-[12.5px] font-semibold text-red-700">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
+                  <span>{errorMessage}</span>
                 </div>
+              )}
 
-                <p className={`text-[10px] leading-snug ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
-                  {lockoutStage >= 4
-                    ? 'Maximum login attempts exceeded. Access locked for 24 hours.'
-                    : 'Too many failed attempts. Login is temporarily paused.'}
-                </p>
-
-                <div className={`py-2 px-3 rounded-lg border text-center space-y-0.5 ${
-                  darkMode
-                    ? 'bg-slate-900/90 border-slate-700/80'
-                    : 'bg-white border-red-200'
-                }`}>
-                  <div className={`text-[9px] font-bold uppercase tracking-wider ${
-                    darkMode ? 'text-slate-400' : 'text-slate-500'
-                  }`}>
-                    LOCKOUT COUNTDOWN
-                  </div>
-                  <div className={`text-xl font-mono font-extrabold tracking-wider ${
-                    darkMode ? 'text-red-400' : 'text-red-600'
-                  }`}>
-                    {formatCountdown(remainingSeconds)}
-                  </div>
-                  <div className="flex justify-center gap-5 text-[8px] font-bold text-slate-500 uppercase tracking-widest">
-                    <span>HRS</span>
-                    <span>MIN</span>
-                    <span>SEC</span>
-                  </div>
+              {successMessage && (
+                <div className="mb-3.5 flex items-center gap-2 rounded-[8px] border border-emerald-200 bg-emerald-50 p-2.5 text-[12.5px] font-semibold text-emerald-700">
+                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                  <span>{successMessage}</span>
                 </div>
+              )}
 
-                <p className={`text-[9px] text-center leading-tight ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Access automatically restores when countdown reaches zero.
-                </p>
-              </div>
-            )}
+              {/* Progressive Lockout Screen Box */}
+              {isLocked && (
+                <div className="mb-4 space-y-2 rounded-[10px] border border-red-200 bg-red-50 p-3 text-left">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-red-600">
+                      ACCOUNT TEMPORARILY LOCKED
+                    </h3>
+                    <span className="rounded-full border border-red-200 bg-red-100 px-2 py-0.5 text-[9px] font-bold text-red-700">
+                      Stage {lockoutStage} of 4
+                    </span>
+                  </div>
 
-            {/* Form Controls */}
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
-              
-              {/* Email Address Field */}
-              <div>
-                <label className={`text-[11px] font-bold tracking-wider uppercase mb-1 block ${
-                  darkMode ? 'text-slate-400' : 'text-slate-500'
-                }`}>
-                  EMAIL ADDRESS
+                  <p className="text-[11px] leading-snug text-slate-700">
+                    {lockoutStage >= 4
+                      ? 'Maximum login attempts exceeded. Access locked for 24 hours.'
+                      : 'Too many failed attempts. Login is temporarily paused.'}
+                  </p>
+
+                  <div className="space-y-0.5 rounded-[8px] border border-red-200 bg-white px-3 py-2 text-center">
+                    <div className="text-[9px] font-bold uppercase tracking-wider text-slate-500">
+                      LOCKOUT COUNTDOWN
+                    </div>
+                    <div className="font-mono text-xl font-extrabold tracking-wider text-red-600">
+                      {formatCountdown(remainingSeconds)}
+                    </div>
+                    <div className="flex justify-center gap-5 text-[8px] font-bold uppercase tracking-widest text-slate-500">
+                      <span>HRS</span>
+                      <span>MIN</span>
+                      <span>SEC</span>
+                    </div>
+                  </div>
+
+                  <p className="text-center text-[10px] leading-tight text-slate-500">
+                    Access automatically restores when countdown reaches zero.
+                  </p>
+                </div>
+              )}
+
+              <form onSubmit={handleLoginSubmit} className="grid gap-[13.6px]" noValidate>
+                <label className="grid gap-[5.6px] text-[13.6px] font-semibold text-[#1b2436]">
+                  <span>Email</span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errorMessage) setErrorMessage(null);
+                    }}
+                    onBlur={() => checkEmailLockout(email)}
+                    disabled={isLocked}
+                    placeholder="you@domain.gov.ph"
+                    autoComplete="username"
+                    required
+                    className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-[12.8px] py-[10.4px] text-[15.2px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                  />
                 </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (errorMessage) setErrorMessage(null);
-                  }}
-                  onBlur={() => checkEmailLockout(email)}
-                  disabled={isLocked}
-                  placeholder="name@email.com"
-                  className={`w-full px-3.5 py-3 border rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
-                    isLocked
-                      ? darkMode
-                        ? 'bg-[#09101f] border-slate-800 text-slate-500 cursor-not-allowed opacity-70'
-                        : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-70'
-                      : darkMode 
-                        ? 'bg-[#101c38] border-slate-700/80 text-white placeholder-slate-500' 
-                        : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
-                  }`}
-                />
-              </div>
 
-              {/* Password Field */}
-              <div>
-                <div className="flex justify-between items-center mb-1">
-                  <label className={`text-[11px] font-bold tracking-wider uppercase block ${
-                    darkMode ? 'text-slate-400' : 'text-slate-500'
-                  }`}>
-                    PASSWORD
-                  </label>
+                <label className="grid gap-[5.6px] text-[13.6px] font-semibold text-[#1b2436]">
+                  <span>Password</span>
+                  <div className="relative flex items-center">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (errorMessage) setErrorMessage(null);
+                      }}
+                      disabled={isLocked}
+                      placeholder="••••••••"
+                      autoComplete="current-password"
+                      required
+                      className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-[12.8px] py-[10.4px] pr-[42px] text-[15.2px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={isLocked}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      title={showPassword ? 'Hide password' : 'Show password'}
+                      className="absolute right-[10px] inline-flex cursor-pointer items-center justify-center rounded-[6px] border-none bg-transparent p-[6px] text-[#61708a] transition-colors duration-150 hover:bg-[#1870d5]/10 hover:text-[#1870d5] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {showPassword ? <EyeOff className="h-[18px] w-[18px]" /> : <Eye className="h-[18px] w-[18px]" />}
+                    </button>
+                  </div>
+                </label>
+
+                <div className="-mt-[4px] flex justify-end">
                   <button
                     type="button"
                     onClick={() => {
@@ -1592,364 +1444,311 @@ export const LoginView: React.FC<LoginViewProps> = ({
                       setSuccessMessage(null);
                     }}
                     disabled={isLocked}
-                    className="text-xs font-bold text-blue-500 hover:text-blue-400 disabled:opacity-50 transition-colors cursor-pointer"
+                    className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-[#1870d5] underline hover:text-[#125bb0] disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Forgot Password?
+                    {isFil ? 'Nakalimutan ang password?' : 'Forgot password?'}
                   </button>
-                </div>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (errorMessage) setErrorMessage(null);
-                    }}
-                    disabled={isLocked}
-                    placeholder="••••••••••••"
-                    className={`w-full px-3.5 py-3 border rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all pr-10 ${
-                      isLocked
-                        ? darkMode
-                          ? 'bg-[#09101f] border-slate-800 text-slate-500 cursor-not-allowed opacity-70'
-                          : 'bg-slate-100 border-slate-200 text-slate-400 cursor-not-allowed opacity-70'
-                        : darkMode 
-                          ? 'bg-[#101c38] border-slate-700/80 text-white placeholder-slate-500' 
-                          : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
-                    }`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={isLocked}
-                    className={`absolute right-3.5 top-1/2 -translate-y-1/2 transition-colors cursor-pointer ${
-                      darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-700'
-                    }`}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLocked}
-                className={`w-full py-3 px-6 text-white font-extrabold text-sm rounded-xl transition-all mt-1 ${
-                  isLocked
-                    ? 'bg-slate-700/60 border border-slate-600/50 text-slate-400 cursor-not-allowed opacity-80'
-                    : 'bg-blue-600 hover:bg-blue-500 active:bg-blue-700 cursor-pointer shadow'
-                }`}
-              >
-                {isLocked ? 'SIGN IN (ACCOUNT LOCKED)' : 'Login'}
-              </button>
-
-              {/* Instant Unlock Button (Shown only when locked on Stage 4 / 24-hour lock) */}
-              {isLocked && lockoutStage >= 4 && (
-                <div className="pt-3 space-y-2.5 text-center">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-px bg-slate-700/60" />
-                    <span className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-                      OR VERIFY YOUR IDENTITY
-                    </span>
-                    <div className="flex-1 h-px bg-slate-700/60" />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleOpenUnlockModal}
-                    className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-extrabold text-xs rounded-xl border border-emerald-400/40 transition-all cursor-pointer shadow-lg"
-                  >
-                    Instant Unlock via Email OTP
-                  </button>
-
-                  <p className="text-[11px] text-slate-400 leading-normal">
-                    Need immediate access? Verify your email to unlock your account now.
-                  </p>
-                </div>
-              )}
-            </form>
-          </div>
-        )}
-
-        {/* GOOGLE reCAPTCHA CHALLENGE POPUP MODAL */}
-        {isCaptchaModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className="w-full max-w-[360px] bg-[#0c1427] border border-slate-700/90 rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-              
-              {/* Blue Header Banner (Official Google reCAPTCHA Style) */}
-              <div className="bg-[#1a73e8] p-4 text-white relative">
-                <p className="text-[13px] font-medium text-white">
-                  {challengeMode === 'image' ? 'Select all squares with' : 'Security Audio Verification'}
-                </p>
-                <h3 className="text-2xl font-extrabold tracking-tight leading-tight mt-0.5">
-                  {challengeMode === 'image' ? currentTopic.title : 'VOICE CODE'}
-                </h3>
-                <p className="text-[11px] text-white/90 mt-1 font-normal">
-                  {challengeMode === 'image' 
-                    ? currentTopic.instruction 
-                    : 'Press play audio and enter the 4 digits spoken.'}
-                </p>
-              </div>
-
-              {/* Modal Alert Message */}
-              {modalError && (
-                <div className="bg-rose-950/80 border-b border-rose-800/80 px-3 py-2 text-[11px] font-semibold text-rose-200 text-center">
-                  {modalError}
-                </div>
-              )}
-
-              {/* Challenge Body Content */}
-              <div className="p-3">
-                {challengeMode === 'image' ? (
-                  /* 3x3 PHOTO SLICED GRID WITH CORNER BLUE CHECKMARKS (MATCHING PIC 2) */
-                  <div className="w-full grid grid-cols-3 gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-700/80 select-none overflow-hidden">
-                    {Array.from({ length: 9 }).map((_, idx) => {
-                      const isSelected = selectedTiles.includes(idx);
-                      const col = idx % 3;
-                      const row = Math.floor(idx / 3);
-
-                      return (
-                        <div
-                          key={idx}
-                          onClick={() => handleToggleTile(idx)}
-                          className={`relative w-full aspect-square cursor-pointer overflow-hidden transition-all duration-150 group bg-slate-800 rounded-sm ${
-                            isSelected ? 'ring-2 ring-blue-500 scale-[0.98]' : 'hover:opacity-95'
-                          }`}
-                          style={{
-                            backgroundImage: `url("${currentTopic.bgImage}")`,
-                            backgroundSize: '300% 300%',
-                            backgroundPosition: `${col * 50}% ${row * 50}%`,
-                            backgroundRepeat: 'no-repeat'
-                          }}
-                        >
-                          {isSelected && (
-                            <div className="absolute bottom-1 left-1 z-20 flex items-center justify-center animate-in zoom-in-75 duration-150">
-                              <div className="bg-[#1a73e8] text-white rounded-full p-1 shadow-xl ring-2 ring-white/90">
-                                <Check className="w-3.5 h-3.5 stroke-[3.5]" />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  /* VOICE CODE AUDIO CHALLENGE */
-                  <div className="py-4 px-2 space-y-4 text-center">
-                    <div className="bg-[#101b33] border border-slate-700/80 rounded-xl p-4 space-y-3">
-                      <div className="flex items-center justify-center gap-3">
-                        <button
-                          type="button"
-                          onClick={handlePlayVoiceCode}
-                          className={`w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md cursor-pointer ${
-                            isSpeaking
-                              ? 'bg-amber-500 text-white animate-bounce'
-                              : 'bg-blue-600 hover:bg-blue-500 text-white'
-                          }`}
-                          title="Play Audio Code"
-                        >
-                          <Volume2 className="w-6 h-6" />
-                        </button>
-                        <div className="text-left">
-                          <span className="text-xs font-bold text-white block">
-                            {isSpeaking ? 'Playing Audio Code...' : 'Click to Listen'}
-                          </span>
-                          <span className="text-[10px] text-slate-400 block">
-                            Listen to 4 digits spoken
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Code Input */}
-                      <input
-                        type="text"
-                        maxLength={4}
-                        value={voiceCodeInput}
-                        onChange={(e) => setVoiceCodeInput(e.target.value.replace(/\D/g, ''))}
-                        placeholder="Enter 4-digit code"
-                        className="w-full text-center tracking-[0.4em] font-mono text-lg font-bold py-2.5 bg-[#080d19] border border-slate-700 rounded-lg text-white placeholder:tracking-normal placeholder:font-sans placeholder:text-xs focus:outline-none focus:border-blue-500"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom Action Footer */}
-              <div className="px-3 py-2.5 bg-[#080e1c] border-t border-slate-800 flex items-center justify-between">
-                {/* Left Controls */}
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={handleRefreshTopic}
-                    className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
-                    title="Reload new challenge"
-                  >
-                    <RotateCw className="w-4 h-4" />
-                  </button>
-
-                  {challengeMode === 'image' ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setChallengeMode('audio');
-                        generateNewVoiceCode();
-                      }}
-                      className="p-1.5 rounded text-slate-400 hover:text-blue-400 hover:bg-slate-800/80 transition-colors cursor-pointer"
-                      title="Switch to Audio Voice Code"
-                    >
-                      <Headphones className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setChallengeMode('image')}
-                      className="p-1.5 rounded text-slate-400 hover:text-blue-400 hover:bg-slate-800/80 transition-colors cursor-pointer"
-                      title="Switch to Image Challenge"
-                    >
-                      <ImageIcon className="w-4 h-4" />
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => alert("reCAPTCHA protection verifies human users to prevent automated bot activity.")}
-                    className="p-1.5 rounded text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
-                    title="Info"
-                  >
-                    <Info className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* Right Buttons: Cancel & VERIFY */}
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsCaptchaModalOpen(false)}
-                    className="px-3 py-1.5 text-slate-300 hover:text-white font-medium text-xs rounded transition-colors cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleVerifyCaptcha}
-                    className="px-5 py-2 bg-[#1a73e8] hover:bg-[#1557b0] active:bg-blue-700 text-white font-bold text-xs uppercase tracking-wider rounded transition-colors shadow cursor-pointer"
-                  >
-                    VERIFY
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* INSTANT UNLOCK VIA EMAIL OTP MODAL (Clean English, No Emojis/Icons) */}
-        {isUnlockModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-            <div className={`w-full max-w-sm rounded-2xl border shadow-2xl p-6 relative animate-in zoom-in-95 duration-200 ${
-              darkMode ? 'bg-[#0d1628] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
-            }`}>
-              <button
-                type="button"
-                onClick={() => setIsUnlockModalOpen(false)}
-                className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                title="Close"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="text-center mb-4">
-                <h2 className="text-base font-extrabold tracking-tight uppercase">
-                  ACCOUNT UNLOCK - OTP VERIFICATION
-                </h2>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  A 6-digit verification code has been sent to your registered email:
-                </p>
-                <p className="text-xs font-mono font-bold text-blue-400 mt-1">
-                  {(email || resetEmail || 'jeffersonlee1234@gmail.com').trim().toLowerCase()}
-                </p>
-              </div>
-
-              {unlockModalError && (
-                <div className={`mb-3 p-2.5 rounded-xl border text-xs font-semibold text-center ${
-                  darkMode
-                    ? 'border-red-500/50 bg-red-950/40 text-red-300'
-                    : 'border-red-200 bg-red-50 text-red-700'
-                }`}>
-                  {unlockModalError}
-                </div>
-              )}
-
-              {unlockModalSuccess && (
-                <div className={`mb-3 p-2.5 rounded-xl border text-xs font-semibold text-center ${
-                  darkMode
-                    ? 'border-emerald-500/50 bg-emerald-950/40 text-emerald-300'
-                    : 'border-emerald-200 bg-emerald-50 text-emerald-700'
-                }`}>
-                  {unlockModalSuccess}
-                </div>
-              )}
-
-              <div className="space-y-4 pt-1">
-                <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider text-center">
-                  ENTER 6-DIGIT CODE:
-                </div>
-
-                <div className="flex justify-center gap-2">
-                  {unlockOtpDigits.map((digit, idx) => (
-                    <input
-                      key={idx}
-                      ref={(el) => (unlockOtpInputRefs.current[idx] = el)}
-                      type="text"
-                      maxLength={1}
-                      inputMode="numeric"
-                      value={digit}
-                      onChange={(e) => handleUnlockOtpDigitChange(idx, e.target.value)}
-                      onKeyDown={(e) => handleUnlockOtpKeyDown(idx, e)}
-                      className={`w-10 h-12 text-center text-lg font-bold font-mono rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
-                        darkMode 
-                          ? 'bg-[#101c38] border-slate-700 text-white' 
-                          : 'bg-slate-50 border-slate-300 text-slate-900'
-                      }`}
-                    />
-                  ))}
                 </div>
 
                 <button
-                  type="button"
-                  onClick={handleVerifyUnlockOtp}
-                  disabled={isVerifyingUnlockOtp}
-                  className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:opacity-60 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow"
+                  type="submit"
+                  disabled={isLocked}
+                  className="mt-[3.2px] inline-flex cursor-pointer items-center justify-center gap-[8px] rounded-full border-none bg-[#1870d5] px-[19.2px] py-[11.5px] text-[15.2px] font-bold text-white shadow-[0_8px_20px_rgba(24,112,213,0.28)] transition-all duration-150 hover:bg-[#125bb0] disabled:cursor-not-allowed disabled:opacity-65"
                 >
-                  {isVerifyingUnlockOtp ? 'VERIFYING...' : 'Verify Code & Unlock Account'}
+                  <span>
+                    {isLocked
+                      ? isFil
+                        ? 'Naka-lock ang Account'
+                        : 'Account Locked'
+                      : isFil
+                      ? 'Mag-sign in'
+                      : 'Sign in'}
+                  </span>
+                  <ArrowRight className="h-[16px] w-[16px]" />
                 </button>
 
-                <div className="flex items-center justify-between text-xs pt-1 text-slate-400">
-                  <button
-                    type="button"
-                    onClick={sendUnlockOtp}
-                    disabled={isSendingUnlockOtp || unlockResendSeconds > 0}
-                    className="text-blue-400 hover:text-blue-300 disabled:text-slate-500 font-semibold cursor-pointer"
-                  >
-                    {unlockResendSeconds > 0 ? `Resend Code in ${Math.floor(unlockResendSeconds / 60)}:${(unlockResendSeconds % 60).toString().padStart(2, '0')}` : 'Resend Code'}
-                  </button>
+                {/* Instant Unlock Button (Shown only when locked on Stage 4 / 24-hour lock) */}
+                {isLocked && lockoutStage >= 4 && (
+                  <div className="space-y-2.5 pt-2 text-center">
+                    <div className="flex items-center gap-3">
+                      <div className="h-px flex-1 bg-slate-200" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#61708a]">
+                        OR VERIFY YOUR IDENTITY
+                      </span>
+                      <div className="h-px flex-1 bg-slate-200" />
+                    </div>
 
+                    <button
+                      type="button"
+                      onClick={handleOpenUnlockModal}
+                      className="w-full cursor-pointer rounded-full border border-emerald-500/40 bg-emerald-600 px-4 py-2.5 text-xs font-extrabold text-white shadow-md transition-all hover:bg-emerald-500"
+                    >
+                      Instant Unlock via Email OTP
+                    </button>
+
+                    <p className="text-[11px] leading-normal text-[#61708a]">
+                      Need immediate access? Verify your email to unlock your account now.
+                    </p>
+                  </div>
+                )}
+              </form>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* GOOGLE reCAPTCHA CHALLENGE POPUP MODAL */}
+      {isCaptchaModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-[360px] overflow-hidden rounded-2xl border border-slate-700/90 bg-[#0c1427] shadow-2xl">
+            <div className="relative bg-[#1a73e8] p-4 text-white">
+              <p className="text-[13px] font-medium text-white">
+                {challengeMode === 'image' ? 'Select all squares with' : 'Security Audio Verification'}
+              </p>
+              <h3 className="mt-0.5 text-2xl font-extrabold leading-tight tracking-tight">
+                {challengeMode === 'image' ? currentTopic.title : 'VOICE CODE'}
+              </h3>
+              <p className="mt-1 text-[11px] font-normal text-white/90">
+                {challengeMode === 'image'
+                  ? currentTopic.instruction
+                  : 'Press play audio and enter the 4 digits spoken.'}
+              </p>
+            </div>
+
+            {modalError && (
+              <div className="border-b border-rose-800/80 bg-rose-950/80 px-3 py-2 text-center text-[11px] font-semibold text-rose-200">
+                {modalError}
+              </div>
+            )}
+
+            <div className="p-3">
+              {challengeMode === 'image' ? (
+                <div className="grid w-full select-none grid-cols-3 gap-1 overflow-hidden rounded-lg border border-slate-700/80 bg-slate-900/90 p-1">
+                  {Array.from({ length: 9 }).map((_, idx) => {
+                    const isSelected = selectedTiles.includes(idx);
+                    const col = idx % 3;
+                    const row = Math.floor(idx / 3);
+
+                    return (
+                      <div
+                        key={idx}
+                        onClick={() => handleToggleTile(idx)}
+                        className={`group relative aspect-square w-full cursor-pointer overflow-hidden rounded-sm bg-slate-800 transition-all duration-150 ${
+                          isSelected ? 'scale-[0.98] ring-2 ring-blue-500' : 'hover:opacity-95'
+                        }`}
+                        style={{
+                          backgroundImage: `url("${currentTopic.bgImage}")`,
+                          backgroundSize: '300% 300%',
+                          backgroundPosition: `${col * 50}% ${row * 50}%`,
+                          backgroundRepeat: 'no-repeat'
+                        }}
+                      >
+                        {isSelected && (
+                          <div className=" absolute bottom-1 left-1 z-20 flex items-center justify-center">
+                            <div className="rounded-full bg-[#1a73e8] p-1 text-white shadow-xl ring-2 ring-white/90">
+                              <Check className="h-3.5 w-3.5 stroke-[3.5]" />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="space-y-4 px-2 py-4 text-center">
+                  <div className="space-y-3 rounded-xl border border-slate-700/80 bg-[#101b33] p-4">
+                    <div className="flex items-center justify-center gap-3">
+                      <button
+                        type="button"
+                        onClick={handlePlayVoiceCode}
+                        className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-full shadow-md transition-all ${
+                          isSpeaking
+                            ? 'animate-bounce bg-amber-500 text-white'
+                            : 'bg-blue-600 text-white hover:bg-blue-500'
+                        }`}
+                        title="Play Audio Code"
+                      >
+                        <Volume2 className="h-6 w-6" />
+                      </button>
+                      <div className="text-left">
+                        <span className="block text-xs font-bold text-white">
+                          {isSpeaking ? 'Playing Audio Code...' : 'Click to Listen'}
+                        </span>
+                        <span className="block text-[10px] text-slate-400">
+                          Listen to 4 digits spoken
+                        </span>
+                      </div>
+                    </div>
+
+                    <input
+                      type="text"
+                      maxLength={4}
+                      value={voiceCodeInput}
+                      onChange={(e) => setVoiceCodeInput(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Enter 4-digit code"
+                      className="w-full rounded-lg border border-slate-700 bg-[#080d19] py-2.5 text-center font-mono text-lg font-bold tracking-[0.4em] text-white placeholder:font-sans placeholder:text-xs placeholder:tracking-normal focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between border-t border-slate-800 bg-[#080e1c] px-3 py-2.5">
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleRefreshTopic}
+                  className="cursor-pointer rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-800/80 hover:text-white"
+                  title="Reload new challenge"
+                >
+                  <RotateCw className="h-4 w-4" />
+                </button>
+
+                {challengeMode === 'image' ? (
                   <button
                     type="button"
-                    onClick={() => setIsUnlockModalOpen(false)}
-                    className="hover:text-white transition-colors cursor-pointer"
+                    onClick={() => {
+                      setChallengeMode('audio');
+                      generateNewVoiceCode();
+                    }}
+                    className="cursor-pointer rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-800/80 hover:text-blue-400"
+                    title="Switch to Audio Voice Code"
                   >
-                    Cancel and Return
+                    <Headphones className="h-4 w-4" />
                   </button>
-                </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setChallengeMode('image')}
+                    className="cursor-pointer rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-800/80 hover:text-blue-400"
+                    title="Switch to Image Challenge"
+                  >
+                    <ImageIcon className="h-4 w-4" />
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => alert('reCAPTCHA protection verifies human users to prevent automated bot activity.')}
+                  className="cursor-pointer rounded p-1.5 text-slate-400 transition-colors hover:bg-slate-800/80 hover:text-white"
+                  title="Info"
+                >
+                  <Info className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCaptchaModalOpen(false)}
+                  className="cursor-pointer rounded px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleVerifyCaptcha}
+                  className="cursor-pointer rounded bg-[#1a73e8] px-5 py-2 text-xs font-bold uppercase tracking-wider text-white shadow transition-colors hover:bg-[#1557b0]"
+                >
+                  VERIFY
+                </button>
               </div>
             </div>
           </div>
-        )}
-        {/* Mobile Footer Credit (Visible ONLY on mobile) */}
-        <div className="mt-6 mb-2 text-center text-[10px] text-slate-500 font-medium md:hidden shrink-0">
-          © Social Services Management System • Community Care Portal
         </div>
-      </div>
+      )}
+
+      {/* INSTANT UNLOCK VIA EMAIL OTP MODAL */}
+      {isUnlockModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm rounded-[14px] border border-[#edf0f4] bg-white p-6 text-[#1b2436] shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setIsUnlockModalOpen(false)}
+              className="absolute top-4 right-4 cursor-pointer text-[#61708a] transition-colors hover:text-[#1b2436]"
+              title="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="mb-4 text-center">
+              <h2 className="text-base font-extrabold uppercase tracking-tight text-[#0f2c58]">
+                ACCOUNT UNLOCK - OTP VERIFICATION
+              </h2>
+              <p className="mt-1 text-xs leading-relaxed text-[#61708a]">
+                A 6-digit verification code has been sent to your registered email:
+              </p>
+              <p className="mt-1 font-mono text-xs font-bold text-[#1870d5]">
+                {(email || resetEmail || 'jeffersonlee1234@gmail.com').trim().toLowerCase()}
+              </p>
+            </div>
+
+            {unlockModalError && (
+              <div className="mb-3 rounded-[8px] border border-red-200 bg-red-50 p-2.5 text-center text-xs font-semibold text-red-700">
+                {unlockModalError}
+              </div>
+            )}
+
+            {unlockModalSuccess && (
+              <div className="mb-3 rounded-[8px] border border-emerald-200 bg-emerald-50 p-2.5 text-center text-xs font-semibold text-emerald-700">
+                {unlockModalSuccess}
+              </div>
+            )}
+
+            <div className="space-y-4 pt-1">
+              <div className="text-center text-[11px] font-bold uppercase tracking-wider text-[#61708a]">
+                ENTER 6-DIGIT CODE:
+              </div>
+
+              <div className="flex justify-center gap-2">
+                {unlockOtpDigits.map((digit, idx) => (
+                  <input
+                    key={idx}
+                    ref={(el) => (unlockOtpInputRefs.current[idx] = el)}
+                    type="text"
+                    maxLength={1}
+                    inputMode="numeric"
+                    value={digit}
+                    onChange={(e) => handleUnlockOtpDigitChange(idx, e.target.value)}
+                    onKeyDown={(e) => handleUnlockOtpKeyDown(idx, e)}
+                    className="h-12 w-10 rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] text-center font-mono text-lg font-bold text-[#1b2436] transition-all focus:border-[#1870d5] focus:bg-white focus:outline-none"
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleVerifyUnlockOtp}
+                disabled={isVerifyingUnlockOtp}
+                className="w-full cursor-pointer rounded-full bg-[#1870d5] px-4 py-3 text-xs font-extrabold uppercase tracking-wider text-white shadow transition-all hover:bg-[#125bb0] disabled:opacity-60"
+              >
+                {isVerifyingUnlockOtp ? 'VERIFYING...' : 'Verify Code & Unlock Account'}
+              </button>
+
+              <div className="flex items-center justify-between pt-1 text-xs text-[#61708a]">
+                <button
+                  type="button"
+                  onClick={sendUnlockOtp}
+                  disabled={isSendingUnlockOtp || unlockResendSeconds > 0}
+                  className="cursor-pointer font-semibold text-[#1870d5] hover:underline disabled:text-slate-400"
+                >
+                  {unlockResendSeconds > 0
+                    ? `Resend Code in ${Math.floor(unlockResendSeconds / 60)}:${(unlockResendSeconds % 60).toString().padStart(2, '0')}`
+                    : 'Resend Code'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsUnlockModalOpen(false)}
+                  className="cursor-pointer transition-colors hover:text-[#1b2436]"
+                >
+                  Cancel and Return
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -196,6 +196,9 @@ export default function App() {
       if (currentPath === '/login' || currentPath.startsWith('/login/')) {
         return 'login';
       }
+      if (currentPath === '/mobile-app' || currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/')) {
+        return 'landing';
+      }
       const hasSession = Boolean(localStorage.getItem('currentUser') || sessionStorage.getItem('activeTab'));
       if (hasSession && PATH_TO_USER_TAB[currentPath] && currentPath !== '/') {
         return PATH_TO_USER_TAB[currentPath];
@@ -297,7 +300,8 @@ export default function App() {
     try {
       const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
       if (activeTab === 'landing') {
-        if (currentPath !== '/') {
+        const isPublicSubpath = currentPath === '/' || currentPath === '/mobile-app' || currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/');
+        if (!isPublicSubpath) {
           window.history.pushState(null, '', '/');
         }
         return;
@@ -332,7 +336,7 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
-      if (currentPath === '/') {
+      if (currentPath === '/' || currentPath === '/mobile-app' || currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/')) {
         setActiveTab('landing');
         return;
       }

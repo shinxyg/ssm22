@@ -242,3 +242,61 @@ input:focus, select:focus, textarea:focus {
 }
 
 
+
+/* Public Landing & Login Theme Variables & Animations */
+:root {
+  --lp-heading: #0f2c59;
+  --lp-brand: #1870d5;
+  --lp-ink: #1e293b;
+  --lp-ink-soft: #5b6b7f;
+  --lp-muted: #7a8595;
+  --lp-line: #e2e8f0;
+  --lp-line-soft: #eef2f7;
+  --lp-brand-soft: #eaf2fd;
+  --lp-gold: #f1c40f;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes landingFloat {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes landingFloatReverse {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translateY(7px); }
+}
+
+@keyframes landingOrb {
+  0%, 100% { opacity: 0.88; transform: translate(0, 0) scale(1); }
+  50% { opacity: 1; transform: translate(-10px, 8px) scale(1.035); }
+}
+
+@keyframes landingCardIn {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.animate-landing-float {
+  animation: landingFloat 5.5s ease-in-out infinite;
+}
+
+.animate-landing-float-reverse {
+  animation: landingFloatReverse 6.2s ease-in-out infinite;
+}
+
+.animate-landing-orb {
+  animation: landingOrb 8s ease-in-out infinite;
+}
+
+.animate-landing-card-in {
+  animation: landingCardIn 0.55s cubic-bezier(0.33, 1, 0.68, 1) both;
+}
