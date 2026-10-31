@@ -369,10 +369,12 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem('govserve_theme_mode', darkMode ? 'dark' : 'light');
-      document.documentElement.classList.toggle('dark', darkMode);
-      document.body.classList.toggle('dark', darkMode);
+      const isDarkActive = darkMode && activeTab !== 'landing' && activeTab !== 'login';
+      document.documentElement.classList.toggle('dark', isDarkActive);
+      document.body.classList.toggle('dark', isDarkActive);
+      document.documentElement.style.colorScheme = isDarkActive ? 'dark' : 'light';
     } catch (e) {}
-  }, [darkMode]);
+  }, [darkMode, activeTab]);
 
   // Session Heartbeat Listener: Instant Auto-kickout if remote session is revoked
   useEffect(() => {

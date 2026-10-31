@@ -1182,19 +1182,21 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal }) => {
                 {/* Right Tilted Preview Card (Responsive on CP & Desktop) */}
                 <div
                   aria-hidden="true"
-                  className="relative grid min-h-[330px] sm:min-h-[380px] lg:min-h-[460px] select-none place-items-center"
+                  className="relative grid min-h-[340px] sm:min-h-[390px] lg:min-h-[460px] select-none place-items-center py-4"
+                  style={{ perspective: '1100px' }}
                 >
+                  {/* Layer 1: Background 3D Sphere & Ring */}
                   <div
-                    className="pointer-events-none absolute right-[1%] top-[8%] h-[280px] w-[280px] sm:h-[360px] sm:w-[360px] rounded-full animate-landing-orb"
+                    className="pointer-events-none absolute right-[0%] top-[6%] h-[270px] w-[270px] sm:h-[350px] sm:w-[350px] rounded-full animate-landing-orb"
                     style={{
                       background:
-                        'radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95), rgba(207, 226, 252, 0.7) 45%, rgba(157, 193, 236, 0.15) 72%, transparent 73%)'
+                        'radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.98), rgba(203, 223, 250, 0.82) 48%, rgba(148, 184, 232, 0.38) 70%, transparent 72%)'
                     }}
                   />
-                  <div className="pointer-events-none absolute bottom-[4%] left-[4%] h-[110px] w-[110px] rounded-full border border-[#1870d52e] shadow-[inset_0_0_0_14px_#ffffff4d]" />
+                  <div className="pointer-events-none absolute bottom-[1%] left-[4%] h-[112px] w-[112px] rounded-full border-[14px] border-[#dbe7f7]/90 shadow-[0_12px_28px_-12px_rgba(15,44,89,0.22)]" />
 
-                  {/* Main Tilted Glass Card */}
-                  <div className="relative z-10 w-[94%] sm:w-[min(410px,86%)] rotate-1 sm:rotate-2 rounded-[18px] border border-[#ffffffe6] bg-[#ffffffd9] p-[14px] sm:p-[18.4px] shadow-[0_30px_80px_-28px_#0f2c5961,0_0_0_8px_#ffffff3d] backdrop-blur-[18px] animate-landing-card-in">
+                  {/* Layer 2: Main Tilted Card with Frosted Outer Rim */}
+                  <div className="hero-tilted-card relative z-10 w-[92%] sm:w-[min(412px,86%)] rounded-[20px] border border-[#ffffff] bg-[#ffffffeb] p-[15px] sm:p-[19px] shadow-[0_32px_80px_-24px_rgba(15,44,89,0.42),0_0_0_8px_rgba(214,226,244,0.78)] backdrop-blur-[18px]">
                     <div className="flex items-center justify-between border-b border-[#eef2f7] pb-[14px]">
                       <span className="inline-flex items-center gap-[6.4px] text-[11.5px] font-bold text-[#067647]">
                         <span className="h-[6px] w-[6px] rounded-full bg-current shadow-[0_0_0_4px_#ecfdf3]" />
