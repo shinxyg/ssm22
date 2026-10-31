@@ -64,9 +64,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         </p>
       </div>
 
-      {/* Filter Category Pills */}
-      <div className="relative z-10 flex flex-wrap items-center gap-2">
-        {filterPills.map((pill) => {
+      {/* Filter Category Pills (Clean 2-Column Grid on CP, Single Row on PC) */}
+      <div className="relative z-10 grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+        {filterPills.map((pill, idx) => {
           const isActive = activeFilter === pill.id;
           return (
             <button
@@ -78,13 +78,15 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
                   elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
               }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer ${
+              className={`${idx === 0 ? 'col-span-2 sm:col-span-1' : ''} flex items-center justify-center text-center px-3 sm:px-3.5 py-2 sm:py-1.5 rounded-full text-[11.5px] sm:text-xs font-semibold transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? 'bg-blue-600 text-white border border-blue-400 shadow-md scale-105'
-                  : 'bg-slate-900/80 hover:bg-slate-900 text-slate-200 border border-slate-700/60 hover:border-blue-500/50'
+                  ? 'bg-blue-600 text-white border border-blue-400 shadow-md sm:scale-105'
+                  : darkMode
+                    ? 'bg-slate-900/80 hover:bg-slate-900 text-slate-200 border border-slate-700/60 hover:border-blue-500/50'
+                    : 'bg-white/15 hover:bg-white/25 text-white border border-white/30 backdrop-blur-sm'
               }`}
             >
-              {pill.label}
+              <span className="truncate">{pill.label}</span>
             </button>
           );
         })}
@@ -92,9 +94,9 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         {/* Special Blue Pill: Assistance & Eligibility Finder */}
         <button
           onClick={onOpenEligibilityModal}
-          className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs border border-blue-400/50 transition-all cursor-pointer"
+          className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 sm:py-1.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs border border-blue-400/50 shadow-md transition-all cursor-pointer"
         >
-          <HeartHandshake className="w-3.5 h-3.5" />
+          <HeartHandshake className="w-3.5 h-3.5 shrink-0" />
           <span>{isTagalog ? 'Tagahanap ng Tulong at Kwalipikasyon' : 'Assistance & Eligibility Finder'}</span>
         </button>
       </div>

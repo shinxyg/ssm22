@@ -101,21 +101,28 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
 
   return (
     <div id="service-catalog" className="py-6 scroll-mt-6">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className={`text-lg font-bold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
-            {isTagalog && filterTitle === "Available Social Services Programs"
-              ? "Mga Magagamit na Programa ng Social Services"
-              : filterTitle}
-          </h3>
-          <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2.5 mb-6">
+        <div className="min-w-0">
+          <div className="flex items-center justify-between gap-2 sm:block">
+            <h3 className={`text-base sm:text-lg font-bold tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+              {isTagalog && filterTitle === "Available Social Services Programs"
+                ? "Mga Magagamit na Programa ng Social Services"
+                : filterTitle}
+            </h3>
+            <span className={`sm:hidden shrink-0 whitespace-nowrap text-[11px] px-2.5 py-1 rounded-full font-mono border ${
+              darkMode ? 'bg-slate-800 text-blue-400 border-slate-700' : 'bg-blue-50 text-[#1870d5] border-blue-200 font-bold'
+            }`}>
+              {sortedServices.length} {isTagalog ? "Programa" : "Programs Found"}
+            </span>
+          </div>
+          <p className={`text-xs mt-1 leading-relaxed ${darkMode ? 'text-slate-400' : 'text-slate-600'}`}>
             {isTagalog
               ? "Pumili ng serbisyo upang makita ang kwalipikasyon, kailangang dokumento, o magpasa ng digital na aplikasyon."
               : "Select a service to view qualifications, required documents, or file your digital application."}
           </p>
         </div>
-        <span className={`text-xs px-3 py-1 rounded-full font-mono border ${
-          darkMode ? 'bg-slate-800 text-blue-400 border-slate-700' : 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
+        <span className={`hidden sm:inline-flex shrink-0 whitespace-nowrap text-xs px-3 py-1 rounded-full font-mono border ${
+          darkMode ? 'bg-slate-800 text-blue-400 border-slate-700' : 'bg-blue-50 text-[#1870d5] border-blue-200 font-bold'
         }`}>
           {sortedServices.length} {isTagalog ? "Programa" : "Programs Found"}
         </span>
@@ -266,10 +273,12 @@ export const ServiceCatalog: React.FC<ServiceCatalogProps> = ({
                   </span>
                   <button
                     onClick={() => onSelectService(service)}
-                    className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                    className={`inline-flex items-center gap-1.5 text-xs font-bold px-3.5 py-2 rounded-xl transition-all cursor-pointer shrink-0 ${
                       matchedRec
                         ? 'bg-emerald-600 hover:bg-emerald-500 text-white border border-emerald-400/40 shadow-sm'
-                        : 'text-blue-500 hover:text-white bg-blue-600/20 hover:bg-blue-600 border border-blue-500/30'
+                        : darkMode
+                          ? 'text-blue-400 hover:text-white bg-blue-600/20 hover:bg-blue-600 border border-blue-500/30'
+                          : 'bg-[#1870d5] hover:bg-[#125bb0] text-white border border-[#1870d5] shadow-sm'
                     }`}
                   >
                     <span>{isTagalog ? 'Mag-apply / Detalye' : 'Apply / Details'}</span>
