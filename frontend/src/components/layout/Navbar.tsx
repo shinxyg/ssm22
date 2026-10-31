@@ -489,7 +489,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* NOTIFICATION DROPDOWN MENU */}
             {showNotifications && (
-              <div className={`absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl p-4 z-50 border shadow-2xl animate-in fade-in zoom-in-95 ${
+              <div className={`fixed left-3 right-3 top-[68px] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-96 rounded-2xl p-4 z-50 border shadow-2xl animate-in fade-in zoom-in-95 ${
                 darkMode ? 'bg-[#0e172a] border-slate-700/80 text-white' : 'bg-white border-slate-200 text-slate-900'
               }`}>
                 <div className={`flex items-center justify-between border-b pb-2.5 mb-3 ${
