@@ -884,7 +884,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
   };
 
   return (
-    <div className="flex min-h-dvh w-full flex-col bg-[#f8f9fb] text-[16px] leading-[1.6] text-[#1b2436] antialiased min-[901px]:grid min-[901px]:h-dvh min-[901px]:grid-cols-2 min-[901px]:overflow-hidden">
+    <div className="fixed inset-0 flex h-dvh w-full flex-col overflow-hidden bg-[#f9fafc] text-[16px] leading-[1.6] text-[#1b2436] antialiased min-[901px]:static min-[901px]:grid min-[901px]:h-dvh min-[901px]:grid-cols-2 min-[901px]:overflow-hidden">
       {/* LEFT ASIDE: Official Deep Navy Branding Column (Compact on CP, Full Height on Desktop) */}
       <aside className="relative flex shrink-0 flex-col justify-center gap-1.5 overflow-hidden bg-[linear-gradient(180deg,#10305e_0%,#0f2c59_55%,#0b2348_100%)] px-4 py-4 text-center text-white min-[901px]:h-dvh min-[901px]:gap-[19.2px] min-[901px]:p-[clamp(32px,5vw,64px)] min-[901px]:text-left">
         <img
@@ -929,7 +929,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
       </aside>
 
       {/* RIGHT COLUMN: Sign In / Forgot Password Container */}
-      <div className="flex flex-1 justify-center bg-[#f9fafc] px-4 pt-3 pb-4 min-[901px]:h-dvh min-[901px]:overflow-y-auto min-[901px]:px-[20px] min-[901px]:py-[clamp(24px,5vw,56px)]">
+      <div className="flex flex-1 justify-center overflow-y-auto bg-[#f9fafc] px-4 pt-3 pb-3 min-[901px]:h-dvh min-[901px]:px-[20px] min-[901px]:py-[clamp(24px,5vw,56px)]">
         <div className="mt-0 flex w-full flex-col items-center min-[901px]:my-auto">
           {/* Top-right Language Switcher Pill */}
           <div className="mb-2 flex w-full justify-end min-[901px]:mb-3 min-[901px]:w-[min(392px,100%)]">

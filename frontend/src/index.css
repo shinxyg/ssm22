@@ -10,7 +10,7 @@
     background-color: #0b1220;
   }
   body {
-    @apply text-slate-100 min-h-screen overflow-x-hidden;
+    @apply text-slate-100 min-h-dvh overflow-x-hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
