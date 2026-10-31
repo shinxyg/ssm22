@@ -3,8 +3,14 @@
 @tailwind utilities;
 
 @layer base {
+  html, body {
+    background-color: #f9fafc;
+  }
+  html.dark, body.dark {
+    background-color: #0b1220;
+  }
   body {
-    @apply bg-[#0b1220] text-slate-100 min-h-screen overflow-x-hidden;
+    @apply text-slate-100 min-h-screen overflow-x-hidden;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }

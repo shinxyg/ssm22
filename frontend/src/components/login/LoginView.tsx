@@ -929,8 +929,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
       </aside>
 
       {/* RIGHT COLUMN: Sign In / Forgot Password Container */}
-      <div className="flex flex-1 justify-center bg-[#f9fafc] px-4 py-2.5 min-[901px]:h-dvh min-[901px]:overflow-y-auto min-[901px]:px-[20px] min-[901px]:py-[clamp(24px,5vw,56px)]">
-        <div className="my-auto flex w-full flex-col items-center">
+      <div className="flex flex-1 justify-center bg-[#f9fafc] px-4 pt-3 pb-4 min-[901px]:h-dvh min-[901px]:overflow-y-auto min-[901px]:px-[20px] min-[901px]:py-[clamp(24px,5vw,56px)]">
+        <div className="mt-0 flex w-full flex-col items-center min-[901px]:my-auto">
           {/* Top-right Language Switcher Pill */}
           <div className="mb-2 flex w-full justify-end min-[901px]:mb-3 min-[901px]:w-[min(392px,100%)]">
             <div
