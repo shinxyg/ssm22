@@ -13,6 +13,7 @@ import {
   Info,
   Check,
   Globe,
+  Languages,
 } from 'lucide-react';
 import { API_BASE_URL } from '../../config/api';
 import { useLanguage } from '../../context/LanguageContext';
@@ -883,22 +884,22 @@ export const LoginView: React.FC<LoginViewProps> = ({
   };
 
   return (
-    <div className="grid min-h-dvh w-full bg-[#f8f9fb] text-[16px] leading-[1.6] text-[#1b2436] antialiased min-[901px]:h-dvh min-[901px]:grid-cols-2 min-[901px]:overflow-hidden">
-      {/* LEFT ASIDE: Official Deep Navy Branding Column (Matches govservedrrm.up.railway.app/login on Desktop & CP) */}
-      <aside className="relative flex flex-col justify-center gap-[9.6px] overflow-hidden bg-[linear-gradient(180deg,#10305e_0%,#0f2c59_55%,#0b2348_100%)] px-[20px] py-8 text-white min-[901px]:h-dvh min-[901px]:gap-[19.2px] min-[901px]:p-[clamp(32px,5vw,64px)]">
+    <div className="flex min-h-dvh w-full flex-col bg-[#f8f9fb] text-[16px] leading-[1.6] text-[#1b2436] antialiased min-[901px]:grid min-[901px]:h-dvh min-[901px]:grid-cols-2 min-[901px]:overflow-hidden">
+      {/* LEFT ASIDE: Official Deep Navy Branding Column (Compact on CP, Full Height on Desktop) */}
+      <aside className="relative flex shrink-0 flex-col justify-center gap-1.5 overflow-hidden bg-[linear-gradient(180deg,#10305e_0%,#0f2c59_55%,#0b2348_100%)] px-4 py-4 text-center text-white min-[901px]:h-dvh min-[901px]:gap-[19.2px] min-[901px]:p-[clamp(32px,5vw,64px)] min-[901px]:text-left">
         <img
           src="/Government Service Integrity Seal.png"
           alt="GovServe"
           className="pointer-events-none absolute top-1/2 left-1/2 hidden w-[min(80%,520px)] -translate-x-1/2 -translate-y-1/2 opacity-20 mix-blend-screen select-none min-[901px]:block"
         />
 
-        <div className="relative z-[1] text-[12px] uppercase tracking-[1.28px] opacity-85">
+        <div className="relative z-[1] text-[10.5px] uppercase tracking-[1.28px] opacity-85 min-[901px]:text-[12px]">
           {isFil
             ? 'Pamamahala sa Serbisyong Panlipunan at Kagalingan'
             : 'Social Services & Welfare Management'}
         </div>
 
-        <h1 className="relative z-[1] m-auto text-center text-[clamp(30.4px,3.2vw,44.8px)] font-extrabold leading-[1.08] tracking-[-0.02em] text-white">
+        <h1 className="relative z-[1] mx-auto text-center text-[21px] font-extrabold leading-[1.12] tracking-[-0.02em] text-white min-[901px]:m-auto min-[901px]:text-[clamp(30.4px,3.2vw,44.8px)] min-[901px]:leading-[1.08]">
           {isFil ? (
             <>
               Pamamahala sa Serbisyong
@@ -914,13 +915,13 @@ export const LoginView: React.FC<LoginViewProps> = ({
           )}
         </h1>
 
-        <p className="relative z-[1] m-auto max-w-[44ch] text-center text-[15.2px] leading-[1.6] text-[#e7eefc]/85">
+        <p className="relative z-[1] m-auto hidden max-w-[44ch] text-center text-[15.2px] leading-[1.6] text-[#e7eefc]/85 min-[901px]:block">
           {isFil
             ? 'Isang sentralisadong digital platform para sa ligtas na pamamahala ng mga programa sa serbisyong panlipunan, crisis intervention, at pamamahagi ng tulong pinansyal sa lokal na pamahalaan.'
             : 'A centralized digital platform for securely managing local government social welfare programs, crisis intervention, and financial aid disbursements.'}
         </p>
 
-        <div className="relative z-[1] text-[12px] uppercase tracking-[1.28px] opacity-85">
+        <div className="relative z-[1] hidden text-[12px] uppercase tracking-[1.28px] opacity-85 min-[901px]:block">
           {isFil
             ? 'Republika ng Pilipinas • Lokal na Pamahalaan'
             : 'Republic of the Philippines • Local Government Unit'}
@@ -928,41 +929,44 @@ export const LoginView: React.FC<LoginViewProps> = ({
       </aside>
 
       {/* RIGHT COLUMN: Sign In / Forgot Password Container */}
-      <div className="flex justify-center bg-[#f9fafc] px-[20px] py-[clamp(24px,5vw,56px)] min-[901px]:h-dvh min-[901px]:overflow-y-auto">
+      <div className="flex flex-1 justify-center bg-[#f9fafc] px-4 py-2.5 min-[901px]:h-dvh min-[901px]:overflow-y-auto min-[901px]:px-[20px] min-[901px]:py-[clamp(24px,5vw,56px)]">
         <div className="my-auto flex w-full flex-col items-center">
           {/* Top-right Language Switcher Pill */}
-          <div className="mb-3 flex w-full justify-end min-[901px]:w-[min(392px,100%)]">
+          <div className="mb-2 flex w-full justify-end min-[901px]:mb-3 min-[901px]:w-[min(392px,100%)]">
             <div
               className="inline-flex items-center gap-[3.2px] rounded-full border border-[#e5eaf2] bg-[#f8fafc] p-[3.2px]"
               role="group"
               aria-label="Language switcher"
             >
               <span className="inline-flex items-center pl-[7.2px] text-[#61708a]" aria-hidden="true">
-                <Globe className="h-[13.5px] w-[13.5px]" />
+                <Languages className="h-[13.5px] w-[13.5px] min-[901px]:hidden" />
+                <Globe className="hidden h-[13.5px] w-[13.5px] min-[901px]:inline" />
               </span>
               <button
                 type="button"
                 onClick={() => setLanguage('English')}
                 aria-pressed={!isFil}
-                className={`cursor-pointer rounded-full border-none px-[9.6px] py-[4.8px] text-[12px] font-semibold leading-none transition-colors duration-150 ${
+                className={`cursor-pointer rounded-full border-none px-[9.6px] py-[4.8px] text-[11.5px] min-[901px]:text-[12px] font-semibold leading-none transition-colors duration-150 ${
                   !isFil
                     ? 'bg-[#1870d5] text-white shadow-[0_2px_6px_rgba(24,112,213,0.28)]'
                     : 'bg-transparent text-[#61708a] hover:text-[#1b2436]'
                 }`}
               >
-                English
+                <span className="min-[901px]:hidden">EN</span>
+                <span className="hidden min-[901px]:inline">English</span>
               </button>
               <button
                 type="button"
                 onClick={() => setLanguage('Tagalog')}
                 aria-pressed={isFil}
-                className={`cursor-pointer rounded-full border-none px-[9.6px] py-[4.8px] text-[12px] font-semibold leading-none transition-colors duration-150 ${
+                className={`cursor-pointer rounded-full border-none px-[9.6px] py-[4.8px] text-[11.5px] min-[901px]:text-[12px] font-semibold leading-none transition-colors duration-150 ${
                   isFil
                     ? 'bg-[#1870d5] text-white shadow-[0_2px_6px_rgba(24,112,213,0.28)]'
                     : 'bg-transparent text-[#61708a] hover:text-[#1b2436]'
                 }`}
               >
-                Filipino
+                <span className="min-[901px]:hidden">FIL</span>
+                <span className="hidden min-[901px]:inline">Filipino</span>
               </button>
             </div>
           </div>
@@ -1313,22 +1317,22 @@ export const LoginView: React.FC<LoginViewProps> = ({
               </form>
             </div>
           ) : (
-            /* DEFAULT SIGN IN CARD (Exact match to govservedrrm.up.railway.app/login) */
-            <div className="w-full rounded-[14px] border border-[#edf0f4] bg-white px-[27.2px] pt-[30.4px] pb-[25.6px] shadow-[0_18px_45px_rgba(15,44,88,0.09)] min-[901px]:w-[min(392px,100%)]">
+            /* DEFAULT SIGN IN CARD (Exact match to govservedrrm.up.railway.app/login on CP & Desktop) */
+            <div className="w-full rounded-[14px] border border-[#edf0f4] bg-white px-5 pt-4 pb-4 shadow-[0_18px_45px_rgba(15,44,88,0.09)] min-[901px]:w-[min(392px,100%)] min-[901px]:px-[27.2px] min-[901px]:pt-[30.4px] min-[901px]:pb-[25.6px]">
               <button
                 type="button"
                 onClick={onBackToHome}
-                className="mb-[14px] inline-flex cursor-pointer items-center gap-[5.6px] rounded-full border border-[#e3eaf5] bg-[#f4f7fc] px-[11.2px] py-[5.6px] text-[12.5px] font-semibold text-[#1870d5] transition-colors duration-150 hover:border-[#c8d9f2] hover:bg-[#eaf1fb]"
+                className="mb-2 inline-flex cursor-pointer items-center gap-[5.6px] rounded-full border border-[#e3eaf5] bg-[#f4f7fc] px-[10px] py-[4.5px] text-[12px] font-semibold text-[#1870d5] transition-colors duration-150 hover:border-[#c8d9f2] hover:bg-[#eaf1fb] min-[901px]:mb-[14px] min-[901px]:px-[11.2px] min-[901px]:py-[5.6px] min-[901px]:text-[12.5px]"
               >
                 <ArrowLeft className="h-[14px] w-[14px]" />
                 <span>{isFil ? 'Bumalik sa homepage' : 'Back to homepage'}</span>
               </button>
 
-              <h1 className="m-0 mb-[4.8px] text-[32px] font-extrabold tracking-[-0.02em] text-[#0f2c58]">
+              <h1 className="m-0 mb-1 text-[26px] font-extrabold leading-tight tracking-[-0.02em] text-[#0f2c58] min-[901px]:mb-[4.8px] min-[901px]:text-[32px]">
                 {isFil ? 'Mag-sign in' : 'Sign in'}
               </h1>
 
-              <p className="m-0 mb-[19.2px] text-[13.5px] leading-[1.5] text-[#61708a]">
+              <p className="m-0 mb-3 text-[12.5px] leading-[1.42] text-[#61708a] min-[901px]:mb-[19.2px] min-[901px]:text-[13.5px] min-[901px]:leading-[1.5]">
                 {isFil
                   ? 'Dito nagsa-sign in ang citizen at MSWDO admin account — bubuksan namin ang tamang dashboard para sa account mo.'
                   : 'Citizen and MSWDO admin accounts all sign in here — we open the right dashboard for your account.'}
@@ -1387,8 +1391,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
                 </div>
               )}
 
-              <form onSubmit={handleLoginSubmit} className="grid gap-[13.6px]" noValidate>
-                <label className="grid gap-[5.6px] text-[13.6px] font-semibold text-[#1b2436]">
+              <form onSubmit={handleLoginSubmit} className="grid gap-2.5 min-[901px]:gap-[13.6px]" noValidate>
+                <label className="grid gap-1 text-[13px] font-semibold text-[#1b2436] min-[901px]:gap-[5.6px] min-[901px]:text-[13.6px]">
                   <span>Email</span>
                   <input
                     type="email"
@@ -1399,14 +1403,14 @@ export const LoginView: React.FC<LoginViewProps> = ({
                     }}
                     onBlur={() => checkEmailLockout(email)}
                     disabled={isLocked}
-                    placeholder="you@domain.gov.ph"
+                    placeholder="name@example.com"
                     autoComplete="username"
                     required
-                    className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-[12.8px] py-[10.4px] text-[15.2px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-3 py-2 text-[14.5px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 min-[901px]:px-[12.8px] min-[901px]:py-[10.4px] min-[901px]:text-[15.2px]"
                   />
                 </label>
 
-                <label className="grid gap-[5.6px] text-[13.6px] font-semibold text-[#1b2436]">
+                <label className="grid gap-1 text-[13px] font-semibold text-[#1b2436] min-[901px]:gap-[5.6px] min-[901px]:text-[13.6px]">
                   <span>Password</span>
                   <div className="relative flex items-center">
                     <input
@@ -1420,7 +1424,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                       placeholder="••••••••"
                       autoComplete="current-password"
                       required
-                      className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-[12.8px] py-[10.4px] pr-[42px] text-[15.2px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                      className="w-full rounded-[8px] border border-[#d9dee7] bg-[#fbfcfe] px-3 py-2 pr-[42px] text-[14.5px] text-[#1b2436] transition-all duration-150 focus:border-[#1870d5] focus:bg-white focus:shadow-[0_0_0_3px_rgba(24,112,213,0.12)] focus:outline-none disabled:cursor-not-allowed disabled:opacity-60 min-[901px]:px-[12.8px] min-[901px]:py-[10.4px] min-[901px]:text-[15.2px]"
                     />
                     <button
                       type="button"
@@ -1435,7 +1439,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                   </div>
                 </label>
 
-                <div className="-mt-[4px] flex justify-end">
+                <div className="-mt-1 flex justify-end min-[901px]:-mt-[4px]">
                   <button
                     type="button"
                     onClick={() => {
@@ -1444,7 +1448,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                       setSuccessMessage(null);
                     }}
                     disabled={isLocked}
-                    className="cursor-pointer border-none bg-transparent p-0 text-[13px] font-semibold text-[#1870d5] underline hover:text-[#125bb0] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="cursor-pointer border-none bg-transparent p-0 text-[12.5px] font-semibold text-[#1870d5] underline hover:text-[#125bb0] disabled:cursor-not-allowed disabled:opacity-50 min-[901px]:text-[13px]"
                   >
                     {isFil ? 'Nakalimutan ang password?' : 'Forgot password?'}
                   </button>
@@ -1453,7 +1457,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
                 <button
                   type="submit"
                   disabled={isLocked}
-                  className="mt-[3.2px] inline-flex cursor-pointer items-center justify-center gap-[8px] rounded-full border-none bg-[#1870d5] px-[19.2px] py-[11.5px] text-[15.2px] font-bold text-white shadow-[0_8px_20px_rgba(24,112,213,0.28)] transition-all duration-150 hover:bg-[#125bb0] disabled:cursor-not-allowed disabled:opacity-65"
+                  className="mt-0.5 inline-flex cursor-pointer items-center justify-center gap-[8px] rounded-full border-none bg-[#1870d5] px-[19.2px] py-2.5 text-[14.5px] font-bold text-white shadow-[0_8px_20px_rgba(24,112,213,0.28)] transition-all duration-150 hover:bg-[#125bb0] disabled:cursor-not-allowed disabled:opacity-65 min-[901px]:mt-[3.2px] min-[901px]:py-[11.5px] min-[901px]:text-[15.2px]"
                 >
                   <span>
                     {isLocked
