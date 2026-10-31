@@ -1198,8 +1198,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal }) => {
                   {/* Layer 2: Main Tilted Card with Frosted Outer Rim */}
                   <div className="hero-tilted-card relative z-10 w-[92%] sm:w-[min(412px,86%)] rounded-[20px] border border-[#ffffff] bg-[#ffffffeb] p-[15px] sm:p-[19px] shadow-[0_32px_80px_-24px_rgba(15,44,89,0.42),0_0_0_8px_rgba(214,226,244,0.78)] backdrop-blur-[18px]">
                     <div className="flex items-center justify-between border-b border-[#eef2f7] pb-[14px]">
-                      <span className="inline-flex items-center gap-[6.4px] text-[11.5px] font-bold text-[#067647]">
-                        <span className="h-[6px] w-[6px] rounded-full bg-current shadow-[0_0_0_4px_#ecfdf3]" />
+                      <span className="inline-flex items-center text-[11.5px] font-bold text-[#067647]">
                         {tr('24/7 System Access', '24/7 na Access sa Sistema')}
                       </span>
                       <span className="font-mono text-[10px] tracking-[0.08em] text-[#5b6b7f]">
@@ -1214,28 +1213,46 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal }) => {
                       <div className="grid gap-[2px]">
                         <span className="text-[13px] text-[#5b6b7f]">
                           {tr(
-                            'Social Services Management',
-                            'Pamamahala sa Serbisyong Panlipunan'
+                            'Your social welfare desk, online',
+                            'Ang iyong social welfare desk, online'
                           )}
                         </span>
                         <strong className="text-[16px] sm:text-[16.8px] leading-[1.3] text-[#0f2c59]">
-                          {tr('All in one unified platform', 'Lahat sa iisang plataporma')}
+                          {tr('What would you like to do?', 'Ano ang gusto mong gawin?')}
                         </strong>
                       </div>
                     </div>
 
                     <div className="grid gap-[8px]">
-                      {coreCapabilities.slice(0, 3).map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="flex items-center gap-[11px] rounded-[14px] border border-transparent bg-[#f8fbff] px-[11.2px] py-[11px] text-[13px] sm:text-[13.4px] font-semibold text-[#1e293b]"
+                      {[
+                        {
+                          num: '01',
+                          label: tr('Apply for social assistance', 'Mag-apply para sa tulong panlipunan'),
+                          onClick: () => onAccessPortal()
+                        },
+                        {
+                          num: '02',
+                          label: tr('Track application & payout', 'Subaybayan ang aplikasyon at payout'),
+                          onClick: () => onAccessPortal()
+                        },
+                        {
+                          num: '03',
+                          label: tr('Check eligibility & requirements', 'Tingnan ang kwalipikasyon at requirements'),
+                          onClick: () => navigateTo('how-it-works')
+                        }
+                      ].map((actionItem) => (
+                        <button
+                          key={actionItem.num}
+                          type="button"
+                          onClick={actionItem.onClick}
+                          className="group/row flex w-full cursor-pointer items-center gap-[11px] rounded-[14px] border border-transparent bg-[#f8fbff] px-[11.2px] py-[11px] text-left text-[13px] sm:text-[13.4px] font-semibold text-[#1e293b] transition-colors duration-150 hover:border-[#1870d533] hover:bg-[#eef5ff]"
                         >
                           <span className="font-mono text-[11.2px] font-bold text-[#1870d5]">
-                            0{idx + 1}
+                            {actionItem.num}
                           </span>
-                          <span className="flex-1 truncate">{item.title}</span>
-                          <ArrowRight className="w-4 h-4 text-[#1870d5] shrink-0" />
-                        </div>
+                          <span className="flex-1 truncate">{actionItem.label}</span>
+                          <ArrowRight className="w-4 h-4 shrink-0 text-[#1870d5] transition-transform duration-200 group-hover/row:translate-x-1" />
+                        </button>
                       ))}
                     </div>
 
