@@ -304,22 +304,15 @@ input:focus, select:focus, textarea:focus {
 @keyframes landingCardTiltIn {
   0% {
     opacity: 0;
-    transform: perspective(1050px) rotateY(-11deg) rotateX(5deg) rotateZ(2.8deg) translateY(16px) scale(0.97);
+    transform: translateY(14px) rotate(2deg);
   }
   100% {
     opacity: 1;
-    transform: perspective(1050px) rotateY(-11deg) rotateX(5deg) rotateZ(2.8deg) translateY(0) scale(1);
+    transform: translateY(0) rotate(2deg);
   }
 }
 
 .hero-tilted-card {
-  transform: perspective(1050px) rotateY(-11deg) rotateX(5deg) rotateZ(2.8deg) !important;
-  transform-style: preserve-3d;
-  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.45s ease;
-  animation: landingCardTiltIn 0.65s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
-}
-
-.hero-tilted-card:hover {
-  transform: perspective(1050px) rotateY(-5deg) rotateX(2.5deg) rotateZ(1.2deg) translateY(-3px) !important;
+  transform: rotate(2deg) !important;
+  animation: landingCardTiltIn 0.55s cubic-bezier(0.33, 1, 0.68, 1);
 }
