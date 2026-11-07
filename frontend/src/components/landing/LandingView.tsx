@@ -643,7 +643,7 @@ const ParticleBackground: React.FC = () => {
 /* ============================================================================
    MAIN LANDING VIEW COMPONENT
    ============================================================================ */
-export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal }) => {
+export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMode = false }) => {
   const { language, setLanguage } = useLanguage();
   const langKey: 'en' | 'ph' = language === 'Tagalog' ? 'ph' : 'en';
   const tr = (en: string, ph: string) => (langKey === 'en' ? en : ph);
@@ -928,8 +928,66 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal }) => {
       style={{
         fontFamily: '"Segoe UI", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif'
       }}
-      className="relative flex min-h-screen flex-col bg-[#f8fafc] text-[16px] leading-[1.6] text-[#1e293b] antialiased selection:bg-blue-500/30 print:bg-white"
+      className={`relative flex min-h-screen flex-col text-[16px] leading-[1.6] antialiased selection:bg-blue-500/30 print:bg-white ${
+        darkMode ? 'landing-dark bg-[#070e1b] text-slate-100' : 'bg-[#f8fafc] text-[#1e293b]'
+      }`}
     >
+      {darkMode && (
+        <style>{`
+          .landing-dark header { background-color: rgba(10, 19, 36, 0.94) !important; border-color: #1e293b !important; }
+          .landing-dark footer { background-color: #060c18 !important; border-top: 1px solid #1e293b !important; }
+          .landing-dark .bg-white,
+          .landing-dark .bg-white\\/95,
+          .landing-dark .bg-white\\/98 { background-color: #0f172a !important; }
+          .landing-dark section.bg-white { background-color: #070e1b !important; }
+          .landing-dark .bg-\\[\\#ffffffb3\\],
+          .landing-dark .bg-\\[\\#ffffffbd\\],
+          .landing-dark .bg-\\[\\#ffffffe6\\] { background-color: rgba(15, 23, 42, 0.88) !important; border-color: rgba(51, 65, 85, 0.75) !important; }
+          .landing-dark .hero-tilted-card {
+            background-color: rgba(15, 23, 42, 0.94) !important;
+            border-color: rgba(51, 65, 85, 0.85) !important;
+            box-shadow: 0 32px 80px -24px rgba(0, 0, 0, 0.78), 0 0 0 8px rgba(30, 41, 59, 0.65) !important;
+          }
+          .landing-dark .bg-\\[\\#f8fbff\\],
+          .landing-dark .bg-\\[\\#fbfdff\\],
+          .landing-dark .bg-\\[\\#f5f9fe\\],
+          .landing-dark .bg-\\[\\#f1f5f9\\],
+          .landing-dark .bg-\\[\\#eef2f7\\] { background-color: #131f38 !important; }
+          .landing-dark .hover\\:bg-\\[\\#fbfdff\\]:hover,
+          .landing-dark .hover\\:bg-\\[\\#eef5ff\\]:hover,
+          .landing-dark .hover\\:bg-\\[\\#eaf2fd\\]:hover,
+          .landing-dark .hover\\:bg-white:hover { background-color: #172544 !important; }
+          .landing-dark .bg-\\[\\#eaf2fd\\] { background-color: rgba(24, 112, 213, 0.18) !important; color: #60a5fa !important; }
+          .landing-dark .bg-\\[\\#ecfdf3\\] { background-color: rgba(6, 118, 71, 0.22) !important; color: #34d399 !important; }
+          .landing-dark .bg-\\[\\#fdf6d9\\] { background-color: rgba(245, 158, 11, 0.18) !important; border-color: rgba(245, 158, 11, 0.35) !important; color: #fbbf24 !important; }
+          .landing-dark .bg-\\[\\#e2e8f0\\] { background-color: #1e293b !important; }
+          .landing-dark .border-\\[\\#e2e8f0\\],
+          .landing-dark .border-\\[\\#eef2f7\\],
+          .landing-dark .border-\\[\\#ffffff\\],
+          .landing-dark .border-\\[\\#ffffffe6\\],
+          .landing-dark .border-\\[\\#2563eb29\\],
+          .landing-dark .border-\\[\\#1870d52e\\] { border-color: #1e293b !important; }
+          .landing-dark .divide-\\[\\#eef2f7\\] > :not([hidden]) ~ :not([hidden]) { border-color: #1e293b !important; }
+          .landing-dark .border-\\[\\#dbe7f7\\]\\/90 { border-color: rgba(30, 58, 138, 0.45) !important; }
+          .landing-dark .text-\\[\\#0f2c59\\],
+          .landing-dark .text-\\[\\#1e293b\\] { color: #f8fafc !important; }
+          .landing-dark button.bg-white.text-\\[\\#0f2c59\\] { background-color: #ffffff !important; color: #0f2c59 !important; }
+          .landing-dark .text-\\[\\#5b6b7f\\],
+          .landing-dark .text-\\[\\#64748b\\] { color: #94a3b8 !important; }
+          .landing-dark .text-\\[\\#067647\\] { color: #34d399 !important; }
+          .landing-dark .text-\\[\\#8a6a08\\] { color: #fbbf24 !important; }
+          .landing-dark [class*="linear-gradient(120deg,#f6faff"],
+          .landing-dark [class*="linear-gradient(165deg,#f5f9fe"],
+          .landing-dark [class*="linear-gradient(135deg,#eaf2fd"] {
+            background-image: linear-gradient(135deg, #0f172a 0%, #13203c 100%) !important;
+          }
+          .landing-dark input[type="search"] {
+            background-color: #091122 !important;
+            border-color: #334155 !important;
+            color: #f8fafc !important;
+          }
+        `}</style>
+      )}
       {/* Interactive Floating Particle Canvas */}
       <ParticleBackground />
 
@@ -1102,11 +1160,17 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal }) => {
             <section
               className="relative overflow-hidden border-b border-[#e2e8f0] pt-[36px] pb-[22.4px] md:pt-[clamp(52px,7vw,96px)]"
               style={{
-                backgroundImage: [
-                  'radial-gradient(620px 420px at 76% 12%, rgba(24, 112, 213, 0.12), transparent 68%)',
-                  'radial-gradient(500px 320px at 8% 0%, rgba(241, 196, 15, 0.08), transparent 68%)',
-                  'linear-gradient(180deg, #f8fbff 0%, #f8fafc 100%)'
-                ].join(', ')
+                backgroundImage: darkMode
+                  ? [
+                      'radial-gradient(620px 420px at 76% 12%, rgba(24, 112, 213, 0.22), transparent 68%)',
+                      'radial-gradient(500px 320px at 8% 0%, rgba(241, 196, 15, 0.08), transparent 68%)',
+                      'linear-gradient(180deg, #070e1b 0%, #0a1428 100%)'
+                    ].join(', ')
+                  : [
+                      'radial-gradient(620px 420px at 76% 12%, rgba(24, 112, 213, 0.12), transparent 68%)',
+                      'radial-gradient(500px 320px at 8% 0%, rgba(241, 196, 15, 0.08), transparent 68%)',
+                      'linear-gradient(180deg, #f8fbff 0%, #f8fafc 100%)'
+                    ].join(', ')
               }}
             >
               {/* Subtle Grid Overlay */}
@@ -1114,9 +1178,10 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal }) => {
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0"
                 style={{
-                  opacity: 0.45,
-                  backgroundImage:
-                    'linear-gradient(rgba(15, 44, 89, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 44, 89, 0.035) 1px, transparent 1px)',
+                  opacity: darkMode ? 0.35 : 0.45,
+                  backgroundImage: darkMode
+                    ? 'linear-gradient(rgba(148, 163, 184, 0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, 0.07) 1px, transparent 1px)'
+                    : 'linear-gradient(rgba(15, 44, 89, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(15, 44, 89, 0.035) 1px, transparent 1px)',
                   backgroundSize: '72px 72px',
                   maskImage: 'linear-gradient(90deg, rgba(0, 0, 0, 0.8), transparent 85%)',
                   WebkitMaskImage: 'linear-gradient(90deg, rgba(0, 0, 0, 0.8), transparent 85%)'
@@ -1189,8 +1254,9 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal }) => {
                   <div
                     className="pointer-events-none absolute right-[0%] top-[6%] h-[270px] w-[270px] sm:h-[350px] sm:w-[350px] rounded-full animate-landing-orb"
                     style={{
-                      background:
-                        'radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.98), rgba(203, 223, 250, 0.82) 48%, rgba(148, 184, 232, 0.38) 70%, transparent 72%)'
+                      background: darkMode
+                        ? 'radial-gradient(circle at 32% 28%, rgba(37, 99, 235, 0.42), rgba(30, 58, 138, 0.35) 48%, rgba(15, 23, 42, 0.2) 70%, transparent 72%)'
+                        : 'radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.98), rgba(203, 223, 250, 0.82) 48%, rgba(148, 184, 232, 0.38) 70%, transparent 72%)'
                     }}
                   />
                   <div className="pointer-events-none absolute bottom-[1%] left-[4%] h-[112px] w-[112px] rounded-full border-[14px] border-[#dbe7f7]/90 shadow-[0_12px_28px_-12px_rgba(15,44,89,0.22)]" />

@@ -59,6 +59,7 @@ const CHALLENGE_TOPICS = [
 export const LoginView: React.FC<LoginViewProps> = ({
   onLoginSuccess,
   onBackToHome,
+  darkMode = false,
 }) => {
   const { language, setLanguage } = useLanguage();
   const isFil = language === 'Tagalog';
@@ -888,7 +889,41 @@ export const LoginView: React.FC<LoginViewProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 flex h-dvh w-full flex-col overflow-hidden bg-[#f9fafc] text-[16px] leading-[1.6] text-[#1b2436] antialiased min-[901px]:static min-[901px]:grid min-[901px]:h-dvh min-[901px]:grid-cols-2 min-[901px]:overflow-hidden">
+    <div
+      className={`fixed inset-0 flex h-dvh w-full flex-col overflow-hidden text-[16px] leading-[1.6] antialiased min-[901px]:static min-[901px]:grid min-[901px]:h-dvh min-[901px]:grid-cols-2 min-[901px]:overflow-hidden ${
+        darkMode ? 'login-dark bg-[#070e1b] text-slate-100' : 'bg-[#f9fafc] text-[#1b2436]'
+      }`}
+    >
+      {darkMode && (
+        <style>{`
+          .login-dark .bg-\\[\\#f9fafc\\] { background-color: #070e1b !important; }
+          .login-dark .bg-white { background-color: #0f172a !important; box-shadow: 0 24px 60px -15px rgba(0, 0, 0, 0.7) !important; }
+          .login-dark .bg-\\[\\#f8fafc\\] { background-color: #0b1325 !important; }
+          .login-dark .bg-\\[\\#fbfcfe\\] { background-color: #091122 !important; color: #f8fafc !important; }
+          .login-dark .bg-\\[\\#f5f9fe\\] { background-color: rgba(24, 112, 213, 0.14) !important; }
+          .login-dark .hover\\:bg-\\[\\#eaf2fd\\]:hover,
+          .login-dark .hover\\:bg-\\[\\#eef2f8\\]:hover { background-color: rgba(24, 112, 213, 0.22) !important; }
+          .login-dark .border-\\[\\#edf0f4\\],
+          .login-dark .border-\\[\\#e5eaf2\\],
+          .login-dark .border-\\[\\#d5e4f7\\],
+          .login-dark .border-\\[\\#d9dee7\\] { border-color: #1e293b !important; }
+          .login-dark input.border-\\[\\#d9dee7\\] { border-color: #334155 !important; }
+          .login-dark input:focus { background-color: #0c162b !important; border-color: #3b82f6 !important; color: #ffffff !important; }
+          .login-dark input::placeholder { color: #64748b !important; }
+          .login-dark .text-\\[\\#0f2c58\\],
+          .login-dark .text-\\[\\#1b2436\\] { color: #f8fafc !important; }
+          .login-dark .text-\\[\\#61708a\\],
+          .login-dark .text-slate-600,
+          .login-dark .text-slate-700 { color: #94a3b8 !important; }
+          .login-dark .hover\\:text-\\[\\#1b2436\\]:hover { color: #ffffff !important; }
+          .login-dark .bg-red-50 { background-color: rgba(127, 29, 29, 0.28) !important; border-color: rgba(239, 68, 68, 0.35) !important; }
+          .login-dark .text-red-700,
+          .login-dark .text-red-600 { color: #fca5a5 !important; }
+          .login-dark .bg-emerald-50 { background-color: rgba(6, 78, 59, 0.3) !important; border-color: rgba(16, 185, 129, 0.35) !important; }
+          .login-dark .text-emerald-700 { color: #6ee7b7 !important; }
+          .login-dark .bg-slate-200 { background-color: #1e293b !important; }
+        `}</style>
+      )}
       {/* LEFT ASIDE: Official Deep Navy Branding Column (Compact on CP, Full Height on Desktop) */}
       <aside className="relative flex shrink-0 flex-col justify-center gap-1.5 overflow-hidden bg-[linear-gradient(180deg,#10305e_0%,#0f2c59_55%,#0b2348_100%)] px-4 py-4 text-center text-white min-[901px]:h-dvh min-[901px]:gap-[19.2px] min-[901px]:p-[clamp(32px,5vw,64px)] min-[901px]:text-left">
         <img
