@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { 
   ArrowLeft, 
   FileText, 
   CheckCircle2, 
+  AlertCircle,
   Upload, 
   ShieldCheck, 
   QrCode,
@@ -506,20 +507,71 @@ export const FuneralAssistanceView: React.FC<FuneralAssistanceViewProps> = ({
     setSubmittedAppRecord(newApp);
   };
 
-  if (submittedAppRecord) {
+  // Check if citizen has an active pending Funeral / Burial Assistance application
+  const activePendingApp = useMemo(() => {
+    return (applications || []).find((app) => {
+      const ref = (app.referenceNo || '').toUpperCase();
+      const svc = (app.serviceName || '').toLowerCase();
+      const asst = (app.assistanceType || '').toLowerCase();
+      const isFuneral =
+        ref.includes('-FUN-') ||
+        ref.startsWith('QC-FUN-') ||
+        svc.includes('funeral') ||
+        svc.includes('burial') ||
+        asst.includes('funeral') ||
+        asst.includes('burial');
+      if (!isFuneral) return false;
+      const st = (app.status || '').toUpperCase();
+      const isFinished =
+        st.includes('RELEASED') ||
+        st.includes('COMPLETED') ||
+        st.includes('REJECTED') ||
+        st.includes('DISAPPROVED') ||
+        st.includes('DISQUALIFIED');
+      return !isFinished;
+    });
+  }, [applications]);
+
+  const submittedAppInList = (applications || []).find(
+    (app) => app.referenceNo === submittedAppRecord?.referenceNo
+  );
+  const isSubmittedAppFinished = submittedAppInList
+    ? (submittedAppInList.status || '').toUpperCase().includes('RELEASED') ||
+      (submittedAppInList.status || '').toUpperCase().includes('COMPLETED') ||
+      (submittedAppInList.status || '').toUpperCase().includes('REJECTED') ||
+      (submittedAppInList.status || '').toUpperCase().includes('DISAPPROVED') ||
+      (submittedAppInList.status || '').toUpperCase().includes('DISQUALIFIED')
+    : false;
+
+  const targetApp = isSubmittedAppFinished
+    ? null
+    : submittedAppRecord || activePendingApp || null;
+
+  if (targetApp) {
+    const isJustSubmitted = Boolean(submittedAppRecord);
     return (
       <div className="max-w-md mx-auto my-6 animate-in fade-in zoom-in-95 duration-300">
         <div className={`p-5 sm:p-6 rounded-2xl border text-center space-y-4 ${
           darkMode ? 'bg-[#0b1426] border-slate-800 text-white' : 'bg-white border-slate-200 text-slate-900'
         }`}>
-          <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500 text-emerald-400 flex items-center justify-center mx-auto">
-            <CheckCircle2 className="w-7 h-7" />
+          <div className={`w-12 h-12 rounded-full border flex items-center justify-center mx-auto ${
+            isJustSubmitted
+              ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400'
+              : 'bg-amber-500/20 border-amber-500 text-amber-400'
+          }`}>
+            {isJustSubmitted ? <CheckCircle2 className="w-7 h-7" /> : <AlertCircle className="w-7 h-7" />}
           </div>
 
           <div className="space-y-1">
-            <h3 className="text-lg sm:text-xl font-bold tracking-tight">Application Successfully Submitted</h3>
+            <h3 className="text-lg sm:text-xl font-bold tracking-tight">
+              {isJustSubmitted ? 'Application Successfully Submitted' : 'Active Application Pending'}
+            </h3>
             <p className={`text-xs max-w-sm mx-auto leading-normal ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-              Your application for <span className="font-bold text-blue-400">QC Funeral Assistance</span> has been successfully submitted.
+              {isJustSubmitted ? (
+                <>Your application for <span className="font-bold text-blue-400">QC Funeral Assistance</span> has been successfully submitted.</>
+              ) : (
+                <>You currently have an active application for <span className="font-bold text-blue-400">{targetApp.serviceName || 'QC Funeral Assistance'}</span>. You cannot submit a new application until your current request is completed.</>
+              )}
             </p>
           </div>
 
@@ -530,14 +582,14 @@ export const FuneralAssistanceView: React.FC<FuneralAssistanceViewProps> = ({
               <span className={`text-[11px] font-sans font-medium uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 Application Reference No.:
               </span>
-              <span className="font-bold text-blue-400 text-xs sm:text-sm">{submittedAppRecord.referenceNo}</span>
+              <span className="font-bold text-blue-400 text-xs sm:text-sm">{targetApp.referenceNo}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 text-xs pt-2 border-t border-slate-800/60">
               <span className={`text-[11px] font-sans font-medium uppercase tracking-wider ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                 Date Filed:
               </span>
               <span className={`font-bold text-xs ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
-                {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                {targetApp.dateSubmitted || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               </span>
             </div>
           </div>
