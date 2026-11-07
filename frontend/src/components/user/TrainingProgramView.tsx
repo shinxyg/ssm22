@@ -785,7 +785,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                               <button
                                 type="button"
                                 disabled
-                                className="flex-1 py-2.5 bg-slate-900/80 border border-slate-800 text-slate-500 text-xs font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5"
+                                className={`flex-1 py-2.5 border text-xs font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5 ${darkMode ? 'bg-slate-900/80 border-slate-800 text-slate-500' : 'bg-slate-100 border-slate-200 text-slate-400'}`}
                               >
                                 <Lock className="w-3.5 h-3.5" />
                                 <span>Active Application Exists</span>
@@ -803,7 +803,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                               <button
                                 type="button"
                                 disabled
-                                className="flex-1 py-2.5 bg-slate-900/80 border border-slate-800 text-amber-400/90 text-[11px] font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5"
+                                className={`flex-1 py-2.5 border text-[11px] font-bold rounded-xl cursor-not-allowed flex items-center justify-center gap-1.5 ${darkMode ? 'bg-slate-900/80 border-slate-800 text-amber-400/90' : 'bg-amber-50 border-amber-200 text-amber-700'}`}
                               >
                                 <Clock className="w-3.5 h-3.5 text-amber-400" />
                                 <span>Waiting for Registration (Opens: {batchInfo.opensDateStr})</span>
@@ -855,8 +855,8 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
               <div className="w-14 h-14 rounded-2xl bg-amber-950/80 border border-amber-500/40 text-amber-400 flex items-center justify-center mx-auto shadow-lg">
                 <AlertCircle className="w-7 h-7" />
               </div>
-              <h3 className="text-xl font-black text-white">Active Application Already Exists</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <h3 className={`text-xl font-black ${darkMode ? 'text-white' : 'text-slate-900'}`}>Active Application Already Exists</h3>
+              <p className={`text-xs leading-relaxed ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                 You have an active training application for <strong className="text-blue-400">{activeApp.course_title || activeApp.assistance_type}</strong> (Ref: <span className="font-mono text-blue-400 font-bold">{activeApp.reference_no}</span>) with current status <strong className="text-amber-400">{activeApp.status}</strong>.
               </p>
               <p className="text-xs text-slate-400">
@@ -875,7 +875,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
           ) : (
             <div>
           {/* Header Title Bar */}
-          <div className="p-6 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-800">
+          <div className={`p-6 pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
             <div>
               <h2 className={`text-xl font-black tracking-tight ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                 Apply for Training Program
@@ -897,7 +897,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
           <div className={`p-6 border-b ${darkMode ? 'bg-[#0c162b] border-slate-800' : 'bg-slate-100/70 border-slate-200'}`}>
             {/* Step circles & progress line */}
             <div className="max-w-3xl mx-auto mb-6 relative">
-              <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-700 -z-0">
+              <div className={`absolute top-4 left-6 right-6 h-0.5 -z-0 ${darkMode ? 'bg-slate-700' : 'bg-slate-200'}`}>
                 <div 
                   className="h-full bg-blue-500 transition-all duration-300"
                   style={{ width: `${((applyStep - 1) / 3) * 100}%` }}
@@ -927,7 +927,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                         isActive
                           ? 'bg-blue-600 text-white'
                           : isPassed
-                          ? 'bg-blue-900 text-blue-300 border border-blue-500/60'
+                          ? (darkMode ? 'bg-blue-900 text-blue-300 border border-blue-500/60' : 'bg-blue-100 text-blue-600 border border-blue-300')
                           : darkMode ? 'bg-slate-800 text-slate-400 border border-slate-700' : 'bg-slate-200 text-slate-600 border border-slate-300'
                       }`}
                     >
@@ -984,9 +984,9 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
             {applyStep === 1 && (
               <div className="space-y-6 max-w-3xl mx-auto">
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800">
+                  <div className={`flex items-center gap-2 pb-2 border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                     <BookOpen className="w-5 h-5 text-blue-400" />
-                    <h3 className="text-sm font-black tracking-wider uppercase text-white">
+                    <h3 className={`text-sm font-black tracking-wider uppercase ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                       STEP 1 — SELECTED COURSE & PRE-REQUISITE CHECKLIST
                     </h3>
                   </div>
@@ -997,39 +997,39 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                     <div className="flex justify-between items-start">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">Selected Training Course</span>
-                        <h4 className="text-base font-extrabold text-white">{selectedCourseTitle}</h4>
+                        <h4 className={`text-base font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedCourseTitle}</h4>
                       </div>
                       <button
                         type="button"
                         onClick={() => setActiveTab(1)}
-                        className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-lg border border-slate-700 transition-all cursor-pointer"
+                        className={`px-3 py-1 text-xs font-bold rounded-lg border transition-all cursor-pointer ${darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-sm'}`}
                       >
                         Change Course
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2 border-t border-slate-800/80">
+                    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-2 border-t ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                       <div>
                         <span className="text-slate-400 font-bold">Training Duration:</span>
-                        <span className="text-white ml-2">18 - 30 working days</span>
+                        <span className={`ml-2 font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>18 - 30 working days</span>
                       </div>
                       <div>
                         <span className="text-slate-400 font-bold">Batch:</span>
-                        <span className="text-white ml-2">3rd Batch 2026</span>
+                        <span className={`ml-2 font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>3rd Batch 2026</span>
                       </div>
                       <div>
                         <span className="text-slate-400 font-bold">Application Period:</span>
-                        <span className="text-white ml-2">July 1 - July 15, 2026</span>
+                        <span className={`ml-2 font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>July 1 - July 15, 2026</span>
                       </div>
                       <div>
                         <span className="text-slate-400 font-bold">Target Starts:</span>
-                        <span className="text-white ml-2">August 1, 2026</span>
+                        <span className={`ml-2 font-semibold ${darkMode ? 'text-white' : 'text-slate-900'}`}>August 1, 2026</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-3 pt-2">
-                    <h4 className="text-xs font-extrabold uppercase text-slate-300">QUALIFICATION & ENTRY REQUIREMENTS</h4>
+                    <h4 className={`text-xs font-extrabold uppercase ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>QUALIFICATION & ENTRY REQUIREMENTS</h4>
                     <div className="space-y-2 text-xs">
                       {[
                         'Quezon City Resident (with QC ID or Barangay Certificate of Residency)',
@@ -1048,7 +1048,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                   </div>
                 </div>
 
-                <div className="flex justify-end items-center pt-6 border-t border-slate-800">
+                <div className={`flex justify-end items-center pt-6 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                   <button
                     type="button"
                     onClick={() => {
@@ -1075,7 +1075,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
               <div className="space-y-6 pt-2">
                 {/* SECTION 1: APPLICANT INFORMATION (DISABLED / READ-ONLY) */}
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center pb-2.5 border-b border-slate-800/80">
+                  <div className={`flex justify-between items-center pb-2.5 border-b ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                     <div className="flex items-center gap-2">
                       <UserCheck className="w-4 h-4 text-blue-400" />
                       <h3 className={`text-xs font-black tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -1347,7 +1347,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                 </div>
 
                 {/* Bottom Nav Action Bar */}
-                <div className="flex justify-between items-center pt-4 border-t border-slate-800">
+                <div className={`flex justify-between items-center pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                   <button
                     type="button"
                     onClick={() => setApplyStep(1)}
@@ -1374,7 +1374,9 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                     className={`px-6 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
                       isStep2Complete
                         ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer shadow-md'
-                        : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                      : darkMode
+                      ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                      : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                     }`}
                   >
                     <span>Next</span>
@@ -1390,7 +1392,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
             {applyStep === 3 && (
               <div className="space-y-6 pt-2">
                 {/* Header Title Row */}
-                <div className="pb-3 border-b border-slate-800">
+                <div className={`pb-3 border-b ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                   <div className="flex items-center gap-2">
                     <FileCheck className="w-4 h-4 text-blue-400" />
                     <h3 className={`text-xs font-black tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>
@@ -1542,7 +1544,7 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                 </div>
 
                 {/* Bottom Nav Action Bar */}
-                <div className="flex justify-between items-center pt-4 border-t border-slate-800">
+                <div className={`flex justify-between items-center pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                   <button
                     type="button"
                     onClick={() => setApplyStep(2)}
@@ -1569,7 +1571,9 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                     className={`px-6 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
                       isStep3Complete
                         ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer shadow-md'
-                        : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                      : darkMode
+                      ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                      : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                     }`}
                   >
                     <span>Next</span>
@@ -1589,10 +1593,10 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                 <div className={`p-6 rounded-2xl border space-y-4 ${
                   darkMode ? 'bg-[#0b1426] border-slate-800' : 'bg-white border-slate-200'
                 }`}>
-                  <div className="flex justify-between items-center pb-3 border-b border-slate-800/80">
+                  <div className={`flex justify-between items-center pb-3 border-b ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                     <div className="flex items-center gap-2">
                       <ChevronUp className="w-4 h-4 text-slate-400" />
-                      <h3 className="text-sm font-extrabold text-white">Selected Course Details</h3>
+                      <h3 className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>Selected Course Details</h3>
                     </div>
                     <button
                       type="button"
@@ -1614,19 +1618,19 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-6 text-xs">
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 block uppercase">COURSE TITLE</span>
-                        <span className="text-white font-extrabold text-sm">{selectedCourseTitle}</span>
+                        <span className={`font-extrabold text-sm ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedCourseTitle}</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 block uppercase">TRAINING BATCH</span>
-                        <span className="text-white font-extrabold">3rd Batch 2026</span>
+                        <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>3rd Batch 2026</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 block uppercase">APPLICATION PERIOD</span>
-                        <span className="text-white font-extrabold">July 1, 2026 - July 15, 2026</span>
+                        <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>July 1, 2026 - July 15, 2026</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 block uppercase">TRAINING SCHEDULE</span>
-                        <span className="text-white font-extrabold">August 1 - 18, 2026</span>
+                        <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>August 1 - 18, 2026</span>
                       </div>
                     </div>
                   </div>
@@ -1636,10 +1640,10 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                 <div className={`p-6 rounded-2xl border space-y-6 ${
                   darkMode ? 'bg-[#0b1426] border-slate-800' : 'bg-white border-slate-200'
                 }`}>
-                  <div className="flex justify-between items-center pb-3 border-b border-slate-800/80">
+                  <div className={`flex justify-between items-center pb-3 border-b ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                     <div className="flex items-center gap-2">
                       <ChevronUp className="w-4 h-4 text-slate-400" />
-                      <h3 className="text-sm font-extrabold text-white">Personal Information</h3>
+                      <h3 className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>Personal Information</h3>
                     </div>
                     <button
                       type="button"
@@ -1658,104 +1662,104 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-6 text-xs">
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">FIRST NAME</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">JEFFERSON</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>JEFFERSON</span>
                     </div>
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">MIDDLE NAME</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">FERNANDO</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>FERNANDO</span>
                     </div>
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">LAST NAME</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">LEE</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>LEE</span>
                     </div>
 
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">SUFFIX</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">N/A</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>N/A</span>
                     </div>
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">NATIONALITY</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">FILIPINO</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>FILIPINO</span>
                     </div>
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">DATE OF BIRTH</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">2004-09-27</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>2004-09-27</span>
                     </div>
 
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">AGE</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">22</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>22</span>
                     </div>
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">GENDER</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">Male</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Male</span>
                     </div>
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">CIVIL STATUS</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">Single</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Single</span>
                     </div>
 
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">HOUSE / BUILDING NUMBER</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">176</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>176</span>
                     </div>
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">STREET NAME</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">23</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>23</span>
                     </div>
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">BARANGAY</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">Bagong Silangan</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>Bagong Silangan</span>
                     </div>
 
                     <div>
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">PHONE NUMBER</span>
-                      <span className="text-white font-extrabold text-xs block mt-0.5">0915582122</span>
+                      <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>0915582122</span>
                     </div>
                   </div>
 
                   {/* Section 2: Educational Background */}
-                  <div className="pt-4 border-t border-slate-800/80 space-y-3">
+                  <div className={`pt-4 border-t space-y-3 ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                     <span className="text-xs font-black tracking-wider text-blue-400 uppercase block">
                       EDUCATIONAL BACKGROUND
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 block uppercase">HIGHEST EDUCATIONAL ATTAINMENT</span>
-                        <span className="text-white font-extrabold">{highestEdu || 'N/A'}</span>
+                        <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{highestEdu || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 block uppercase">SCHOOL / INSTITUTION</span>
-                        <span className="text-white font-extrabold">{schoolName || 'N/A'}</span>
+                        <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{schoolName || 'N/A'}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Section 3: Training Purpose */}
-                  <div className="pt-4 border-t border-slate-800/80 space-y-3">
+                  <div className={`pt-4 border-t space-y-3 ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                     <span className="text-xs font-black tracking-wider text-blue-400 uppercase block">
                       TRAINING PURPOSE
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 block uppercase">WHY ARE YOU APPLYING FOR THE TRAINING?</span>
-                        <span className="text-white font-extrabold">{trainingPurpose || 'N/A'}</span>
+                        <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{trainingPurpose || 'N/A'}</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-extrabold text-slate-400 block uppercase">BRIEFLY STATE YOUR REASON FOR APPLYING</span>
-                        <span className="text-white font-extrabold">{purposeReason || 'N/A'}</span>
+                        <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{purposeReason || 'N/A'}</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Section 4: Previous Training / Experience */}
-                  <div className="pt-4 border-t border-slate-800/80 space-y-3">
+                  <div className={`pt-4 border-t space-y-3 ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                     <span className="text-xs font-black tracking-wider text-blue-400 uppercase block">
                       PREVIOUS TRAINING / EXPERIENCE
                     </span>
                     <div className="text-xs">
                       <span className="text-[10px] font-extrabold text-slate-400 block uppercase">HAVE YOU ATTENDED A SIMILAR SKILLS TRAINING BEFORE?</span>
-                      <span className="text-white font-extrabold">{previousTraining || 'N/A'}</span>
+                      <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{previousTraining || 'N/A'}</span>
                     </div>
                   </div>
                 </div>
@@ -1764,10 +1768,10 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                 <div className={`p-6 rounded-2xl border space-y-5 ${
                   darkMode ? 'bg-[#0b1426] border-slate-800' : 'bg-white border-slate-200'
                 }`}>
-                  <div className="flex justify-between items-center pb-3 border-b border-slate-800/80">
+                  <div className={`flex justify-between items-center pb-3 border-b ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
                     <div className="flex items-center gap-2">
                       <ChevronUp className="w-4 h-4 text-slate-400" />
-                      <h3 className="text-sm font-extrabold text-white">Required documents</h3>
+                      <h3 className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>Required documents</h3>
                     </div>
                     <button
                       type="button"
@@ -1789,14 +1793,14 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                       { title: 'INDIGENCY OF BARANGAY (OPTIONAL)', doc: docPhotoId }
                     ].map((item, idx) => (
                       <div key={idx} className="space-y-1">
-                        <span className="text-xs font-black uppercase tracking-wider text-slate-200 block">{item.title}</span>
+                        <span className={`text-xs font-black uppercase tracking-wider block ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{item.title}</span>
                         {item.doc ? (
                           <div className="pt-1">
-                            <div className="relative w-36 border border-slate-700/80 rounded-2xl p-2.5 bg-[#0e1933] flex flex-col items-center shadow-lg">
-                              <div className="w-20 h-20 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shrink-0">
+                            <div className={`relative w-36 border rounded-2xl p-2.5 flex flex-col items-center shadow-lg ${darkMode ? 'border-slate-700/80 bg-[#0e1933]' : 'border-slate-200 bg-white'}`}>
+                              <div className={`w-20 h-20 rounded-xl overflow-hidden border shrink-0 ${darkMode ? 'border-slate-700 bg-slate-950' : 'border-slate-200 bg-slate-100'}`}>
                                 <img src={item.doc.url || 'https://images.unsplash.com/photo-1584433144859-1fc3ab64a957?w=500&auto=format&fit=crop&q=80'} alt={item.doc.name} className="w-full h-full object-cover" />
                               </div>
-                              <span className="text-[10px] font-bold text-slate-200 mt-2 truncate max-w-full text-center px-1">{item.doc.name}</span>
+                              <span className={`text-[10px] font-bold mt-2 truncate max-w-full text-center px-1 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{item.doc.name}</span>
                             </div>
                           </div>
                         ) : (
@@ -1808,11 +1812,11 @@ export const TrainingProgramView: React.FC<TrainingProgramViewProps> = ({
                 </div>
 
                 {/* BOTTOM ACTION BAR */}
-                <div className="flex justify-between items-center pt-6 border-t border-slate-800">
+                <div className={`flex justify-between items-center pt-6 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                   <button
                     type="button"
                     onClick={() => setApplyStep(3)}
-                    className="px-8 py-2.5 rounded-full border border-slate-700 bg-slate-900/60 text-slate-300 hover:bg-slate-800 text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer"
+                    className={`px-8 py-2.5 rounded-full border text-xs font-extrabold uppercase tracking-wider transition-all cursor-pointer ${darkMode ? 'border-slate-700 bg-slate-900/60 text-slate-300 hover:bg-slate-800' : 'border-slate-300 bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
                   >
                     BACK
                   </button>

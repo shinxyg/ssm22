@@ -649,8 +649,8 @@ export const FuneralAssistanceView: React.FC<FuneralAssistanceViewProps> = ({
                   <h2 className={`text-base sm:text-lg font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                     {isTagalog ? 'Mga Kailangan sa Aplikasyon ng QC Funeral Assistance' : 'Requirements for Application of QC Funeral Assistance'}
                   </h2>
-                  <span className="px-2.5 py-0.5 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 text-[11px] font-mono rounded-full font-semibold">
-                    newApplication
+                  <span className={`px-2.5 py-0.5 border text-[11px] font-mono rounded-full font-semibold ${darkMode ? 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40' : 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
+                    New Application
                   </span>
                 </div>
                 <p className={`text-xs mt-0.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -674,7 +674,7 @@ export const FuneralAssistanceView: React.FC<FuneralAssistanceViewProps> = ({
         <div className={`p-6 border-b ${darkMode ? 'bg-[#0c162b] border-slate-800' : 'bg-slate-100/70 border-slate-200'}`}>
           {/* Step circles & progress line */}
           <div className="max-w-3xl mx-auto mb-6 relative">
-            <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-700 -z-0">
+            <div className={`absolute top-4 left-6 right-6 h-0.5 -z-0 ${darkMode ? 'bg-slate-700' : 'bg-slate-200'}`}>
               <div 
                 className="h-full bg-blue-500 transition-all duration-300"
                 style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
@@ -698,7 +698,7 @@ export const FuneralAssistanceView: React.FC<FuneralAssistanceViewProps> = ({
                       isActive
                         ? 'bg-blue-600 text-white'
                         : isPassed
-                        ? 'bg-blue-900 text-blue-300 border border-blue-500/60'
+                        ? (darkMode ? 'bg-blue-900 text-blue-300 border border-blue-500/60' : 'bg-blue-100 text-blue-600 border border-blue-300')
                         : darkMode ? 'bg-slate-800 text-slate-400 border border-slate-700' : 'bg-slate-200 text-slate-600 border border-slate-300'
                     }`}
                   >

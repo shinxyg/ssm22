@@ -475,7 +475,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
             <div className={`p-6 border-b ${darkMode ? 'bg-[#0c162b] border-slate-800' : 'bg-slate-100/70 border-slate-200'}`}>
               {/* Step circles & progress line */}
               <div className="max-w-3xl mx-auto mb-6 relative">
-                <div className="absolute top-4 left-6 right-6 h-0.5 bg-slate-700 -z-0">
+                <div className={`absolute top-4 left-6 right-6 h-0.5 -z-0 ${darkMode ? 'bg-slate-700' : 'bg-slate-200'}`}>
                   <div 
                     className="h-full bg-blue-500 transition-all duration-300"
                     style={{ width: `${((currentStep - 1) / 3) * 100}%` }}
@@ -505,7 +505,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                           isActive
                             ? 'bg-blue-600 text-white'
                             : isPassed
-                            ? 'bg-blue-900 text-blue-300 border border-blue-500/60'
+                            ? (darkMode ? 'bg-blue-900 text-blue-300 border border-blue-500/60' : 'bg-blue-100 text-blue-600 border border-blue-300')
                             : darkMode ? 'bg-slate-800 text-slate-400 border border-slate-700' : 'bg-slate-200 text-slate-600 border border-slate-300'
                         }`}
                       >
@@ -702,7 +702,9 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                       className={`px-6 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
                         isStep1Complete
                           ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer shadow-md'
-                          : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                          : darkMode
+                          ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                          : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                       }`}
                     >
                       <span>Next</span>
@@ -1043,7 +1045,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                   </div>
 
                   {/* Step 2 Action Bar */}
-                  <div className="flex justify-between items-center pt-5 border-t border-slate-800">
+                  <div className={`flex justify-between items-center pt-5 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(1)}
@@ -1070,7 +1072,9 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                       className={`px-6 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
                         isStep2Complete
                           ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer shadow-md'
-                          : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                          : darkMode
+                          ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                          : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                       }`}
                     >
                       <span>Next</span>
@@ -1086,7 +1090,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
               {currentStep === 3 && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-base sm:text-lg font-black tracking-tight text-white uppercase">
+                    <h2 className={`text-base sm:text-lg font-black tracking-tight uppercase ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                       Upload Supporting Requirements
                     </h2>
                     <p className="text-xs text-slate-400 mt-1 font-medium">
@@ -1125,14 +1129,14 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                         key={item.key}
                         className={`p-5 rounded-2xl border space-y-3 transition-all ${
                           item.doc
-                            ? 'bg-[#0d1c3a]/70 border-2 border-emerald-500/50'
-                            : 'bg-[#0b1326] border-slate-800/80'
+                            ? (darkMode ? 'bg-[#0d1c3a]/70 border-2 border-emerald-500/50' : 'bg-emerald-50/70 border-2 border-emerald-500/60')
+                            : (darkMode ? 'bg-[#0b1326] border-slate-800/80' : 'bg-slate-50 border-slate-200')
                         }`}
                       >
                         <div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-black tracking-wide uppercase text-white">
+                              <span className={`text-xs font-black tracking-wide uppercase ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                                 {item.title}
                               </span>
                               {item.doc && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
@@ -1143,7 +1147,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                               </span>
                             )}
                           </div>
-                          <p className="text-xs mt-1 text-slate-300 font-medium">{item.desc}</p>
+                          <p className={`text-xs mt-1 font-medium ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>{item.desc}</p>
                           <p className="text-[11px] text-slate-400 mt-0.5">{item.allowed}</p>
                         </div>
 
@@ -1176,7 +1180,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
 
                         {item.doc && item.doc.url && (
                           <div className="pt-2">
-                            <div className="relative w-44 border border-slate-700/80 bg-[#0c162b] rounded-2xl p-2.5 flex flex-col items-center group">
+                            <div className={`relative w-44 border rounded-2xl p-2.5 flex flex-col items-center group ${darkMode ? 'border-slate-700/80 bg-[#0c162b]' : 'border-slate-200 bg-white shadow-sm'}`}>
                               <button
                                 type="button"
                                 onClick={() => item.setDoc(null)}
@@ -1185,14 +1189,14 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                               >
                                 <X className="w-3 h-3" />
                               </button>
-                              <div className="w-full h-24 rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shrink-0 flex items-center justify-center">
+                              <div className={`w-full h-24 rounded-xl overflow-hidden border shrink-0 flex items-center justify-center ${darkMode ? 'border-slate-700/80 bg-slate-950' : 'border-slate-200 bg-slate-100'}`}>
                                 {item.doc.url.startsWith('blob:') || item.doc.url.match(/\.(jpg|jpeg|png|webp)/i) ? (
                                   <img src={item.doc.url} alt={item.doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                                 ) : (
                                   <FileText className="w-8 h-8 text-blue-400" />
                                 )}
                               </div>
-                              <span className="text-xs font-bold text-center truncate max-w-full mt-2 block px-1 text-slate-200 group-hover:text-blue-400">
+                              <span className={`text-xs font-bold text-center truncate max-w-full mt-2 block px-1 group-hover:text-blue-400 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                 {item.doc.name}
                               </span>
                               <span className="text-[10px] font-mono block text-center mt-0.5 text-slate-400">
@@ -1206,7 +1210,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                   </div>
 
                   {/* Step 3 Action Bar */}
-                  <div className="flex justify-between items-center pt-5 border-t border-slate-800">
+                  <div className={`flex justify-between items-center pt-5 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(2)}
@@ -1229,7 +1233,9 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                       className={`px-6 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
                         isStep3Complete
                           ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer shadow-md'
-                          : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                          : darkMode
+                          ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700/60'
+                          : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                       }`}
                     >
                       <span>Next</span>
@@ -1246,11 +1252,11 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                 <div className="space-y-6">
                   <div className="space-y-4 text-xs">
                     {/* 1. STEP 1 SECTOR VERIFICATION CARD */}
-                    <div className="border rounded-2xl overflow-hidden bg-[#0e1933]/60 border-slate-800">
-                      <div className="p-4 flex items-center justify-between border-b bg-[#101c38] border-slate-800/80">
+                    <div className={`border rounded-2xl overflow-hidden ${darkMode ? 'bg-[#0e1933]/60 border-slate-800' : 'bg-slate-50/80 border-slate-200 shadow-sm'}`}>
+                      <div className={`p-4 flex items-center justify-between border-b ${darkMode ? 'bg-[#101c38] border-slate-800/80' : 'bg-slate-100 border-slate-200'}`}>
                         <div className="flex items-center gap-2">
                           <ChevronUp className="w-4 h-4 text-slate-400" />
-                          <h4 className="text-sm font-extrabold text-white uppercase tracking-wide">
+                          <h4 className={`text-sm font-extrabold uppercase tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                             STEP 1 — SECTOR VERIFICATION
                           </h4>
                         </div>
@@ -1268,15 +1274,15 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-6 text-xs">
                           <div>
                             <span className="text-[10px] font-extrabold block uppercase tracking-wider text-slate-400">SECTOR CLASSIFICATION</span>
-                            <span className="font-bold text-white block mt-0.5">{sectorClassification || 'Not specified'}</span>
+                            <span className={`font-bold block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{sectorClassification || 'Not specified'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold block uppercase tracking-wider text-slate-400">EMPLOYMENT STATUS</span>
-                            <span className="font-bold text-white block mt-0.5">{employmentStatus || 'Not specified'}</span>
+                            <span className={`font-bold block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{employmentStatus || 'Not specified'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold block uppercase tracking-wider text-slate-400">EXISTING BUSINESS</span>
-                            <span className="font-bold text-white block mt-0.5">
+                            <span className={`font-bold block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                               {existingBusiness}
                               {existingBusiness === 'Yes' && typeOfBusiness ? ` (${typeOfBusiness === 'Other' && otherBusinessSpecification ? otherBusinessSpecification : typeOfBusiness})` : ''}
                             </span>
@@ -1286,11 +1292,11 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                     </div>
 
                     {/* 2. APPLICANT INFORMATION & ASSISTANCE DETAILS CARD */}
-                    <div className="border rounded-2xl overflow-hidden bg-[#0e1933]/60 border-slate-800">
-                      <div className="p-4 flex items-center justify-between border-b bg-[#101c38] border-slate-800/80">
+                    <div className={`border rounded-2xl overflow-hidden ${darkMode ? 'bg-[#0e1933]/60 border-slate-800' : 'bg-slate-50/80 border-slate-200 shadow-sm'}`}>
+                      <div className={`p-4 flex items-center justify-between border-b ${darkMode ? 'bg-[#101c38] border-slate-800/80' : 'bg-slate-100 border-slate-200'}`}>
                         <div className="flex items-center gap-2">
                           <ChevronUp className="w-4 h-4 text-slate-400" />
-                          <h4 className="text-sm font-extrabold text-white uppercase tracking-wide">
+                          <h4 className={`text-sm font-extrabold uppercase tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                             A. APPLICANT INFORMATION
                           </h4>
                         </div>
@@ -1309,65 +1315,65 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-6 text-xs">
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">FIRST NAME</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{firstName || 'JEFFERSON'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{firstName || 'JEFFERSON'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">MIDDLE NAME</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{middleName || 'FERNANDO'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{middleName || 'FERNANDO'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">LAST NAME</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{lastName || 'LEE'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{lastName || 'LEE'}</span>
                           </div>
 
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">SUFFIX</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{suffix || 'N/A'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{suffix || 'N/A'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">NATIONALITY</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{nationality || 'FILIPINO'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{nationality || 'FILIPINO'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">DATE OF BIRTH</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{dob || '2004-09-27'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{dob || '2004-09-27'}</span>
                           </div>
 
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">AGE</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{age || '22'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{age || '22'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">GENDER</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{gender || 'Male'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{gender || 'Male'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">CIVIL STATUS</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{civilStatus || 'Single'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{civilStatus || 'Single'}</span>
                           </div>
 
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">HOUSE / BUILDING NUMBER</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{houseNo || '176'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{houseNo || '176'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">STREET NAME</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{street || '23'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{street || '23'}</span>
                           </div>
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">BARANGAY</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{barangay || 'Bagong Silangan'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{barangay || 'Bagong Silangan'}</span>
                           </div>
 
                           <div>
                             <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">PHONE NUMBER</span>
-                            <span className="text-white font-extrabold text-xs block mt-0.5">{phone || '0915582122'}</span>
+                            <span className={`font-extrabold text-xs block mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{phone || '0915582122'}</span>
                           </div>
                         </div>
 
                         {/* Assistance Request Details Sub-section (Pic 1) */}
-                        <div className="pt-4 border-t border-slate-800/80 space-y-4 text-xs">
-                          <h5 className="text-xs font-extrabold tracking-wide text-white uppercase">
+                        <div className={`pt-4 border-t space-y-4 text-xs ${darkMode ? 'border-slate-800/80' : 'border-slate-200'}`}>
+                          <h5 className={`text-xs font-extrabold tracking-wide uppercase ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                             Assistance Request Details
                           </h5>
                           <div className="space-y-3">
@@ -1392,7 +1398,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                             {reasonPurpose && (
                               <div>
                                 <span className="text-[10px] font-extrabold block uppercase tracking-wider text-slate-400 mb-1">REASON / PURPOSE OF ASSISTANCE</span>
-                                <p className="text-slate-200 font-medium italic bg-[#0c162b] p-3 rounded-xl border border-slate-800/80">
+                                <p className={`font-medium italic p-3 rounded-xl border ${darkMode ? 'text-slate-200 bg-[#0c162b] border-slate-800/80' : 'text-slate-700 bg-white border-slate-200'}`}>
                                   "{reasonPurpose}"
                                 </p>
                               </div>
@@ -1403,11 +1409,11 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                     </div>
 
                     {/* 3. REQUIRED DOCUMENTS CARD (Pic 1) */}
-                    <div className="border rounded-2xl overflow-hidden bg-[#0e1933]/60 border-slate-800">
-                      <div className="p-4 flex items-center justify-between border-b bg-[#101c38] border-slate-800/80">
+                    <div className={`border rounded-2xl overflow-hidden ${darkMode ? 'bg-[#0e1933]/60 border-slate-800' : 'bg-slate-50/80 border-slate-200 shadow-sm'}`}>
+                      <div className={`p-4 flex items-center justify-between border-b ${darkMode ? 'bg-[#101c38] border-slate-800/80' : 'bg-slate-100 border-slate-200'}`}>
                         <div className="flex items-center gap-2">
                           <ChevronUp className="w-4 h-4 text-slate-400" />
-                          <h4 className="text-sm font-extrabold text-white uppercase tracking-wide">REQUIRED DOCUMENTS</h4>
+                          <h4 className={`text-sm font-extrabold uppercase tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>REQUIRED DOCUMENTS</h4>
                         </div>
                         <button
                           type="button"
@@ -1427,7 +1433,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                         ].map((item) => (
                           <div key={item.key} className="space-y-2">
                             <div className="flex items-center gap-2">
-                              <span className="text-xs font-extrabold uppercase tracking-wide text-white">
+                              <span className={`text-xs font-extrabold uppercase tracking-wide ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                                 {item.title}
                               </span>
                               {item.doc && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
@@ -1435,15 +1441,15 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
 
                             {item.doc && item.doc.url ? (
                               <div className="pt-1">
-                                <div className="w-36 border border-slate-700/90 bg-[#091124] rounded-2xl p-2.5 flex flex-col items-center shadow-lg transition-all group">
-                                  <div className="w-20 h-20 rounded-xl overflow-hidden border border-slate-700 bg-slate-950 shrink-0 flex items-center justify-center">
+                                <div className={`w-36 border rounded-2xl p-2.5 flex flex-col items-center shadow-lg transition-all group ${darkMode ? 'border-slate-700/90 bg-[#091124]' : 'border-slate-200 bg-white'}`}>
+                                  <div className={`w-20 h-20 rounded-xl overflow-hidden border shrink-0 flex items-center justify-center ${darkMode ? 'border-slate-700 bg-slate-950' : 'border-slate-200 bg-slate-100'}`}>
                                     {item.doc.url.startsWith('blob:') || item.doc.url.match(/\.(jpg|jpeg|png|webp)/i) ? (
                                       <img src={item.doc.url} alt={item.doc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                                     ) : (
                                       <FileText className="w-8 h-8 text-blue-400" />
                                     )}
                                   </div>
-                                  <span className="text-[10px] font-bold text-center truncate max-w-full mt-2 block px-1 text-slate-200 group-hover:text-blue-400">
+                                  <span className={`text-[10px] font-bold text-center truncate max-w-full mt-2 block px-1 group-hover:text-blue-400 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                     {item.doc.name}
                                   </span>
                                   <span className="text-[9px] font-mono block text-center mt-0.5 text-slate-400">
@@ -1463,7 +1469,7 @@ export const LivelihoodProgramView: React.FC<LivelihoodProgramViewProps> = ({
                   </div>
 
                   {/* Step 4 Action Bar */}
-                  <div className="flex justify-between items-center pt-5 border-t border-slate-800">
+                  <div className={`flex justify-between items-center pt-5 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(3)}

@@ -590,7 +590,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-slate-800">
+          <div className={`flex justify-end pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
             <button
               type="button"
               disabled={!pwdIdNumber || !swaCategory}
@@ -648,7 +648,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={firstName || 'JEFFERSON'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -659,7 +659,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={middleName || 'FERNANDO'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -670,7 +670,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={lastName || 'LEE'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -682,7 +682,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   disabled
                   placeholder={isTagalog ? 'Sufiks (Jr., Sr., III, atbp.)' : 'Suffix (Jr., Sr., III, etc.)'}
                   value={suffix}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -693,7 +693,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={nationality || 'FILIPINO'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -704,7 +704,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value="27/09/2004"
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -715,7 +715,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={age || '22'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -724,7 +724,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                 <select
                   disabled
                   value={gender || 'Male'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 >
                   <option value="Male">{isTagalog ? 'Lalaki' : 'Male'}</option>
                   <option value="Female">{isTagalog ? 'Babae' : 'Female'}</option>
@@ -736,7 +736,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                 <select
                   disabled
                   value={civilStatus || 'Single'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 >
                   <option value="Single">{isTagalog ? 'Walang asawa (Single)' : 'Single'}</option>
                   <option value="Married">{isTagalog ? 'May asawa (Married)' : 'Married'}</option>
@@ -752,7 +752,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={houseNo || '176'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -763,7 +763,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={street || '23'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -774,7 +774,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={barangay || 'Bagong Silangan'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -785,7 +785,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={phone || '09155582122'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 appearance-none`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 appearance-none`}
                 />
               </div>
 
@@ -796,14 +796,14 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
                   readOnly
                   disabled
                   value={pwdIdNumber ? (pwdIdNumber.startsWith('PWD-') ? pwdIdNumber : `PWD-${pwdIdNumber}`) : 'PWD-13-7404-000-0012345'}
-                  className={`${inputClass} cursor-not-allowed select-none border-slate-700/50 opacity-90 font-mono`}
+                  className={`${inputClass} cursor-not-allowed select-none opacity-90 font-mono`}
                 />
               </div>
             </div>
           </div>
 
           {/* 2. OCCUPATION / EMPLOYMENT */}
-          <div className="space-y-4 pt-4 border-t border-slate-700/40">
+          <div className={`space-y-4 pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
             <div>
               <h3 className={subHeaderClass}>
                 {isTagalog ? '2. TRABAHO / EMPLEYO' : '2. OCCUPATION / EMPLOYMENT'}
@@ -871,7 +871,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
           </div>
 
           {/* 3. EDUCATIONAL BACKGROUND */}
-          <div className="space-y-4 pt-4 border-t border-slate-700/40">
+          <div className={`space-y-4 pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
             <div>
               <h3 className={subHeaderClass}>
                 {isTagalog ? '3. PINAG-ARALAN' : '3. EDUCATIONAL BACKGROUND'}
@@ -915,7 +915,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
           </div>
 
           {/* 4. FAMILY COMPOSITION */}
-          <div className="space-y-4 pt-4 border-t border-slate-700/40">
+          <div className={`space-y-4 pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
             <div className="flex justify-between items-center">
               <div>
                 <h3 className={subHeaderClass}>
@@ -1047,7 +1047,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
           </div>
 
           {/* 5. ESTIMATE MONTHLY EXPENSES */}
-          <div className="space-y-4 pt-4 border-t border-slate-700/40">
+          <div className={`space-y-4 pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
             <div>
               <h3 className={subHeaderClass}>
                 {isTagalog ? '5. TINATAYANG BUWANANG GASTUSIN' : '5. ESTIMATE MONTHLY EXPENSES'}
@@ -1089,7 +1089,7 @@ export const PwdAssistanceView: React.FC<PwdAssistanceViewProps> = ({
           </div>
 
           {/* 6. ADDITIONAL INFORMATION & SWA CATEGORY (AUTO-FILLED FROM STEP 1) */}
-          <div className="space-y-4 pt-4 border-t border-slate-700/40">
+          <div className={`space-y-4 pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
             <div>
               <h3 className={subHeaderClass}>
                 {isTagalog ? '6. KARAGDAGANG IMPORMASYON AT KATEGORYA NG SWA' : '6. ADDITIONAL INFORMATION & SWA CATEGORY'}

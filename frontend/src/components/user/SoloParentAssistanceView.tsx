@@ -720,15 +720,17 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
               </div>
 
               {/* Bottom Next Step Button */}
-              <div className="flex justify-end pt-4 border-t border-slate-800">
+              <div className={`flex justify-end pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                 <button
                   type="button"
                   onClick={() => handleNextStep(2)}
                   disabled={!isStep1Valid}
                   className={`px-8 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 transition-all ${
                     isStep1Valid
-                      ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                      : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                      ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer'
+                      : darkMode
+                      ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                      : 'bg-slate-200 text-slate-400 border border-slate-300 cursor-not-allowed'
                   }`}
                 >
                   <span>{isTagalog ? 'KASUNOD' : 'NEXT'}</span>
@@ -743,7 +745,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
           {currentStep === 2 && (
             <div className="space-y-8">
               
-              <div className="border-b border-slate-800 pb-3">
+              <div className={`border-b pb-3 ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                 <h2 className="text-sm font-extrabold uppercase tracking-wider text-blue-400 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-blue-400" />
                   {isTagalog ? 'Iminumungkahing Online Porma ng Aplikasyon sa Financial Subsidy' : 'Suggested Online Financial Subsidy Application Form'}
@@ -752,7 +754,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
 
               {/* Applicant Information */}
               <div className="space-y-4">
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-2">
+                <h3 className={`text-xs font-extrabold uppercase tracking-wider border-b pb-2 ${darkMode ? 'text-slate-300 border-slate-800' : 'text-slate-800 border-slate-200'}`}>
                   {isTagalog ? 'Impormasyon ng Aplikante' : 'Applicant Information'}
                 </h3>
 
@@ -983,7 +985,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
 
               {/* Solo Parent Information */}
               <div className="space-y-4 pt-2">
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-2">
+                <h3 className={`text-xs font-extrabold uppercase tracking-wider border-b pb-2 ${darkMode ? 'text-slate-300 border-slate-800' : 'text-slate-800 border-slate-200'}`}>
                   Solo Parent Information
                 </h3>
 
@@ -1043,7 +1045,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
 
               {/* Employment & Income Information */}
               <div className="space-y-4 pt-2">
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-2">
+                <h3 className={`text-xs font-extrabold uppercase tracking-wider border-b pb-2 ${darkMode ? 'text-slate-300 border-slate-800' : 'text-slate-800 border-slate-200'}`}>
                   {isTagalog ? 'Impormasyon sa Trabaho at Kita' : 'Employment & Income Information'}
                 </h3>
 
@@ -1109,7 +1111,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
 
               {/* Other Government Assistance */}
               <div className="space-y-4 pt-2">
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-300 border-b border-slate-800 pb-2">
+                <h3 className={`text-xs font-extrabold uppercase tracking-wider border-b pb-2 ${darkMode ? 'text-slate-300 border-slate-800' : 'text-slate-800 border-slate-200'}`}>
                   Other Government Assistance
                 </h3>
 
@@ -1210,11 +1212,11 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
               </div>
 
               {/* Stepper Controls */}
-              <div className="flex justify-between pt-4 border-t border-slate-800">
+              <div className={`flex justify-between pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                 <button
                   type="button"
                   onClick={() => setCurrentStep(1)}
-                  className="px-6 py-2.5 rounded-xl border border-slate-700 text-xs font-bold uppercase text-slate-300 hover:bg-slate-800"
+                  className={`px-6 py-2.5 rounded-xl border text-xs font-bold uppercase transition-all cursor-pointer ${darkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'}`}
                 >
                   BACK
                 </button>
@@ -1224,8 +1226,10 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                   disabled={!isStep2Valid}
                   className={`px-8 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider flex items-center gap-2 transition-all ${
                     isStep2Valid
-                      ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                      : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                      ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer'
+                      : darkMode
+                      ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                      : 'bg-slate-200 text-slate-400 border border-slate-300 cursor-not-allowed'
                   }`}
                 >
                   <span>NEXT</span>
@@ -1363,11 +1367,11 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
               </div>
 
               {/* Stepper Navigation */}
-              <div className="flex justify-between pt-4 border-t border-slate-800">
+              <div className={`flex justify-between pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                 <button
                   type="button"
                   onClick={() => setCurrentStep(2)}
-                  className="px-6 py-2.5 rounded-xl border border-slate-700 text-xs font-bold uppercase text-slate-300 hover:bg-slate-800"
+                  className={`px-6 py-2.5 rounded-xl border text-xs font-bold uppercase transition-all cursor-pointer ${darkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'}`}
                 >
                   {isTagalog ? 'BUMALIK' : 'BACK'}
                 </button>
@@ -1388,7 +1392,7 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
           {currentStep === 4 && (
             <div className="space-y-6">
               
-              <div className="border-b border-slate-800 pb-3">
+              <div className={`border-b pb-3 ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                 <h2 className="text-sm font-extrabold uppercase tracking-wider text-blue-400 flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-blue-400" />
                   {isTagalog ? 'Hakbang 4: Pagsusuri at Pag-submit ng Aplikasyon' : 'Step 4: Review & Submit Application'}
@@ -1621,11 +1625,11 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
               </div>
 
               {/* Action Row */}
-              <div className="flex justify-between pt-4 border-t border-slate-800">
+              <div className={`flex justify-between pt-4 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
                 <button
                   type="button"
                   onClick={() => setCurrentStep(3)}
-                  className="px-6 py-2.5 rounded-xl border border-slate-700 text-xs font-bold uppercase text-slate-300 hover:bg-slate-800"
+                  className={`px-6 py-2.5 rounded-xl border text-xs font-bold uppercase transition-all cursor-pointer ${darkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200'}`}
                 >
                   {isTagalog ? 'BUMALIK' : 'BACK'}
                 </button>
@@ -1635,8 +1639,10 @@ export const SoloParentAssistanceView: React.FC<SoloParentAssistanceViewProps> =
                   disabled={isSubmitting}
                   className={`px-8 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all ${
                     !isSubmitting
-                      ? 'bg-blue-600 hover:bg-blue-500 text-white'
-                      : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                      ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer'
+                      : darkMode
+                      ? 'bg-slate-800 text-slate-500 border border-slate-700 cursor-not-allowed'
+                      : 'bg-slate-200 text-slate-400 border border-slate-300 cursor-not-allowed'
                   }`}
                 >
                   {isSubmitting ? (
