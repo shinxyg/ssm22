@@ -250,10 +250,11 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
           String(session.id),
           `${(session.os_name || '').trim().toLowerCase()}__${(session.browser_name || '').trim().toLowerCase()}`
         ];
+        const seenKey = userRole === 'admin' ? 'govserve_seen_admin_device_tokens' : 'govserve_seen_user_device_tokens';
         setSeenDeviceTokens(prev => {
           const next = prev.filter(k => !removedKeys.includes(k));
           try {
-            localStorage.setItem('govserve_seen_device_tokens', JSON.stringify(next));
+            localStorage.setItem(seenKey, JSON.stringify(next));
             window.dispatchEvent(new Event('govserve_devices_seen'));
           } catch {}
           return next;
@@ -278,9 +279,10 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       if (res.ok) {
         setSessionNotice('Logged out of all other devices successfully.');
         setSessions(prev => prev.filter(s => s.session_token === currentSessionToken));
+        const seenKey = userRole === 'admin' ? 'govserve_seen_admin_device_tokens' : 'govserve_seen_user_device_tokens';
         setSeenDeviceTokens([]);
         try {
-          localStorage.setItem('govserve_seen_device_tokens', JSON.stringify([]));
+          localStorage.setItem(seenKey, JSON.stringify([]));
           window.dispatchEvent(new Event('govserve_devices_seen'));
         } catch {}
         setTimeout(() => setSessionNotice(null), 4000);
@@ -290,14 +292,35 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     }
   };
 
-  // Load user profile from localStorage on mount
+  // Load user profile strictly isolated by userRole ('admin' vs 'user')
   useEffect(() => {
     try {
-      const savedUserStr = localStorage.getItem('currentUser');
-      if (savedUserStr) {
-        const u = JSON.parse(savedUserStr);
+      const roleStorageKey = userRole === 'admin' ? 'currentAdminUser' : 'currentCitizenUser';
+      let u: any = null;
+      const roleSavedStr = localStorage.getItem(roleStorageKey);
+      if (roleSavedStr) {
+        u = JSON.parse(roleSavedStr);
+      } else {
+        const fallbackStr = localStorage.getItem('currentUser');
+        if (fallbackStr) {
+          const parsed = JSON.parse(fallbackStr);
+          const isParsedAdmin = parsed?.role === 'admin' || (parsed?.email || '').toLowerCase() === 'admin@gmail.com';
+          if ((userRole === 'admin' && isParsedAdmin) || (userRole !== 'admin' && !isParsedAdmin)) {
+            u = parsed;
+            localStorage.setItem(roleStorageKey, JSON.stringify(parsed));
+          }
+        }
+      }
+
+      const resolvedEmail = userRole === 'admin'
+        ? 'admin@gmail.com'
+        : (u?.email && u.email.toLowerCase() !== 'admin@gmail.com' ? u.email : 'jeffersonlee1234@gmail.com');
+
+      setEmail(resolvedEmail);
+
+      if (u) {
         if (u.first_name) setFirstName(u.first_name);
-        if (u.middle_name) setMiddleName(u.middle_name);
+        if (u.middle_name !== undefined) setMiddleName(u.middle_name || '');
         if (u.last_name) setLastName(u.last_name);
         if (u.suffix !== undefined) setSuffix(u.suffix || '');
         if (u.dob) {
@@ -328,49 +351,44 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
         if (u.profile_photo || u.profilePhoto) setProfilePhoto(u.profile_photo || u.profilePhoto);
         if (u.profile_photo_updated_at) setProfilePhotoUpdatedAt(u.profile_photo_updated_at);
         if (u.session_token) setCurrentSessionToken(u.session_token);
-        const resolvedEmail = u.email || (userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
-        setEmail(resolvedEmail);
-        fetchSessions(resolvedEmail);
-        fetch(`${API_BASE_URL}/api/user/profile?email=${encodeURIComponent(resolvedEmail)}`)
-          .then(r => r.ok ? r.json() : null)
-          .then(dbUser => {
-            if (dbUser) {
-              if (dbUser.profile_photo) setProfilePhoto(dbUser.profile_photo);
-              if (dbUser.profile_photo_updated_at) setProfilePhotoUpdatedAt(dbUser.profile_photo_updated_at);
-              try {
-                const curr = JSON.parse(localStorage.getItem('currentUser') || '{}');
-                localStorage.setItem('currentUser', JSON.stringify({
-                  ...curr,
-                  ...(dbUser.profile_photo ? { profile_photo: dbUser.profile_photo } : {}),
-                  ...(dbUser.profile_photo_updated_at ? { profile_photo_updated_at: dbUser.profile_photo_updated_at } : {})
-                }));
-                window.dispatchEvent(new Event('govserve_profile_updated'));
-              } catch {}
-            }
-          })
-          .catch(() => {});
-      } else {
-        const defaultEmail = userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com';
-        fetchSessions(defaultEmail);
-        fetch(`${API_BASE_URL}/api/user/profile?email=${encodeURIComponent(defaultEmail)}`)
-          .then(r => r.ok ? r.json() : null)
-          .then(dbUser => {
-            if (dbUser) {
-              if (dbUser.profile_photo) setProfilePhoto(dbUser.profile_photo);
-              if (dbUser.profile_photo_updated_at) setProfilePhotoUpdatedAt(dbUser.profile_photo_updated_at);
-            }
-          })
-          .catch(() => {});
+      } else if (userRole === 'admin') {
+        setFirstName('SYSTEM');
+        setMiddleName('');
+        setLastName('ADMINISTRATOR');
       }
-    } catch (err) {
-      console.warn('Error reading currentUser from localStorage:', err);
-    }
-  }, []);
 
-  // Track seen other-device session tokens in localStorage
+      fetchSessions(resolvedEmail);
+      fetch(`${API_BASE_URL}/api/user/profile?email=${encodeURIComponent(resolvedEmail)}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(dbUser => {
+          if (dbUser) {
+            if (dbUser.profile_photo) setProfilePhoto(dbUser.profile_photo);
+            if (dbUser.profile_photo_updated_at) setProfilePhotoUpdatedAt(dbUser.profile_photo_updated_at);
+            try {
+              const curr = JSON.parse(localStorage.getItem(roleStorageKey) || '{}');
+              const updatedRoleObj = {
+                ...curr,
+                email: resolvedEmail,
+                role: userRole,
+                ...(dbUser.profile_photo ? { profile_photo: dbUser.profile_photo } : {}),
+                ...(dbUser.profile_photo_updated_at ? { profile_photo_updated_at: dbUser.profile_photo_updated_at } : {})
+              };
+              localStorage.setItem(roleStorageKey, JSON.stringify(updatedRoleObj));
+              window.dispatchEvent(new Event('govserve_profile_updated'));
+            } catch {}
+          }
+        })
+        .catch(() => {});
+    } catch (err) {
+      console.warn('Error reading role user from localStorage:', err);
+    }
+  }, [userRole]);
+
+  // Track seen other-device session tokens in localStorage (strictly separated by userRole)
   const [seenDeviceTokens, setSeenDeviceTokens] = useState<string[]>(() => {
     try {
-      const saved = localStorage.getItem('govserve_seen_device_tokens');
+      const seenKey = userRole === 'admin' ? 'govserve_seen_admin_device_tokens' : 'govserve_seen_user_device_tokens';
+      const saved = localStorage.getItem(seenKey);
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -410,9 +428,10 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       ]);
       const merged = Array.from(new Set([...seenDeviceTokens, ...currentOtherKeys]));
       if (merged.length !== seenDeviceTokens.length) {
+        const seenKey = userRole === 'admin' ? 'govserve_seen_admin_device_tokens' : 'govserve_seen_user_device_tokens';
         setSeenDeviceTokens(merged);
         try {
-          localStorage.setItem('govserve_seen_device_tokens', JSON.stringify(merged));
+          localStorage.setItem(seenKey, JSON.stringify(merged));
           window.dispatchEvent(new Event('govserve_devices_seen'));
         } catch {}
       }
@@ -559,9 +578,11 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
           setProfilePhotoUpdatedAt(nowIso);
 
           try {
-            const savedStr = localStorage.getItem('currentUser');
-            const parsed = savedStr ? JSON.parse(savedStr) : { email: targetEmail, first_name: firstName, middle_name: middleName, last_name: lastName };
+            const roleStorageKey = userRole === 'admin' ? 'currentAdminUser' : 'currentCitizenUser';
+            const savedStr = localStorage.getItem(roleStorageKey);
+            const parsed = savedStr ? JSON.parse(savedStr) : { email: targetEmail, role: userRole, first_name: firstName, middle_name: middleName, last_name: lastName };
             const updatedUser = { ...parsed, profile_photo: compressedDataUrl, profile_photo_updated_at: nowIso };
+            localStorage.setItem(roleStorageKey, JSON.stringify(updatedUser));
             localStorage.setItem('currentUser', JSON.stringify(updatedUser));
             window.dispatchEvent(new Event('storage'));
             window.dispatchEvent(new Event('govserve_profile_updated'));

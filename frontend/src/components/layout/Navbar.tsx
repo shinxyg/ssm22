@@ -120,25 +120,34 @@ export const Navbar: React.FC<NavbarProps> = ({
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
-  // Dynamically resolve citizen name & initials from localStorage or props
-  const [currentUserData, setCurrentUserData] = useState<any>(() => {
+  const readRoleMatchedUser = () => {
     try {
-      const saved = localStorage.getItem('currentUser');
-      return saved ? JSON.parse(saved) : null;
+      const roleKey = userRole === 'admin' ? 'currentAdminUser' : 'currentCitizenUser';
+      const roleSaved = localStorage.getItem(roleKey);
+      if (roleSaved) return JSON.parse(roleSaved);
+
+      const fallbackSaved = localStorage.getItem('currentUser');
+      if (fallbackSaved) {
+        const parsed = JSON.parse(fallbackSaved);
+        const isParsedAdmin = parsed?.role === 'admin' || (parsed?.email || '').toLowerCase() === 'admin@gmail.com';
+        if ((userRole === 'admin' && isParsedAdmin) || (userRole !== 'admin' && !isParsedAdmin)) {
+          return parsed;
+        }
+      }
+      return null;
     } catch {
       return null;
     }
-  });
+  };
+
+  // Dynamically resolve citizen/admin user data strictly by role
+  const [currentUserData, setCurrentUserData] = useState<any>(() => readRoleMatchedUser());
 
   useEffect(() => {
     const updateUser = () => {
-      try {
-        const saved = localStorage.getItem('currentUser');
-        setCurrentUserData(saved ? JSON.parse(saved) : null);
-      } catch {
-        setCurrentUserData(null);
-      }
+      setCurrentUserData(readRoleMatchedUser());
     };
+    updateUser();
     window.addEventListener('storage', updateUser);
     window.addEventListener('focus', updateUser);
     window.addEventListener('govserve_profile_updated', updateUser);
@@ -147,18 +156,19 @@ export const Navbar: React.FC<NavbarProps> = ({
       window.removeEventListener('focus', updateUser);
       window.removeEventListener('govserve_profile_updated', updateUser);
     };
-  }, []);
+  }, [userRole]);
 
-  // Track unseen other device logins & count for Profile Red Number Badge
+  // Track unseen other device logins & count for Profile Red Number Badge (strictly separated by userRole)
   const [hasUnseenOtherDevices, setHasUnseenOtherDevices] = useState<boolean>(false);
   const [otherDevicesCount, setOtherDevicesCount] = useState<number>(0);
 
   useEffect(() => {
     const checkOtherDevices = async () => {
       try {
-        const saved = localStorage.getItem('currentUser');
-        const parsed = saved ? JSON.parse(saved) : null;
-        const targetEmail = parsed?.email || (userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
+        const parsed = readRoleMatchedUser();
+        const targetEmail = userRole === 'admin'
+          ? 'admin@gmail.com'
+          : (parsed?.email && parsed.email.toLowerCase() !== 'admin@gmail.com' ? parsed.email : 'jeffersonlee1234@gmail.com');
         const currentToken = parsed?.session_token || '';
 
         const res = await fetch(`${API_BASE_URL}/api/user/sessions?email=${encodeURIComponent(targetEmail)}`);
@@ -175,7 +185,8 @@ export const Navbar: React.FC<NavbarProps> = ({
         }
 
         const otherSessions = sessionsList.filter((s: any) => s.session_token !== activeCurrent.session_token && s.id !== activeCurrent.id);
-        const seenRaw = localStorage.getItem('govserve_seen_device_tokens');
+        const seenStorageKey = userRole === 'admin' ? 'govserve_seen_admin_device_tokens' : 'govserve_seen_user_device_tokens';
+        const seenRaw = localStorage.getItem(seenStorageKey);
         const seenTokens: string[] = seenRaw ? JSON.parse(seenRaw) : [];
 
         const unseenSessions = otherSessions.filter((s: any) => {
@@ -676,21 +687,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={async () => {
                   setShowProfileMenu(false);
                   try {
-                    const savedUser = localStorage.getItem('currentUser');
-                    if (savedUser) {
-                      const parsed = JSON.parse(savedUser);
-                      if (parsed?.email) {
-                        await fetch(`${API_BASE_URL}/api/logout`, {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ email: parsed.email }),
-                        });
-                      }
-                    }
+                    const parsed = readRoleMatchedUser();
+                    const logoutEmail = userRole === 'admin' ? 'admin@gmail.com' : (parsed?.email || 'jeffersonlee1234@gmail.com');
+                    await fetch(`${API_BASE_URL}/api/logout`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: logoutEmail, session_token: parsed?.session_token }),
+                    });
                   } catch (e) {
                     console.error('Logout error:', e);
                   }
-                  localStorage.removeItem('currentUser');
+                  localStorage.removeItem(userRole === 'admin' ? 'currentAdminUser' : 'currentCitizenUser');
                   if (onNavigateToLogin) onNavigateToLogin();
                 }}
                 className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-red-500 rounded-lg transition-colors cursor-pointer mt-0.5 ${

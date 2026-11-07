@@ -382,10 +382,20 @@ export default function App() {
 
     let token = '';
     try {
-      const savedUserStr = localStorage.getItem('currentUser');
-      if (savedUserStr) {
-        const u = JSON.parse(savedUserStr);
+      const roleKey = userRole === 'admin' ? 'currentAdminUser' : 'currentCitizenUser';
+      const roleStr = localStorage.getItem(roleKey);
+      if (roleStr) {
+        const u = JSON.parse(roleStr);
         token = u.session_token || '';
+      } else {
+        const savedUserStr = localStorage.getItem('currentUser');
+        if (savedUserStr) {
+          const u = JSON.parse(savedUserStr);
+          const isUAdmin = u.role === 'admin' || (u.email || '').toLowerCase() === 'admin@gmail.com';
+          if ((userRole === 'admin' && isUAdmin) || (userRole !== 'admin' && !isUAdmin)) {
+            token = u.session_token || '';
+          }
+        }
       }
     } catch {}
 
@@ -397,7 +407,7 @@ export default function App() {
         if (res.ok) {
           const data = await res.json();
           if (data && data.active === false) {
-            localStorage.removeItem('currentUser');
+            localStorage.removeItem(userRole === 'admin' ? 'currentAdminUser' : 'currentCitizenUser');
             sessionStorage.removeItem('activeTab');
             sessionStorage.removeItem('userRole');
             alert('Your session has been logged out from another device.');

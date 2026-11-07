@@ -590,6 +590,10 @@ export const LoginView: React.FC<LoginViewProps> = ({
         localStorage.removeItem('govserve_session_expired');
         localStorage.setItem('govserve_last_activity', Date.now().toString());
         localStorage.setItem('currentUser', JSON.stringify(data.user));
+        localStorage.setItem(
+          data.user.role === 'admin' ? 'currentAdminUser' : 'currentCitizenUser',
+          JSON.stringify(data.user)
+        );
         setSuccessMessage(isFil ? 'Matagumpay na naka-sign in! Nire-redirect...' : 'Login successful! Redirecting...');
         setTimeout(() => {
           onLoginSuccess(data.user.role === 'admin' ? 'admin' : 'user');

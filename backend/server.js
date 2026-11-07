@@ -3609,13 +3609,41 @@ app.get('/api/user/sessions', async (req, res) => {
 
   try {
     const cleanEmail = email.trim().toLowerCase();
-    const result = await pool.query(
+    let result = await pool.query(
       `SELECT id, user_id, email, session_token, device_type, os_name, browser_name, ip_address, location, signed_in_at, last_active_at, is_active
        FROM user_sessions 
        WHERE LOWER(email) = $1 AND is_active = TRUE
        ORDER BY last_active_at DESC;`,
       [cleanEmail]
     );
+
+    if (result.rows.length === 0) {
+      const userAgent = req.headers['user-agent'] || '';
+      const rawIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '120.28.144.151';
+      const clientIp = (typeof rawIp === 'string' ? rawIp.split(',')[0].trim() : '120.28.144.151').replace('::ffff:', '');
+      const { deviceType, osName, browserName, location } = await parseDeviceInfo(userAgent, clientIp);
+      const sessionToken = `sess_${crypto.randomUUID()}`;
+      await pool.query(`
+        INSERT INTO user_sessions (user_id, email, session_token, device_type, os_name, browser_name, ip_address, location, signed_in_at, last_active_at, is_active)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, TRUE);
+      `, [
+        cleanEmail === 'admin@gmail.com' ? 'USR-ADMIN' : 'USR-USER',
+        cleanEmail,
+        sessionToken,
+        deviceType,
+        osName,
+        browserName,
+        clientIp || '120.28.144.151',
+        location || 'Quezon City, PH'
+      ]);
+      result = await pool.query(
+        `SELECT id, user_id, email, session_token, device_type, os_name, browser_name, ip_address, location, signed_in_at, last_active_at, is_active
+         FROM user_sessions 
+         WHERE LOWER(email) = $1 AND is_active = TRUE
+         ORDER BY last_active_at DESC;`,
+        [cleanEmail]
+      );
+    }
 
     const sessions = (result.rows || []).map(sess => {
       let loc = sess.location || 'Quezon City, PH';
