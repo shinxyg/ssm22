@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLanguage, Language } from '../../context/LanguageContext';
 import { API_BASE_URL } from '../../config/api';
 import { 
@@ -121,6 +122,17 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
   const [photoCooldownError, setPhotoCooldownError] = useState<string | null>(null);
   const [showPhotoCooldownModal, setShowPhotoCooldownModal] = useState<boolean>(false);
   const photoInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  // Prevent background scrolling while modal is open
+  useEffect(() => {
+    if (showPhotoCooldownModal || showQcidModal) {
+      const origOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = origOverflow;
+      };
+    }
+  }, [showPhotoCooldownModal, showQcidModal]);
 
   // Calculate remaining cooldown days (7-day lock after uploading a profile photo)
   const photoCooldownDaysLeft = (() => {
@@ -1462,11 +1474,19 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       </div>
 
       {/* QCID Digital Card Modal */}
-      {showQcidModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className={`relative w-full max-w-md border rounded-2xl p-6 shadow-2xl space-y-4 text-center ${
-            darkMode ? 'bg-[#0e172a] border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
-          }`}>
+      {showQcidModal && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in overscroll-contain"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowQcidModal(false);
+          }}
+        >
+          <div 
+            className={`relative w-full max-w-md border rounded-2xl p-6 shadow-2xl space-y-4 text-center ${
+              darkMode ? 'bg-[#0e172a] border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className={`flex justify-between items-center border-b pb-3 ${
               darkMode ? 'border-slate-700' : 'border-slate-200'
             }`}>
@@ -1507,17 +1527,26 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
               Close QCID Card
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* CHANGE PROFILE PICTURE COOLDOWN MODAL (CENTERED & DARK/LIGHT MODE READY) */}
-      {showPhotoCooldownModal && (
-        <div className="fixed inset-0 z-[99999] bg-[#030712]/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className={`rounded-3xl p-6 sm:p-7 w-full max-w-sm text-center shadow-2xl border animate-in fade-in zoom-in-95 ${
-            darkMode
-              ? 'bg-[#0e172a] text-white border-slate-700/80'
-              : 'bg-white text-slate-900 border-slate-200'
-          }`}>
+      {showPhotoCooldownModal && createPortal(
+        <div 
+          className="fixed inset-0 z-[999999] bg-[#030712]/80 backdrop-blur-sm flex items-center justify-center p-4 overscroll-contain select-none"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowPhotoCooldownModal(false);
+          }}
+        >
+          <div 
+            className={`rounded-3xl p-6 sm:p-7 w-full max-w-sm text-center shadow-2xl border animate-in fade-in zoom-in-95 ${
+              darkMode
+                ? 'bg-[#0e172a] text-white border-slate-700/80'
+                : 'bg-white text-slate-900 border-slate-200'
+            }`}
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className={`text-base sm:text-lg font-extrabold tracking-tight ${
               darkMode ? 'text-white' : 'text-slate-900'
             }`}>
@@ -1540,7 +1569,8 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
