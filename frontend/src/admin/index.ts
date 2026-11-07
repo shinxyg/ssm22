@@ -6,5 +6,6 @@ export { AdminLivelihoodView } from './AdminLivelihoodView';
 export { AdminDisbursementView } from './AdminDisbursementView';
 export { AdminBeneficiaryView } from './AdminBeneficiaryView';
 export { AdminAppointmentView } from './AdminAppointmentView';
+export { AdminDrrmAppointmentView } from './AdminDrrmAppointmentView';
 export { AdminActivityView } from './AdminActivityView';
 export { AdminUserView } from './AdminUserView';

@@ -39,6 +39,7 @@ import {
   AdminDisbursementView, 
   AdminBeneficiaryView, 
   AdminAppointmentView, 
+  AdminDrrmAppointmentView,
   AdminActivityView, 
   AdminUserView, 
   ReportsAnalyticsView 
@@ -142,6 +143,7 @@ const ADMIN_TAB_TO_PATH: Record<string, string> = {
   'disbursement': '/admin/financial-aid',
   'beneficiaries': '/admin/beneficiaries',
   'appointments': '/admin/appointments',
+  'drrm-appointments': '/admin/drrm-appointments',
   'activity': '/admin/activity-log',
   'users': '/admin/users',
   'profile': '/admin/profile/account',
@@ -157,6 +159,7 @@ const PATH_TO_ADMIN_TAB: Record<string, string> = {
   '/admin/financial-aid': 'disbursement',
   '/admin/beneficiaries': 'beneficiaries',
   '/admin/appointments': 'appointments',
+  '/admin/drrm-appointments': 'drrm-appointments',
   '/admin/activity-log': 'activity',
   '/admin/users': 'users',
   '/admin/profile': 'profile',
@@ -1108,6 +1111,7 @@ export default function App() {
       'disbursement': 'Disbursement & Financial Aid Payouts',
       'beneficiaries': 'Beneficiary Master Registry',
       'appointments': 'Citizen Appointments Calendar',
+      'drrm-appointments': 'DRRM Integration Appointments',
       'activity': 'System Security & Activity Log',
       'users': 'User & Access Control Management',
     };
@@ -1219,6 +1223,20 @@ export default function App() {
               >
                 <Calendar className={`w-4 h-4 shrink-0 ${adminTab === 'appointments' ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
                 <span className="truncate">Appointments</span>
+              </button>
+              <button
+                onClick={() => {
+                  setAdminTab('drrm-appointments');
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-3 justify-start rounded-2xl text-[13px] font-semibold transition-all border ${
+                  adminTab === 'drrm-appointments'
+                    ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                    : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                }`}
+              >
+                <Calendar className={`w-4 h-4 shrink-0 ${adminTab === 'drrm-appointments' ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
+                <span className="truncate">DRRM Appointments</span>
               </button>
               <button
                 onClick={() => {
@@ -1368,6 +1386,22 @@ export default function App() {
                 }`} />
                 {sidebarOpen && <span className="truncate">Appointments</span>}
               </button>
+              <button
+                onClick={() => setAdminTab('drrm-appointments')}
+                className={`w-full flex items-center ${
+                  sidebarOpen ? 'gap-3.5 px-4 py-3 justify-start' : 'justify-center p-3'
+                } rounded-2xl text-[13px] font-semibold transition-all duration-150 border group cursor-pointer ${
+                  adminTab === 'drrm-appointments'
+                    ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                    : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                }`}
+                title={sidebarOpen ? undefined : "DRRM Appointments"}
+              >
+                <Calendar className={`w-4 h-4 shrink-0 transition-colors ${
+                  adminTab === 'drrm-appointments' ? 'text-blue-400' : 'text-[#94a3b8] group-hover:text-white'
+                }`} />
+                {sidebarOpen && <span className="truncate">DRRM Appointments</span>}
+              </button>
             </div>
 
             {/* MONITORING Section */}
@@ -1474,6 +1508,8 @@ export default function App() {
                 applications={applications} 
                 onUpdateStatus={handleUpdateStatus}
               />
+            ) : adminTab === 'drrm-appointments' ? (
+              <AdminDrrmAppointmentView darkMode={darkMode} />
             ) : adminTab === 'activity' ? (
               <AdminActivityView darkMode={darkMode} />
             ) : (
