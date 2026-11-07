@@ -149,8 +149,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     };
   }, []);
 
-  // Track unseen other device logins for Profile Red Dot indicator
+  // Track unseen other device logins & count for Profile Red Number Badge
   const [hasUnseenOtherDevices, setHasUnseenOtherDevices] = useState<boolean>(false);
+  const [otherDevicesCount, setOtherDevicesCount] = useState<number>(0);
 
   useEffect(() => {
     const checkOtherDevices = async () => {
@@ -169,6 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         const activeCurrent = sessionsList.find((s: any) => currentToken ? s.session_token === currentToken : false) || sessionsList[0];
         if (!activeCurrent) {
           setHasUnseenOtherDevices(false);
+          setOtherDevicesCount(0);
           return;
         }
 
@@ -176,12 +178,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         const seenRaw = localStorage.getItem('govserve_seen_device_tokens');
         const seenTokens: string[] = seenRaw ? JSON.parse(seenRaw) : [];
 
-        const unseen = otherSessions.some((s: any) => {
+        const unseenSessions = otherSessions.filter((s: any) => {
           const tokenKey = s.session_token || String(s.id);
           const deviceSig = `${(s.os_name || '').trim().toLowerCase()}__${(s.browser_name || '').trim().toLowerCase()}`;
           return !seenTokens.includes(tokenKey) && !seenTokens.includes(deviceSig);
         });
-        setHasUnseenOtherDevices(unseen);
+        setHasUnseenOtherDevices(unseenSessions.length > 0);
+        setOtherDevicesCount(otherSessions.length);
       } catch {
         // Ignore network errors silently
       }
@@ -629,8 +632,15 @@ export const Navbar: React.FC<NavbarProps> = ({
               ) : (
                 displayInitials
               )}
-              {hasUnseenOtherDevices && (
-                <span className={`absolute -top-1 -right-1 z-10 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 animate-pulse ${darkMode ? 'ring-[#070e1b]' : 'ring-white'}`} />
+              {hasUnseenOtherDevices && otherDevicesCount > 0 && (
+                <span
+                  title={`${otherDevicesCount} other device${otherDevicesCount === 1 ? '' : 's'} signed in`}
+                  className={`absolute -top-1.5 -right-1.5 z-10 min-w-[16px] h-4 px-1 bg-rose-500 text-white text-[9px] font-extrabold rounded-full flex items-center justify-center ring-2 leading-none ${
+                    darkMode ? 'ring-[#070e1b]' : 'ring-white shadow-sm'
+                  }`}
+                >
+                  {otherDevicesCount}
+                </span>
               )}
             </div>
           </button>
@@ -654,8 +664,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <User className="w-3.5 h-3.5 text-slate-400" />
                 <span className="flex-1 text-left">{t('nav.profile')}</span>
-                {hasUnseenOtherDevices && (
-                  <span className="w-2 h-2 bg-rose-500 rounded-full shrink-0 animate-pulse" />
+                {hasUnseenOtherDevices && otherDevicesCount > 0 && (
+                  <span className="min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-extrabold rounded-full inline-flex items-center justify-center shrink-0 leading-none">
+                    {otherDevicesCount}
+                  </span>
                 )}
               </button>
 

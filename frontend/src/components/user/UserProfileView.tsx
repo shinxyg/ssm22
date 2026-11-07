@@ -116,8 +116,21 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
 
   const [showQcidModal, setShowQcidModal] = useState<boolean>(false);
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [profilePhotoUpdatedAt, setProfilePhotoUpdatedAt] = useState<string | null>(null);
   const [photoUploadMsg, setPhotoUploadMsg] = useState<string | null>(null);
+  const [photoCooldownError, setPhotoCooldownError] = useState<string | null>(null);
   const photoInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  // Calculate remaining cooldown days (7-day lock after uploading a profile photo)
+  const photoCooldownDaysLeft = (() => {
+    if (!profilePhotoUpdatedAt) return 0;
+    const updatedMs = new Date(profilePhotoUpdatedAt).getTime();
+    if (isNaN(updatedMs)) return 0;
+    const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+    const diffMs = updatedMs + sevenDaysMs - Date.now();
+    if (diffMs <= 0) return 0;
+    return Math.ceil(diffMs / (24 * 60 * 60 * 1000));
+  })();
 
   // Device Management & Sessions State
   interface UserSession {
@@ -313,6 +326,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
         if (u.phone_number || u.mobileNumber) setMobileNumber(u.phone_number || u.mobileNumber);
         if (u.working_in_qc !== undefined) setWorkingInQC(u.working_in_qc);
         if (u.profile_photo || u.profilePhoto) setProfilePhoto(u.profile_photo || u.profilePhoto);
+        if (u.profile_photo_updated_at) setProfilePhotoUpdatedAt(u.profile_photo_updated_at);
         if (u.session_token) setCurrentSessionToken(u.session_token);
         const resolvedEmail = u.email || (userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
         setEmail(resolvedEmail);
@@ -320,11 +334,16 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
         fetch(`${API_BASE_URL}/api/user/profile?email=${encodeURIComponent(resolvedEmail)}`)
           .then(r => r.ok ? r.json() : null)
           .then(dbUser => {
-            if (dbUser && dbUser.profile_photo) {
-              setProfilePhoto(dbUser.profile_photo);
+            if (dbUser) {
+              if (dbUser.profile_photo) setProfilePhoto(dbUser.profile_photo);
+              if (dbUser.profile_photo_updated_at) setProfilePhotoUpdatedAt(dbUser.profile_photo_updated_at);
               try {
                 const curr = JSON.parse(localStorage.getItem('currentUser') || '{}');
-                localStorage.setItem('currentUser', JSON.stringify({ ...curr, profile_photo: dbUser.profile_photo }));
+                localStorage.setItem('currentUser', JSON.stringify({
+                  ...curr,
+                  ...(dbUser.profile_photo ? { profile_photo: dbUser.profile_photo } : {}),
+                  ...(dbUser.profile_photo_updated_at ? { profile_photo_updated_at: dbUser.profile_photo_updated_at } : {})
+                }));
                 window.dispatchEvent(new Event('govserve_profile_updated'));
               } catch {}
             }
@@ -336,8 +355,9 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
         fetch(`${API_BASE_URL}/api/user/profile?email=${encodeURIComponent(defaultEmail)}`)
           .then(r => r.ok ? r.json() : null)
           .then(dbUser => {
-            if (dbUser && dbUser.profile_photo) {
-              setProfilePhoto(dbUser.profile_photo);
+            if (dbUser) {
+              if (dbUser.profile_photo) setProfilePhoto(dbUser.profile_photo);
+              if (dbUser.profile_photo_updated_at) setProfilePhotoUpdatedAt(dbUser.profile_photo_updated_at);
             }
           })
           .catch(() => {});
@@ -486,6 +506,13 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (photoCooldownDaysLeft > 0) {
+      setPhotoCooldownError(`You can change your photo again in ${photoCooldownDaysLeft} day${photoCooldownDaysLeft === 1 ? '' : 's'}.`);
+      setTimeout(() => setPhotoCooldownError(null), 4000);
+      e.target.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (ev) => {
       const rawDataUrl = ev.target?.result as string;
@@ -511,26 +538,37 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
           ctx.drawImage(img, 0, 0, w, h);
         }
         const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-        setProfilePhoto(compressedDataUrl);
-
         const targetEmail = email || (userRole === 'admin' ? 'admin@gmail.com' : 'jeffersonlee1234@gmail.com');
-        try {
-          const savedStr = localStorage.getItem('currentUser');
-          const parsed = savedStr ? JSON.parse(savedStr) : { email: targetEmail, first_name: firstName, middle_name: middleName, last_name: lastName };
-          const updatedUser = { ...parsed, profile_photo: compressedDataUrl };
-          localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-          window.dispatchEvent(new Event('storage'));
-          window.dispatchEvent(new Event('govserve_profile_updated'));
-        } catch {}
 
         try {
-          await fetch(`${API_BASE_URL}/api/user/profile-photo`, {
+          const res = await fetch(`${API_BASE_URL}/api/user/profile-photo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: targetEmail, profilePhoto: compressedDataUrl }),
           });
-          setPhotoUploadMsg('Profile photo updated successfully!');
-          setTimeout(() => setPhotoUploadMsg(null), 3500);
+          const data = await res.json().catch(() => null);
+          if (res.status === 429 && data) {
+            if (data.profilePhotoUpdatedAt) setProfilePhotoUpdatedAt(data.profilePhotoUpdatedAt);
+            setPhotoCooldownError(data.message || 'You can only change your profile photo once every 7 days.');
+            setTimeout(() => setPhotoCooldownError(null), 4500);
+            return;
+          }
+
+          const nowIso = data?.user?.profile_photo_updated_at || new Date().toISOString();
+          setProfilePhoto(compressedDataUrl);
+          setProfilePhotoUpdatedAt(nowIso);
+
+          try {
+            const savedStr = localStorage.getItem('currentUser');
+            const parsed = savedStr ? JSON.parse(savedStr) : { email: targetEmail, first_name: firstName, middle_name: middleName, last_name: lastName };
+            const updatedUser = { ...parsed, profile_photo: compressedDataUrl, profile_photo_updated_at: nowIso };
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('govserve_profile_updated'));
+          } catch {}
+
+          setPhotoUploadMsg('Profile photo updated! Next change allowed in 7 days.');
+          setTimeout(() => setPhotoUploadMsg(null), 4000);
         } catch (err) {
           console.error('Error saving profile photo to backend:', err);
         }
@@ -558,9 +596,18 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
             }`}>
               <div className="flex items-center gap-3.5">
                 <div
-                  onClick={() => photoInputRef.current?.click()}
-                  title="Click to upload profile photo"
-                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-500/50 flex items-center justify-center font-bold text-lg shrink-0 overflow-hidden cursor-pointer ${
+                  onClick={() => {
+                    if (photoCooldownDaysLeft > 0) {
+                      setPhotoCooldownError(`You can change your photo again in ${photoCooldownDaysLeft} day${photoCooldownDaysLeft === 1 ? '' : 's'}.`);
+                      setTimeout(() => setPhotoCooldownError(null), 4000);
+                      return;
+                    }
+                    photoInputRef.current?.click();
+                  }}
+                  title={photoCooldownDaysLeft > 0 ? `Photo change locked for ${photoCooldownDaysLeft} more day(s)` : 'Click to upload profile photo'}
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-500/50 flex items-center justify-center font-bold text-lg shrink-0 overflow-hidden ${
+                    photoCooldownDaysLeft > 0 ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'
+                  } ${
                     darkMode ? 'bg-slate-800 text-slate-300' : 'bg-white text-slate-700'
                   }`}
                 >
@@ -585,6 +632,12 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                         {photoUploadMsg}
                       </span>
                     )}
+                    {photoCooldownError && (
+                      <span className={`text-[11px] font-bold flex items-center gap-1 ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
+                        <Clock className="w-3.5 h-3.5" />
+                        {photoCooldownError}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -597,16 +650,46 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 className="hidden"
               />
 
-              <button
-                type="button"
-                onClick={() => photoInputRef.current?.click()}
-                className={`w-full sm:w-auto justify-center px-3.5 py-2 text-xs font-semibold rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
-                  darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300'
-                }`}
-              >
-                <Camera className="w-4 h-4 text-slate-400" />
-                <span>Upload Photo</span>
-              </button>
+              <div className="flex flex-col sm:items-end gap-1">
+                <button
+                  type="button"
+                  disabled={photoCooldownDaysLeft > 0}
+                  onClick={() => {
+                    if (photoCooldownDaysLeft > 0) return;
+                    photoInputRef.current?.click();
+                  }}
+                  className={`w-full sm:w-auto justify-center px-3.5 py-2 text-xs font-semibold rounded-xl border flex items-center gap-2 transition-all ${
+                    photoCooldownDaysLeft > 0
+                      ? darkMode
+                        ? 'bg-slate-800/50 text-amber-400 border-amber-500/30 cursor-not-allowed'
+                        : 'bg-amber-50 text-amber-700 border-amber-300 cursor-not-allowed'
+                      : darkMode
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 cursor-pointer'
+                      : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 cursor-pointer shadow-sm'
+                  }`}
+                >
+                  {photoCooldownDaysLeft > 0 ? (
+                    <>
+                      <Clock className={`w-4 h-4 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
+                      <span>Change Photo in {photoCooldownDaysLeft} {photoCooldownDaysLeft === 1 ? 'day' : 'days'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Camera className={`w-4 h-4 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
+                      <span>Upload Photo</span>
+                    </>
+                  )}
+                </button>
+                <span className={`text-[10px] font-medium ${
+                  photoCooldownDaysLeft > 0
+                    ? darkMode ? 'text-amber-400/90' : 'text-amber-700'
+                    : darkMode ? 'text-slate-500' : 'text-slate-500'
+                }`}>
+                  {photoCooldownDaysLeft > 0
+                    ? `Locked • ${photoCooldownDaysLeft} day${photoCooldownDaysLeft === 1 ? '' : 's'} left before next change`
+                    : 'Can be changed once every 7 days'}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -631,8 +714,10 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                   }`}
                 >
                   <span>{tab.label}</span>
-                  {tab.id === 'devices' && hasUnseenOtherDevices && (
-                    <span className="w-2 h-2 bg-rose-500 rounded-full shrink-0 animate-pulse" />
+                  {tab.id === 'devices' && hasUnseenOtherDevices && otherDeviceSessions.length > 0 && (
+                    <span className="min-w-[18px] h-[18px] px-1 bg-rose-500 text-white text-[10px] font-extrabold rounded-full inline-flex items-center justify-center shrink-0 leading-none">
+                      {otherDeviceSessions.length}
+                    </span>
                   )}
                 </button>
               );

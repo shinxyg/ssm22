@@ -1816,7 +1816,36 @@ export default function App() {
                     <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                       <div className="text-right">
                         <div className="text-xs font-bold text-amber-500">{app.amountOrType}</div>
-                        <span className="text-[10px] text-emerald-600 font-semibold">{app.status}</span>
+                        {(() => {
+                          const st = (app.status || '').toUpperCase();
+                          const isRejected =
+                            st.includes('REJECT') ||
+                            st.includes('DISAPPROV') ||
+                            st.includes('DISQUALIF') ||
+                            st.includes('UNQUALIF');
+                          const isApprovedOrCompleted =
+                            st.includes('RELEASED') ||
+                            st.includes('COMPLETED') ||
+                            st.includes('APPROVED') ||
+                            st.includes('QUALIFIED') ||
+                            st.includes('ENROLLED');
+                          const statusColorClass = isRejected
+                            ? darkMode
+                              ? 'text-rose-400 font-bold'
+                              : 'text-rose-600 font-bold'
+                            : isApprovedOrCompleted
+                            ? darkMode
+                              ? 'text-emerald-400 font-semibold'
+                              : 'text-emerald-600 font-semibold'
+                            : darkMode
+                            ? 'text-amber-400 font-semibold'
+                            : 'text-amber-600 font-semibold';
+                          return (
+                            <span className={`text-[10px] ${statusColorClass}`}>
+                              {app.status}
+                            </span>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>

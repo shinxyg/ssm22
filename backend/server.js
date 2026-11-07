@@ -3463,7 +3463,7 @@ app.get('/api/user/profile', async (req, res) => {
 
   try {
     const cleanEmail = email.trim().toLowerCase();
-    const result = await pool.query('SELECT id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, profile_photo, COALESCE(is_online, FALSE) as is_online FROM users WHERE LOWER(email) = $1;', [cleanEmail]);
+    const result = await pool.query('SELECT id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, profile_photo, profile_photo_updated_at, COALESCE(is_online, FALSE) as is_online FROM users WHERE LOWER(email) = $1;', [cleanEmail]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User profile not found' });
@@ -3475,7 +3475,7 @@ app.get('/api/user/profile', async (req, res) => {
   }
 });
 
-// POST /api/user/profile-photo - Upload or update user profile photo
+// POST /api/user/profile-photo - Upload or update user profile photo (with 7-day cooldown)
 app.post('/api/user/profile-photo', async (req, res) => {
   const { email, profilePhoto } = req.body;
   if (!email) {
@@ -3484,11 +3484,31 @@ app.post('/api/user/profile-photo', async (req, res) => {
 
   try {
     const cleanEmail = email.trim().toLowerCase();
+    const existingRes = await pool.query(
+      'SELECT profile_photo_updated_at FROM users WHERE LOWER(email) = $1;',
+      [cleanEmail]
+    );
+
+    if (existingRes.rows.length > 0 && existingRes.rows[0].profile_photo_updated_at) {
+      const lastUpdated = new Date(existingRes.rows[0].profile_photo_updated_at).getTime();
+      const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+      const elapsedMs = Date.now() - lastUpdated;
+      if (elapsedMs < sevenDaysMs) {
+        const remainingDays = Math.ceil((sevenDaysMs - elapsedMs) / (24 * 60 * 60 * 1000));
+        return res.status(429).json({
+          success: false,
+          cooldownDays: remainingDays,
+          profilePhotoUpdatedAt: existingRes.rows[0].profile_photo_updated_at,
+          message: `You can only change your profile photo once every 7 days. Please wait ${remainingDays} more day${remainingDays === 1 ? '' : 's'}.`
+        });
+      }
+    }
+
     const result = await pool.query(
       `UPDATE users
-       SET profile_photo = $1, updated_at = CURRENT_TIMESTAMP
+       SET profile_photo = $1, profile_photo_updated_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
        WHERE LOWER(email) = $2
-       RETURNING id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, profile_photo;`,
+       RETURNING id, email, role, first_name, middle_name, last_name, suffix, dob, blood_type, civil_status, sex, occupation, phone_number, house_no, street_name, barangay, city, profile_photo, profile_photo_updated_at;`,
       [profilePhoto || null, cleanEmail]
     );
 

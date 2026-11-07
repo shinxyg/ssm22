@@ -818,6 +818,7 @@ export const initDB = async () => {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS unlock_otp_expires TIMESTAMP;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS last_failed_attempt TIMESTAMP;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo TEXT;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_photo_updated_at TIMESTAMP;
 
       CREATE TABLE IF NOT EXISTS activity_logs (
         id SERIAL PRIMARY KEY,
