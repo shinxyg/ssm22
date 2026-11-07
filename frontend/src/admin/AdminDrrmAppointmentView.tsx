@@ -58,7 +58,7 @@ const INITIAL_DRRM_APPOINTMENTS: DrrmAppointmentRecord[] = [
     reporterRole: 'DRRM Reporter',
     caseType: 'Vehicular Accident',
     moduleService: 'Medical Assistance',
-    appointmentDate: '2026-11-10',
+    appointmentDate: '2026-11-07',
     appointmentTime: '09:30',
     venue: 'SSDD Medical Assistance Desk, QC Hall',
     status: 'Interview Scheduled',
@@ -115,6 +115,67 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
   const [schedulingRecord, setSchedulingRecord] = useState<DrrmAppointmentRecord | null>(null);
   const [assessmentRecord, setAssessmentRecord] = useState<DrrmAppointmentRecord | null>(null);
   const [printingVoucher, setPrintingVoucher] = useState<DrrmAppointmentRecord | null>(null);
+  const [nowTick, setNowTick] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    const clockInterval = setInterval(() => {
+      setNowTick(Date.now());
+    }, 1000);
+    return () => clearInterval(clockInterval);
+  }, []);
+
+  const isScheduleTimeReached = (apptDate?: string, apptTime?: string): boolean => {
+    if (!apptDate) return false;
+    try {
+      let year: number, month: number, day: number;
+
+      if (apptDate.includes('-')) {
+        const parts = apptDate.split('-');
+        year = parseInt(parts[0], 10);
+        month = parseInt(parts[1], 10) - 1;
+        day = parseInt(parts[2], 10);
+      } else {
+        const parsed = new Date(apptDate);
+        if (isNaN(parsed.getTime())) return true;
+        year = parsed.getFullYear();
+        month = parsed.getMonth();
+        day = parsed.getDate();
+      }
+
+      let hours = 0;
+      let minutes = 0;
+
+      if (apptTime) {
+        const timeUpper = apptTime.toUpperCase().trim();
+        const isPM = timeUpper.includes('PM');
+        const isAM = timeUpper.includes('AM');
+        const cleanTime = timeUpper.replace('AM', '').replace('PM', '').trim();
+        const timeParts = cleanTime.split(':');
+
+        if (timeParts.length >= 1) {
+          hours = parseInt(timeParts[0], 10);
+          if (isNaN(hours)) hours = 0;
+        }
+        if (timeParts.length >= 2) {
+          minutes = parseInt(timeParts[1], 10);
+          if (isNaN(minutes)) minutes = 0;
+        }
+
+        if (isPM && hours < 12) {
+          hours += 12;
+        } else if (isAM && hours === 12) {
+          hours = 0;
+        }
+      }
+
+      const targetDate = new Date(year, month, day, hours, minutes, 0, 0);
+      if (isNaN(targetDate.getTime())) return true;
+
+      return nowTick >= targetDate.getTime();
+    } catch {
+      return true;
+    }
+  };
 
   useEffect(() => {
     try {
@@ -738,13 +799,26 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                           Set Schedule
                         </button>
                       ) : rec.status === 'Interview Scheduled' ? (
-                        <button
-                          type="button"
-                          onClick={() => setAssessmentRecord(rec)}
-                          className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
-                        >
-                          Conduct Assessment
-                        </button>
+                        isScheduleTimeReached(rec.appointmentDate, rec.appointmentTime) ? (
+                          <button
+                            type="button"
+                            onClick={() => setAssessmentRecord(rec)}
+                            className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all animate-pulse cursor-pointer"
+                          >
+                            Grant Voucher
+                          </button>
+                        ) : (
+                          <div
+                            className={`w-full text-center text-[11px] font-mono font-semibold py-2 rounded-xl border flex items-center justify-center gap-1.5 ${
+                              darkMode
+                                ? 'text-amber-300/90 bg-amber-950/40 border-amber-800/40'
+                                : 'text-amber-800 bg-amber-100 border-amber-300'
+                            }`}
+                          >
+                            <Clock className="w-3.5 h-3.5 text-amber-500" />
+                            <span>Awaiting Schedule Time</span>
+                          </div>
+                        )
                       ) : rec.status === 'Approved & Voucher Issued' ? (
                         <div className="flex items-center gap-2">
                           <span
@@ -922,13 +996,26 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                                 Set Schedule
                               </button>
                             ) : rec.status === 'Interview Scheduled' ? (
-                              <button
-                                type="button"
-                                onClick={() => setAssessmentRecord(rec)}
-                                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer"
-                              >
-                                Conduct Assessment
-                              </button>
+                              isScheduleTimeReached(rec.appointmentDate, rec.appointmentTime) ? (
+                                <button
+                                  type="button"
+                                  onClick={() => setAssessmentRecord(rec)}
+                                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition-all animate-pulse cursor-pointer"
+                                >
+                                  Grant Voucher
+                                </button>
+                              ) : (
+                                <span
+                                  className={`text-[11px] font-mono font-semibold px-3 py-1.5 rounded-xl border inline-flex items-center gap-1.5 ${
+                                    darkMode
+                                      ? 'text-amber-300/90 bg-amber-950/40 border-amber-800/40'
+                                      : 'text-amber-800 bg-amber-100 border-amber-300'
+                                  }`}
+                                >
+                                  <Clock className="w-3.5 h-3.5 text-amber-500" />
+                                  <span>Awaiting Schedule Time</span>
+                                </span>
+                              )
                             ) : rec.status === 'Approved & Voucher Issued' ? (
                               <div className="inline-flex items-center justify-end gap-2">
                                 <span
@@ -1124,7 +1211,7 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
           document.body
         )}
 
-      {/* ASSESSMENT & DECISION MODAL */}
+      {/* GRANT VOUCHER & DECISION MODAL */}
       {assessmentRecord &&
         createPortal(
           <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
@@ -1135,7 +1222,7 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                     {assessmentRecord.referenceNo}
                   </span>
                   <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
-                    DRRM Medical Referral Assessment &amp; Decision
+                    Grant Medical Assistance Voucher
                   </h3>
                 </div>
                 <button
@@ -1176,10 +1263,10 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
 
                 <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-800/40 text-emerald-300 space-y-1">
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">
-                    DRRM REFERRAL &amp; MEDICAL VOUCHER VERIFICATION
+                    VOUCHER GRANT REMARKS / NOTES
                   </span>
                   <p className="text-[11px]">
-                    Social Worker verified the DRRM incident report, medical abstract, and valid identification. Choose the final assessment decision below to issue the Official Medical Assistance Voucher:
+                    Social Worker verified the DRRM incident report, medical abstract, and valid identification. Confirm below to grant and issue the Official Medical Assistance Voucher:
                   </p>
                 </div>
               </div>
@@ -1208,7 +1295,7 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                     }
                     className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-colors cursor-pointer"
                   >
-                    Approve &amp; Issue Voucher
+                    ✓ Grant &amp; Issue Voucher
                   </button>
                 </div>
               </div>
