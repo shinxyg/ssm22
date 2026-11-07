@@ -695,9 +695,13 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
 
         return createPortal(
         <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-[#0e172a] text-slate-100 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-800 my-auto">
+          <div className={`rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border my-auto ${
+            darkMode ? 'bg-[#0e172a] text-slate-100 border-slate-800' : 'bg-white text-slate-900 border-slate-200'
+          }`}>
             {/* Modal Header */}
-            <div className="p-5 bg-[#121e36] border-b border-slate-800 flex justify-between items-center gap-4 shrink-0">
+            <div className={`p-5 border-b flex justify-between items-center gap-4 shrink-0 ${
+              darkMode ? 'bg-[#121e36] border-slate-800' : 'bg-slate-100 border-slate-200'
+            }`}>
               {(() => {
                 const dynName = resolveApplicantDynamicName(selectedApp);
                 const dynInitials = getApplicantInitials(dynName);
@@ -721,7 +725,7 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                     </div>
                     <div className="min-w-0">
                       <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider block">{selectedApp.reference_no}</span>
-                      <h3 className="text-base font-extrabold text-white mt-0.5 truncate">
+                      <h3 className={`text-base font-extrabold mt-0.5 truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                         {isChildWelfare
                           ? 'Child Welfare Protection & Assistance Services'
                           : isSoloParentEdu
@@ -730,8 +734,8 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                           ? 'Educational Assistance for Indigent Children & Youth — ₱5,000 Cash Grant'
                           : 'Solo Parent Subsidy — ₱3,000 Cash Grant'}
                       </h3>
-                      <p className="text-[11px] font-semibold text-slate-300 mt-0.5 truncate">
-                        Applicant: <span className="text-white font-extrabold">{dynName}</span>
+                      <p className={`text-[11px] font-semibold mt-0.5 truncate ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                        Applicant: <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{dynName}</span>
                       </p>
                     </div>
                   </div>
@@ -740,7 +744,9 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
               <button
                 type="button"
                 onClick={() => setSelectedApp(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 shrink-0 cursor-pointer"
+                className={`p-1.5 rounded-lg shrink-0 cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -750,92 +756,96 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
             <div className="p-6 space-y-5 text-xs overflow-y-auto flex-1 custom-modal-scroll">
 
                     {/* SECTION A: APPLICANT / PARENT / GUARDIAN INFORMATION */}
-                    <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-4">
-                      <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                    <div className={`p-4 rounded-xl border space-y-4 ${
+                      darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                    }`}>
+                      <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                        darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                      }`}>
                         <span>APPLICANT / PARENT / GUARDIAN INFORMATION</span>
-                        <span className="text-[9px] font-mono text-slate-400">VERIFIED QCITIZEN PROFILE</span>
+                        <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>VERIFIED QCITIZEN PROFILE</span>
                       </span>
 
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">First Name</span>
-                          <div className="font-bold text-white text-xs mt-0.5">{selectedApp.first_name || 'N/A'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>First Name</span>
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.first_name || 'N/A'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Middle Name</span>
-                          <div className="font-bold text-white text-xs mt-0.5">{selectedApp.middle_name || 'N/A'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Middle Name</span>
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.middle_name || 'N/A'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Last Name</span>
-                          <div className="font-bold text-white text-xs mt-0.5">{selectedApp.last_name || 'N/A'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Last Name</span>
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.last_name || 'N/A'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Suffix</span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.suffix || 'N/A'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Suffix</span>
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.suffix || 'N/A'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Nationality</span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.nationality || 'FILIPINO'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Nationality</span>
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.nationality || 'FILIPINO'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Date of Birth</span>
-                          <div className="font-mono text-slate-200 text-xs mt-0.5">{selectedApp.dob || 'N/A'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date of Birth</span>
+                          <div className={`font-mono text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.dob || 'N/A'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Age</span>
-                          <div className="font-bold text-slate-200 text-xs mt-0.5">{selectedApp.age ? `${selectedApp.age} yrs old` : 'N/A'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Age</span>
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.age ? `${selectedApp.age} yrs old` : 'N/A'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Gender</span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.gender || selectedApp.details?.gender || 'Male'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Gender</span>
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.gender || selectedApp.details?.gender || 'Male'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Civil Status</span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.civil_status || selectedApp.details?.civilStatus || (isSoloParentEdu ? 'Solo Parent' : 'Single')}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Civil Status</span>
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.civil_status || selectedApp.details?.civilStatus || (isSoloParentEdu ? 'Solo Parent' : 'Single')}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">House / Bldg No.</span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.house_no || selectedApp.details?.houseNo || '176'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>House / Bldg No.</span>
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.house_no || selectedApp.details?.houseNo || '176'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Street Name</span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.street_name || selectedApp.details?.streetName || '23'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Street Name</span>
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.street_name || selectedApp.details?.streetName || '23'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Barangay</span>
-                          <div className="font-bold text-slate-200 text-xs mt-0.5">{selectedApp.barangay || selectedApp.details?.barangay || 'Bagong Silangan'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Barangay</span>
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.barangay || selectedApp.details?.barangay || 'Bagong Silangan'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Phone Number</span>
-                          <div className="font-mono font-bold text-slate-200 text-xs mt-0.5">{selectedApp.phone_number || 'N/A'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Phone Number</span>
+                          <div className={`font-mono font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.phone_number || 'N/A'}</div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[10px] font-semibold uppercase">Email Address</span>
-                          <div className="font-bold text-slate-200 text-xs mt-0.5 truncate">{selectedApp.email_address || 'N/A'}</div>
+                          <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Email Address</span>
+                          <div className={`font-bold text-xs mt-0.5 truncate ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.email_address || 'N/A'}</div>
                         </div>
                         {isChildWelfare || isIndigentEdu ? (
                           <>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Relationship to Child</span>
-                              <div className="font-bold text-white text-xs mt-0.5">{selectedApp.relationship_to_child || selectedApp.details?.relationshipToChild || selectedApp.details?.relationToChild || 'Parent / Guardian'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Relationship to Child</span>
+                              <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.relationship_to_child || selectedApp.details?.relationshipToChild || selectedApp.details?.relationToChild || 'Parent / Guardian'}</div>
                             </div>
                             {isIndigentEdu && (
                               <>
                                 <div>
-                                  <span className="text-slate-400 text-[10px] font-semibold uppercase">Target Sector(s)</span>
-                                  <div className="font-bold text-white text-xs mt-0.5">{Array.isArray(selectedApp.details?.selectedSector) ? selectedApp.details.selectedSector.join(', ') : selectedApp.details?.selectedSector || (selectedApp as any).selected_sectors || 'Children & Youth'}</div>
+                                  <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Target Sector(s)</span>
+                                  <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{Array.isArray(selectedApp.details?.selectedSector) ? selectedApp.details.selectedSector.join(', ') : selectedApp.details?.selectedSector || (selectedApp as any).selected_sectors || 'Children & Youth'}</div>
                                 </div>
                                 <div>
-                                  <span className="text-slate-400 text-[10px] font-semibold uppercase">Requested Service(s)</span>
-                                  <div className="font-bold text-white text-xs mt-0.5">{Array.isArray(selectedApp.details?.selectedServices) ? selectedApp.details.selectedServices.join(', ') : selectedApp.details?.selectedServices || (selectedApp as any).selected_services || 'Child Protection'}</div>
+                                  <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Requested Service(s)</span>
+                                  <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{Array.isArray(selectedApp.details?.selectedServices) ? selectedApp.details.selectedServices.join(', ') : selectedApp.details?.selectedServices || (selectedApp as any).selected_services || 'Child Protection'}</div>
                                 </div>
                               </>
                             )}
                           </>
                         ) : (
                           <div>
-                            <span className="text-slate-400 text-[10px] font-semibold uppercase">Existing Solo Parent ID No.</span>
-                            <div className="font-mono font-bold text-white text-xs mt-0.5">{selectedApp.solo_parent_id_no || selectedApp.details?.spicNumber || 'N/A'}</div>
+                            <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Existing Solo Parent ID No.</span>
+                            <div className={`font-mono font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.solo_parent_id_no || selectedApp.details?.spicNumber || 'N/A'}</div>
                           </div>
                         )}
                       </div>
@@ -844,63 +854,73 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                     {/* SECTION B & C: SPECIFIC TO PROGRAM TYPE */}
                     {isChildWelfare ? (
                       <>
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>CHILD INFORMATION</span>
-                            <span className="text-[9px] font-mono text-slate-400">CHILD PROFILE</span>
+                            <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>CHILD PROFILE</span>
                           </span>
                           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Child's Full Name</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.child_full_name || selectedApp.details?.childFullName || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Child's Full Name</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.child_full_name || selectedApp.details?.childFullName || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Date of Birth</span>
-                              <div className="font-mono text-slate-200 mt-0.5">{selectedApp.child_dob || selectedApp.details?.childDob || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date of Birth</span>
+                              <div className={`font-mono mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.child_dob || selectedApp.details?.childDob || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Age</span>
-                              <div className="font-bold text-slate-200 mt-0.5">
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Age</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                 {selectedApp.child_age || selectedApp.details?.childAge ? `${selectedApp.child_age || selectedApp.details?.childAge} yrs old` : 'N/A'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Sex / Gender</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.child_sex || selectedApp.details?.childSex || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sex / Gender</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.child_sex || selectedApp.details?.childSex || 'N/A'}</div>
                             </div>
                             <div className="col-span-2">
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Child's Address</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Child's Address</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                                 {selectedApp.child_address || selectedApp.details?.childAddress || (selectedApp.house_no ? `${selectedApp.house_no} ${selectedApp.street_name}, ${selectedApp.barangay}` : 'N/A')}
                               </div>
                             </div>
                             <div className="col-span-2">
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">School Name (If applicable)</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.school_name || selectedApp.details?.schoolName || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>School Name (If applicable)</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.school_name || selectedApp.details?.schoolName || 'N/A'}</div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>REASON FOR REQUEST & INCIDENT DETAILS</span>
-                            <span className="text-[9px] font-mono text-slate-400 font-bold">CASE DETAILS</span>
+                            <span className={`text-[9px] font-mono font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>CASE DETAILS</span>
                           </span>
                           <div className="space-y-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase block mb-1">Description of Concern / Problem</span>
-                              <div className="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-slate-200 leading-relaxed font-sans">
+                              <span className={`text-[10px] font-semibold uppercase block mb-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Description of Concern / Problem</span>
+                              <div className={`p-3 rounded-lg border leading-relaxed font-sans ${
+                                darkMode ? 'bg-slate-950/60 border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
+                              }`}>
                                 {selectedApp.concern_description || selectedApp.details?.concernDescription || 'N/A'}
                               </div>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                               <div>
-                                <span className="text-slate-400 text-[10px] font-semibold uppercase">Date / Approximate Date of Incident</span>
-                                <div className="font-mono font-bold text-slate-200 mt-0.5">{selectedApp.incident_date || selectedApp.details?.incidentDate || 'N/A'}</div>
+                                <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date / Approximate Date of Incident</span>
+                                <div className={`font-mono font-bold mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.incident_date || selectedApp.details?.incidentDate || 'N/A'}</div>
                               </div>
                               <div>
-                                <span className="text-slate-400 text-[10px] font-semibold uppercase">Location of Incident</span>
-                                <div className="font-semibold text-slate-200 mt-0.5">{selectedApp.incident_location || selectedApp.details?.incidentLocation || 'N/A'}</div>
+                                <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Location of Incident</span>
+                                <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.incident_location || selectedApp.details?.incidentLocation || 'N/A'}</div>
                               </div>
                             </div>
                           </div>
@@ -908,54 +928,62 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                       </>
                     ) : isSoloParentEdu ? (
                       <>
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>STUDENT / DEPENDENT CHILD INFORMATION</span>
-                            <span className="text-[9px] font-mono text-slate-400">STUDENT BENEFICIARY</span>
+                            <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>STUDENT BENEFICIARY</span>
                           </span>
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Student Full Name</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.child_full_name || selectedApp.details?.childFullName || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Student Full Name</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.child_full_name || selectedApp.details?.childFullName || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Date of Birth</span>
-                              <div className="font-mono text-slate-200 mt-0.5">{selectedApp.child_dob || selectedApp.details?.childDob || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date of Birth</span>
+                              <div className={`font-mono mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.child_dob || selectedApp.details?.childDob || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Age</span>
-                              <div className="font-bold text-slate-200 mt-0.5">
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Age</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                 {selectedApp.child_age || selectedApp.details?.childAge ? `${selectedApp.child_age || selectedApp.details?.childAge} yrs old` : 'N/A'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Sex</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.child_sex || selectedApp.details?.childSex || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sex</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.child_sex || selectedApp.details?.childSex || 'N/A'}</div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>SCHOOL & ACADEMIC DETAILS</span>
-                            <span className="text-[9px] font-mono text-slate-400 font-bold">ACADEMIC INFO</span>
+                            <span className={`text-[9px] font-mono font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ACADEMIC INFO</span>
                           </span>
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">School Name</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.school_name || selectedApp.details?.schoolName || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>School Name</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.school_name || selectedApp.details?.schoolName || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Grade / Year Level</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.grade_level || selectedApp.details?.gradeLevel || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Grade / Year Level</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.grade_level || selectedApp.details?.gradeLevel || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Learner Reference No. (LRN)</span>
-                              <div className="font-mono font-bold text-white mt-0.5">{selectedApp.lrn_number || selectedApp.details?.lrnNumber || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Learner Reference No. (LRN)</span>
+                              <div className={`font-mono font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.lrn_number || selectedApp.details?.lrnNumber || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">School Address</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.school_address || selectedApp.details?.schoolAddress || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>School Address</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.school_address || selectedApp.details?.schoolAddress || 'N/A'}</div>
                             </div>
                           </div>
                         </div>
@@ -963,84 +991,92 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                     ) : isIndigentEdu ? (
                       <>
                         {/* INDIGENT CHILDREN & YOUTH EDUCATIONAL ASSISTANCE FORM STRUCTURE */}
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>CHILD / BENEFICIARY INFORMATION</span>
-                            <span className="text-[9px] font-mono text-slate-400">STUDENT BENEFICIARY</span>
+                            <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>STUDENT BENEFICIARY</span>
                           </span>
                           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Full Name</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.child_full_name || selectedApp.details?.childFullName || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Full Name</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.child_full_name || selectedApp.details?.childFullName || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Date of Birth</span>
-                              <div className="font-mono text-slate-200 mt-0.5">{selectedApp.child_dob || selectedApp.details?.childDob || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date of Birth</span>
+                              <div className={`font-mono mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.child_dob || selectedApp.details?.childDob || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Age</span>
-                              <div className="font-bold text-slate-200 mt-0.5">
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Age</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                 {selectedApp.child_age || selectedApp.details?.childAge ? `${selectedApp.child_age || selectedApp.details?.childAge} yrs old` : 'N/A'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Sex</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.child_sex || selectedApp.details?.childSex || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Sex</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.child_sex || selectedApp.details?.childSex || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">School Name</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.school_name || selectedApp.details?.schoolName || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>School Name</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.school_name || selectedApp.details?.schoolName || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Grade Level</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.grade_level || selectedApp.details?.gradeLevel || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Grade Level</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.grade_level || selectedApp.details?.gradeLevel || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Learner Reference No. (LRN)</span>
-                              <div className="font-mono font-bold text-white mt-0.5">{selectedApp.lrn_number || selectedApp.details?.lrnNumber || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Learner Reference No. (LRN)</span>
+                              <div className={`font-mono font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.lrn_number || selectedApp.details?.lrnNumber || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Type of School</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.details?.typeOfSchool || (selectedApp as any).type_of_school || 'Public School'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Type of School</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.typeOfSchool || (selectedApp as any).type_of_school || 'Public School'}</div>
                             </div>
                             <div className="col-span-2">
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Other Enrollment Info</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.details?.otherEnrollmentInfo || (selectedApp as any).other_enrollment_info || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Other Enrollment Info</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.otherEnrollmentInfo || (selectedApp as any).other_enrollment_info || 'N/A'}</div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>FAMILY INFORMATION & FINANCIAL ASSESSMENT</span>
-                            <span className="text-[9px] font-mono text-slate-400 font-bold">ELIGIBILITY ASSESS</span>
+                            <span className={`text-[9px] font-mono font-bold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>ELIGIBILITY ASSESS</span>
                           </span>
                           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Number of Children in Family</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.details?.numChildrenInFamily || (selectedApp as any).num_children_in_family || selectedApp.num_dependents || '1'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Number of Children in Family</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.numChildrenInFamily || (selectedApp as any).num_children_in_family || selectedApp.num_dependents || '1'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Number of Children Currently Studying</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.details?.numChildrenStudying || (selectedApp as any).num_children_studying || '1'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Number of Children Currently Studying</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.numChildrenStudying || (selectedApp as any).num_children_studying || '1'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Monthly Family Income</span>
-                              <div className="font-bold text-white mt-0.5">
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Monthly Family Income</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                                 {selectedApp.monthly_income || selectedApp.details?.monthlyFamilyIncome || (selectedApp as any).monthly_family_income || '₱10,000 – ₱15,000'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">4Ps Beneficiary?</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.details?.is4psBeneficiary || (selectedApp as any).is_4ps_beneficiary || 'No'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>4Ps Beneficiary?</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.is4psBeneficiary || (selectedApp as any).is_4ps_beneficiary || 'No'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Solo Parent Educational Beneficiary?</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.details?.isSoloEducationalBeneficiary || (selectedApp as any).is_solo_educational_beneficiary || 'No'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Solo Parent Educational Beneficiary?</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.isSoloEducationalBeneficiary || (selectedApp as any).is_solo_educational_beneficiary || 'No'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">PWD Educational Beneficiary?</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.details?.isPwdEducationalBeneficiary || (selectedApp as any).is_pwd_educational_beneficiary || 'No'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>PWD Educational Beneficiary?</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.isPwdEducationalBeneficiary || (selectedApp as any).is_pwd_educational_beneficiary || 'No'}</div>
                             </div>
                           </div>
                         </div>
@@ -1048,23 +1084,27 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                     ) : (
                       <>
                         {/* STANDARD SOLO PARENT SUBSIDY SECTIONS */}
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>SOLO PARENT & DEPENDENT INFORMATION</span>
-                            <span className="text-[9px] font-mono text-slate-400">FAMILY STATUS</span>
+                            <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>FAMILY STATUS</span>
                           </span>
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Solo Parent Category / Reason</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.solo_parent_category || selectedApp.details?.soloParentCategory || 'Unmarried parent'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Solo Parent Category / Reason</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.solo_parent_category || selectedApp.details?.soloParentCategory || 'Unmarried parent'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Number of Dependents</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.num_dependents || selectedApp.details?.dependentsCount || '1'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Number of Dependents</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.num_dependents || selectedApp.details?.dependentsCount || '1'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Age of Youngest Dependent</span>
-                              <div className="font-bold text-white mt-0.5">
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Age of Youngest Dependent</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                                 {(() => {
                                   const raw = selectedApp.age_youngest_dependent || selectedApp.details?.youngestAge || '3';
                                   return String(raw).includes('yr') ? raw : `${raw} yrs old`;
@@ -1074,27 +1114,31 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>EMPLOYMENT & INCOME DETAILS</span>
-                            <span className="text-[9px] font-mono text-slate-400">FINANCIAL ASSESSMENT</span>
+                            <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>FINANCIAL ASSESSMENT</span>
                           </span>
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Employment Status</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.employment_status || selectedApp.details?.employmentStatus || 'Unemployed'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Employment Status</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.employment_status || selectedApp.details?.employmentStatus || 'Unemployed'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Occupation</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.occupation || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Occupation</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.occupation || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Employer / Source of Income</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.employer_income_source || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Employer / Source of Income</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.employer_income_source || 'N/A'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Monthly Income (PHP)</span>
-                              <div className="font-bold text-white mt-0.5">
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Monthly Income (PHP)</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                                 {(() => {
                                   const val = selectedApp.monthly_income;
                                   if (!val || val === '0' || val === 'P0' || val === '₱0') return '₱0.00';
@@ -1105,29 +1149,33 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                           </div>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                          <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+                        <div className={`p-4 rounded-xl border space-y-3 ${
+                          darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                        }`}>
+                          <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                            darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                          }`}>
                             <span>OTHER GOVERNMENT ASSISTANCE & PENSION</span>
-                            <span className="text-[9px] font-mono text-slate-400">BENEFIT DECLARATION</span>
+                            <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>BENEFIT DECLARATION</span>
                           </span>
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Receiving Gov Assistance?</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.receiving_gov_assistance || 'No'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Receiving Gov Assistance?</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.receiving_gov_assistance || 'No'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Government Program Name</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Government Program Name</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                                 {selectedApp.gov_program_name ? `${selectedApp.gov_program_name} ${selectedApp.gov_assistance_amount_freq ? `(${selectedApp.gov_assistance_amount_freq})` : ''}` : 'N/A'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Receiving Pension?</span>
-                              <div className="font-bold text-white mt-0.5">{selectedApp.receiving_pension || 'No'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Receiving Pension?</span>
+                              <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.receiving_pension || 'No'}</div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[10px] font-semibold uppercase">Pension Type / Details</span>
-                              <div className="font-semibold text-slate-300 mt-0.5">{selectedApp.pension_type || 'N/A'}</div>
+                              <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Pension Type / Details</span>
+                              <div className={`font-semibold mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.pension_type || 'N/A'}</div>
                             </div>
                           </div>
                         </div>
@@ -1135,8 +1183,12 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                     )}
 
               {/* UPLOADED REQUIREMENTS */}
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+              <div className={`p-4 rounded-xl border space-y-3 ${
+                darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
+                  darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                }`}>
                   <span>UPLOADED REQUIREMENTS (CLICK TO VIEW / INSPECT)</span>
                 </span>
 
@@ -1227,15 +1279,27 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                         <div
                           key={docItem.key}
                           onClick={() => setInspectingDoc({ title: docItem.title, filename: fileName, dataUrl: dataUrl })}
-                          className="p-3.5 rounded-xl bg-[#0b1426] hover:bg-[#111e38] border border-slate-800 hover:border-blue-500/50 transition-all cursor-pointer flex items-center gap-3 group"
+                          className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center gap-3 group ${
+                            darkMode
+                              ? 'bg-[#0b1426] hover:bg-[#111e38] border-slate-800 hover:border-blue-500/50'
+                              : 'bg-white hover:bg-slate-100 border-slate-200 hover:border-blue-400 shadow-sm'
+                          }`}
                         >
-                          <div className="p-2 rounded-lg bg-blue-950/60 border border-blue-800/50 text-blue-400 group-hover:text-blue-300 shrink-0">
+                          <div className={`p-2 rounded-lg border shrink-0 ${
+                            darkMode
+                              ? 'bg-blue-950/60 border-blue-800/50 text-blue-400 group-hover:text-blue-300'
+                              : 'bg-blue-50 border-blue-200 text-blue-600 group-hover:text-blue-700'
+                          }`}>
                             <DocIcon className="w-5 h-5 stroke-[1.7]" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="font-extrabold text-white text-xs tracking-tight">{docItem.title}</div>
-                            <div className="text-[10px] text-slate-400 font-mono mt-0.5 flex items-center gap-1">
-                              <span className="text-emerald-400 font-bold">✓ Uploaded:</span>
+                            <div className={`font-extrabold text-xs tracking-tight ${
+                              darkMode ? 'text-white' : 'text-slate-900'
+                            }`}>{docItem.title}</div>
+                            <div className={`text-[10px] font-mono mt-0.5 flex items-center gap-1 ${
+                              darkMode ? 'text-slate-400' : 'text-slate-500'
+                            }`}>
+                              <span className="text-emerald-500 font-bold">✓ Uploaded:</span>
                               <span className="truncate">{fileName}</span>
                             </div>
                           </div>
@@ -1247,8 +1311,12 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
               </div>
 
               {/* SECTION 7: CURRENT APPLICATION STATUS */}
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-2">
-                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">CURRENT APPLICATION STATUS</span>
+              <div className={`p-4 rounded-xl border space-y-2 ${
+                darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <span className={`text-[10px] font-extrabold uppercase tracking-wider block ${
+                  darkMode ? 'text-slate-400' : 'text-slate-500'
+                }`}>CURRENT APPLICATION STATUS</span>
                 <div>
                   <span className="px-3.5 py-1.5 rounded-full text-xs font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 inline-block">
                     {selectedApp.status.toUpperCase()}
@@ -1259,7 +1327,9 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
             </div>
 
             {/* Modal Bottom Action Bar */}
-            <div className="p-4 bg-[#121e36] border-t border-slate-800 flex justify-end items-center gap-3 shrink-0">
+            <div className={`p-4 border-t flex justify-end items-center gap-3 shrink-0 ${
+              darkMode ? 'bg-[#121e36] border-slate-800' : 'bg-slate-100 border-slate-200'
+            }`}>
               {(() => {
                 const st = (selectedApp.status || '').toUpperCase();
                 const isPendingDoc = st.includes('PENDING') || st.includes('REVIEW') || st === 'SUBMITTED' || st === 'FOR VALIDATION';

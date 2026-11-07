@@ -585,10 +585,14 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
 
         return createPortal(
           <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-            <div className="bg-[#0e172a] border border-slate-700 rounded-2xl max-w-3xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-modal-scroll">
+            <div className={`border rounded-2xl max-w-3xl w-full p-6 space-y-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-modal-scroll ${
+              darkMode ? 'bg-[#0e172a] border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
+            }`}>
               
               {/* Header Bar */}
-              <div className="flex items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div className={`flex items-center justify-between gap-4 border-b pb-4 ${
+                darkMode ? 'border-slate-800' : 'border-slate-200'
+              }`}>
                 {(() => {
                   const dynName = resolveApplicantDynamicName(selectedApp);
                   const dynInitials = getApplicantInitials(dynName);
@@ -632,9 +636,9 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                             );
                           })()}
                         </div>
-                        <h3 className="text-base font-extrabold text-white mt-0.5 truncate">{selectedApp.serviceName}</h3>
-                        <p className="text-[11px] font-semibold text-slate-300 mt-0.5 truncate">
-                          Applicant: <span className="text-white font-extrabold">{dynName}</span>
+                        <h3 className={`text-base font-extrabold mt-0.5 truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.serviceName}</h3>
+                        <p className={`text-[11px] font-semibold mt-0.5 truncate ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                          Applicant: <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{dynName}</span>
                         </p>
                       </div>
                     </div>
@@ -643,7 +647,11 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setSelectedApp(null)}
-                  className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white border border-slate-700 shrink-0 cursor-pointer"
+                  className={`p-2 rounded-xl border shrink-0 cursor-pointer ${
+                    darkMode 
+                      ? 'bg-slate-800 text-slate-400 hover:text-white border-slate-700' 
+                      : 'bg-slate-100 text-slate-500 hover:text-slate-900 border-slate-200'
+                  }`}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -652,50 +660,54 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
               <div className="space-y-6 text-xs">
                 
                 {/* 1. PERSONAL INFORMATION */}
-                <div className="p-4 rounded-xl bg-[#091122] border border-slate-800/90 space-y-3">
-                  <h4 className="font-extrabold text-white uppercase tracking-wider text-xs border-b border-slate-800 pb-2">
+                <div className={`p-4 rounded-xl border space-y-3 ${
+                  darkMode ? 'bg-[#091122] border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <h4 className={`font-extrabold uppercase tracking-wider text-xs border-b pb-2 ${
+                    darkMode ? 'text-white border-slate-800' : 'text-slate-900 border-slate-200'
+                  }`}>
                     Personal Information (Verified Citizen Profile)
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-3 gap-x-4">
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">First Name</span>
-                      <span className="font-bold text-white">{pInfo.firstName || det.firstName || raw.first_name || 'N/A'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>First Name</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.firstName || det.firstName || raw.first_name || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Middle Name</span>
-                      <span className="font-bold text-white">{pInfo.middleName || det.middleName || raw.middle_name || 'N/A'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Middle Name</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.middleName || det.middleName || raw.middle_name || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Last Name</span>
-                      <span className="font-bold text-white">{pInfo.lastName || det.lastName || raw.last_name || 'N/A'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Last Name</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.lastName || det.lastName || raw.last_name || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Nationality</span>
-                      <span className="font-bold text-white">{pInfo.nationality || det.nationality || raw.nationality || 'Filipino'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Nationality</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.nationality || det.nationality || raw.nationality || 'Filipino'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Date of Birth</span>
-                      <span className="font-bold text-white">{pInfo.dateOfBirth || pInfo.dob || det.dateOfBirth || det.dob || raw.dob || 'N/A'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date of Birth</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.dateOfBirth || pInfo.dob || det.dateOfBirth || det.dob || raw.dob || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Age</span>
-                      <span className="font-bold text-white">{pInfo.age || det.age || raw.age || 'N/A'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Age</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.age || det.age || raw.age || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Gender</span>
-                      <span className="font-bold text-white">{pInfo.gender || det.gender || raw.gender || 'N/A'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Gender</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.gender || det.gender || raw.gender || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Civil Status</span>
-                      <span className="font-bold text-white">{pInfo.civilStatus || det.civilStatus || raw.civil_status || 'N/A'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Civil Status</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.civilStatus || det.civilStatus || raw.civil_status || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Phone Number</span>
-                      <span className="font-bold text-white">{pInfo.phoneNumber || pInfo.phone || det.phoneNumber || raw.phone_number || 'N/A'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Phone Number</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{pInfo.phoneNumber || pInfo.phone || det.phoneNumber || raw.phone_number || 'N/A'}</span>
                     </div>
                     <div className="col-span-2 sm:col-span-3">
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Address</span>
-                      <span className="font-bold text-white">
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Address</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                         {[
                           pInfo.houseNo || det.houseNo || raw.house_no,
                           pInfo.streetName || det.streetName || det.street || raw.street_name,
@@ -704,37 +716,41 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                       </span>
                     </div>
                     <div className="col-span-2 sm:col-span-3">
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">{isPwdApp ? 'PWD ID Number' : 'Senior Citizen ID No.'}</span>
-                      <span className="font-bold font-mono text-white">{isPwdApp ? pwdIdNo : seniorIdNo}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{isPwdApp ? 'PWD ID Number' : 'Senior Citizen ID No.'}</span>
+                      <span className={`font-bold font-mono ${darkMode ? 'text-white' : 'text-slate-900'}`}>{isPwdApp ? pwdIdNo : seniorIdNo}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* 2. OCCUPATION & FINANCIAL INFORMATION */}
-                <div className="p-4 rounded-xl bg-[#091122] border border-slate-800/90 space-y-3">
-                  <h4 className="font-extrabold text-white uppercase tracking-wider text-xs border-b border-slate-800 pb-2">
+                <div className={`p-4 rounded-xl border space-y-3 ${
+                  darkMode ? 'bg-[#091122] border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <h4 className={`font-extrabold uppercase tracking-wider text-xs border-b pb-2 ${
+                    darkMode ? 'text-white border-slate-800' : 'text-slate-900 border-slate-200'
+                  }`}>
                     Occupation / Financial Information
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4">
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Employment Status</span>
-                      <span className="font-bold text-white">{occInfo.employmentStatus || det.employmentStatus || raw.employment_status || 'Not Specified'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Employment Status</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{occInfo.employmentStatus || det.employmentStatus || raw.employment_status || 'Not Specified'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Current / Previous Occupation</span>
-                      <span className="font-bold text-white">{occInfo.occupation || det.occupation || raw.occupation || 'Not Specified'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Current / Previous Occupation</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{occInfo.occupation || det.occupation || raw.occupation || 'Not Specified'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Source of Income</span>
-                      <span className="font-bold text-white">{occInfo.sourceOfIncome || det.sourceOfIncome || raw.source_of_income || 'Not Specified'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Source of Income</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{occInfo.sourceOfIncome || det.sourceOfIncome || raw.source_of_income || 'Not Specified'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Approx. Monthly Income</span>
-                      <span className="font-bold text-white">{occInfo.approxMonthlyIncome || det.approxMonthlyIncome || raw.approx_monthly_income || 'Not Specified'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Approx. Monthly Income</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{occInfo.approxMonthlyIncome || det.approxMonthlyIncome || raw.approx_monthly_income || 'Not Specified'}</span>
                     </div>
                     <div className="col-span-1 sm:col-span-2">
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Pension / Benefits Received</span>
-                      <span className="font-bold text-white">
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Pension / Benefits Received</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                         {occInfo.pensionReceived === 'Other' ? (occInfo.otherPensionDetails || 'Other') : (occInfo.pensionReceived || raw.pension_received || 'None')}
                       </span>
                     </div>
@@ -742,47 +758,57 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                 </div>
 
                 {/* 3. EDUCATIONAL BACKGROUND */}
-                <div className="p-4 rounded-xl bg-[#091122] border border-slate-800/90 space-y-3">
-                  <h4 className="font-extrabold text-white uppercase tracking-wider text-xs border-b border-slate-800 pb-2">
+                <div className={`p-4 rounded-xl border space-y-3 ${
+                  darkMode ? 'bg-[#091122] border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <h4 className={`font-extrabold uppercase tracking-wider text-xs border-b pb-2 ${
+                    darkMode ? 'text-white border-slate-800' : 'text-slate-900 border-slate-200'
+                  }`}>
                     Educational Background
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4">
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Highest Educational Attainment</span>
-                      <span className="font-bold text-white">{det.highestEducation || det.educationalAttainment || raw.educational_attainment || 'Not Specified'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Highest Educational Attainment</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{det.highestEducation || det.educationalAttainment || raw.educational_attainment || 'Not Specified'}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Other Relevant Education Information</span>
-                      <span className="font-bold text-white">{det.otherEducationInfo || raw.other_education_info || 'None'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Other Relevant Education Information</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{det.otherEducationInfo || raw.other_education_info || 'None'}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* 4. FAMILY COMPOSITION */}
-                <div className="p-4 rounded-xl bg-[#091122] border border-slate-800/90 space-y-3">
-                  <h4 className="font-extrabold text-white uppercase tracking-wider text-xs border-b border-slate-800 pb-2">
+                <div className={`p-4 rounded-xl border space-y-3 ${
+                  darkMode ? 'bg-[#091122] border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <h4 className={`font-extrabold uppercase tracking-wider text-xs border-b pb-2 ${
+                    darkMode ? 'text-white border-slate-800' : 'text-slate-900 border-slate-200'
+                  }`}>
                     Family Composition & Dependents
                   </h4>
                   {famMembers.length === 0 ? (
-                    <span className="text-slate-400 italic">No family members listed.</span>
+                    <span className={`italic ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>No family members listed.</span>
                   ) : (
                     <div className="overflow-x-auto">
                       <table className="w-full text-left text-xs">
                         <thead>
-                          <tr className="border-b border-slate-800 text-[10px] uppercase font-bold text-slate-400">
+                          <tr className={`border-b text-[10px] uppercase font-bold ${
+                            darkMode ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'
+                          }`}>
                             <th className="py-1.5 px-2">Name</th>
                             <th className="py-1.5 px-2">Relationship</th>
                             <th className="py-1.5 px-2">Age</th>
                             <th className="py-1.5 px-2">Occupation</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-800/60 font-medium">
+                        <tbody className={`divide-y font-medium ${darkMode ? 'divide-slate-800/60' : 'divide-slate-200'}`}>
                           {famMembers.map((m: any, idx: number) => (
                             <tr key={idx}>
-                              <td className="py-2 px-2 font-bold text-white">{m.name || 'N/A'}</td>
-                              <td className="py-2 px-2 text-slate-300">{m.rel || m.relationship || 'N/A'}</td>
-                              <td className="py-2 px-2 text-slate-300">{m.age || 'N/A'}</td>
-                              <td className="py-2 px-2 text-slate-300">{m.occ || m.occupation || 'N/A'}</td>
+                              <td className={`py-2 px-2 font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{m.name || 'N/A'}</td>
+                              <td className={`py-2 px-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{m.rel || m.relationship || 'N/A'}</td>
+                              <td className={`py-2 px-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{m.age || 'N/A'}</td>
+                              <td className={`py-2 px-2 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{m.occ || m.occupation || 'N/A'}</td>
                             </tr>
                           ))}
                         </tbody>
@@ -792,46 +818,60 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                 </div>
 
                 {/* 5. MONTHLY HOUSEHOLD EXPENSES */}
-                <div className="p-4 rounded-xl bg-[#091122] border border-slate-800/90 space-y-2">
-                  <h4 className="font-extrabold text-white uppercase tracking-wider text-xs border-b border-slate-800 pb-2">
+                <div className={`p-4 rounded-xl border space-y-2 ${
+                  darkMode ? 'bg-[#091122] border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <h4 className={`font-extrabold uppercase tracking-wider text-xs border-b pb-2 ${
+                    darkMode ? 'text-white border-slate-800' : 'text-slate-900 border-slate-200'
+                  }`}>
                     Monthly Household Expenses
                   </h4>
                   <div>
-                    <span className="text-[10px] font-bold text-slate-400 block uppercase">Total Monthly Household Expenses</span>
-                    <span className="font-bold text-white text-sm">
+                    <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Total Monthly Household Expenses</span>
+                    <span className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                       {totalExpenses ? (String(totalExpenses).startsWith('₱') ? totalExpenses : `₱${totalExpenses}`) : 'Not Specified'}
                     </span>
                   </div>
                 </div>
 
                 {/* 6. QUALIFYING CATEGORY & ASSESSMENT DETAILS */}
-                <div className="p-4 rounded-xl bg-[#091122] border border-slate-800/90 space-y-3">
-                  <h4 className="font-extrabold text-white uppercase tracking-wider text-xs border-b border-slate-800 pb-2">
+                <div className={`p-4 rounded-xl border space-y-3 ${
+                  darkMode ? 'bg-[#091122] border-slate-800/90' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <h4 className={`font-extrabold uppercase tracking-wider text-xs border-b pb-2 ${
+                    darkMode ? 'text-white border-slate-800' : 'text-slate-900 border-slate-200'
+                  }`}>
                     {isPwdApp ? 'Qualifying Category & Assessment Details' : 'Living Situation & Additional Information'}
                   </h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4">
                     {isPwdApp ? (
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 block uppercase">Qualifying Category / Disability Type</span>
-                        <span className="font-bold text-white">{swaCategoryVal || 'Not Specified'}</span>
+                        <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Qualifying Category / Disability Type</span>
+                        <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{swaCategoryVal || 'Not Specified'}</span>
                       </div>
                     ) : (
                       <div>
-                        <span className="text-[10px] font-bold text-slate-400 block uppercase">Living Arrangement</span>
-                        <span className="font-bold text-white">{livInfo.livingArrangement === 'Other' ? (livInfo.customLivingArrangement || 'Other') : (livInfo.livingArrangement || raw.living_arrangement || 'Not Specified')}</span>
+                        <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Living Arrangement</span>
+                        <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{livInfo.livingArrangement === 'Other' ? (livInfo.customLivingArrangement || 'Other') : (livInfo.livingArrangement || raw.living_arrangement || 'Not Specified')}</span>
                       </div>
                     )}
                     <div>
-                      <span className="text-[10px] font-bold text-slate-400 block uppercase">Reason for Requesting Assistance</span>
-                      <span className="font-bold text-white">{reasonVal || 'Not Specified'}</span>
+                      <span className={`text-[10px] font-bold block uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Reason for Requesting Assistance</span>
+                      <span className={`font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{reasonVal || 'Not Specified'}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* 7. UPLOADED REQUIREMENT DOCUMENTS */}
-                <div className="p-4 rounded-xl bg-[#091124] border border-slate-800 space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
-                    <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                <div className={`p-4 rounded-xl border space-y-3 ${
+                  darkMode ? 'bg-[#091124] border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <div className={`flex items-center justify-between border-b pb-1.5 ${
+                    darkMode ? 'border-slate-800/80' : 'border-slate-200'
+                  }`}>
+                    <span className={`text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-2 ${
+                      darkMode ? 'text-slate-200' : 'text-slate-800'
+                    }`}>
                       <FileText className="w-4 h-4 text-blue-400" />
                       <span>UPLOADED REQUIREMENTS (CLICK TO VIEW / INSPECT)</span>
                     </span>
@@ -850,17 +890,27 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                             dataUrl: doc.dataUrl,
                             url: doc.dataUrl
                           })}
-                          className="p-3.5 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                          className={`p-3.5 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${
+                            darkMode
+                              ? 'bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white'
+                              : 'bg-white hover:bg-slate-100 border-slate-200 text-slate-900'
+                          }`}
                         >
                           <div className="flex items-center gap-3 overflow-hidden">
-                            <div className="p-2 rounded-lg bg-slate-900 border border-slate-800 shrink-0">
+                            <div className={`p-2 rounded-lg border shrink-0 ${
+                              darkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'
+                            }`}>
                               <IconComp className={`w-4 h-4 ${doc.iconColor}`} />
                             </div>
                             <div className="truncate">
-                              <span className="text-xs font-extrabold text-white block truncate group-hover:text-blue-300 transition-colors">
+                              <span className={`text-xs font-extrabold block truncate transition-colors ${
+                                darkMode ? 'text-white group-hover:text-blue-300' : 'text-slate-900 group-hover:text-blue-600'
+                              }`}>
                                 {doc.title}
                               </span>
-                              <span className="text-[11px] font-mono text-slate-400 block truncate mt-0.5">
+                              <span className={`text-[11px] font-mono block truncate mt-0.5 ${
+                                darkMode ? 'text-slate-400' : 'text-slate-500'
+                              }`}>
                                 📎 {doc.fileName}
                               </span>
                             </div>
@@ -874,8 +924,10 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
               </div>
 
               {/* Modal Footer Controls */}
-              <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
-                <span className="text-[11px] text-slate-400">Application Reference: <strong className="text-white font-mono">{selectedApp.referenceNo}</strong></span>
+              <div className={`pt-3 border-t flex items-center justify-between ${
+                darkMode ? 'border-slate-800' : 'border-slate-200'
+              }`}>
+                <span className={`text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Application Reference: <strong className={`font-mono ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.referenceNo}</strong></span>
                 
                 <div className="flex items-center gap-2">
                   {(() => {

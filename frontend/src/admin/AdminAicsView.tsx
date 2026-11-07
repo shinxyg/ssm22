@@ -480,7 +480,7 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
               <div className={`p-4 rounded-xl border space-y-3 ${
                 darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
               }`}>
-                <span className={`text-[11px] font-extrabold uppercase tracking-wider block border-b pb-1.5 flex items-center justify-between ${
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
                   darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
                 }`}>
                   <span>ASSISTANCE CATEGORY & DETAILS</span>
@@ -542,7 +542,7 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
               <div className={`p-4 rounded-xl border space-y-4 ${
                 darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
               }`}>
-                <span className={`text-[11px] font-extrabold uppercase tracking-wider block border-b pb-1.5 flex items-center justify-between ${
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider border-b pb-1.5 flex items-center justify-between ${
                   darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
                 }`}>
                   <span>APPLICANT PERSONAL INFORMATION (INDIVIDUAL FIELDS)</span>
@@ -593,16 +593,16 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                     <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.houseNo || '176'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Street Name</span>
-                    <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.details?.street || selectedApp.details?.streetName || '23'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Street Name</span>
+                    <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.street || selectedApp.details?.streetName || '23'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Barangay</span>
-                    <div className="font-bold text-slate-200 text-xs mt-0.5">{selectedApp.details?.barangay || 'Bagong Silangan'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Barangay</span>
+                    <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.details?.barangay || 'Bagong Silangan'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Phone Number</span>
-                    <div className="font-mono font-bold text-slate-200 text-xs mt-0.5">{selectedApp.details?.phone || '09155582122'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Phone Number</span>
+                    <div className={`font-mono font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.details?.phone || '09155582122'}</div>
                   </div>
                 </div>
 
@@ -618,12 +618,18 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                   ].some(str => typeof str === 'string' && (str.toLowerCase().includes('funeral') || str.toLowerCase().includes('burial')));
 
                   return (
-                    <div className="mt-3 pt-3 border-t border-slate-800/80 bg-slate-950/60 p-3.5 rounded-xl border border-slate-800 space-y-2">
+                    <div className={`mt-3 pt-3 border-t p-3.5 rounded-xl border space-y-2 ${
+                      darkMode ? 'border-slate-800/80 bg-slate-950/60' : 'border-slate-200 bg-white shadow-sm'
+                    }`}>
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold text-slate-200 uppercase tracking-wider block">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider block ${
+                          darkMode ? 'text-slate-200' : 'text-slate-800'
+                        }`}>
                           {isFuneralRecord ? 'DECEASED BENEFICIARY DETAILS (INDIVIDUAL FIELDS):' : 'PATIENT BENEFICIARY DETAILS (INDIVIDUAL FIELDS):'}
                         </span>
-                        <span className="text-[9px] font-bold text-slate-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-700 font-mono">
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded border font-mono ${
+                          darkMode ? 'text-slate-300 bg-slate-900 border-slate-700' : 'text-slate-700 bg-slate-100 border-slate-300'
+                        }`}>
                           {isFuneralRecord ? 'DECEASED BENEFICIARY' : (selectedApp.details?.isApplicantPatient ? 'APPLICANT IS PATIENT' : 'PATIENT IS BENEFICIARY')}
                         </span>
                       </div>
@@ -632,148 +638,126 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                         {isFuneralRecord && (
                           <>
                             <div>
-                              <span className="text-slate-400 text-[9px] uppercase font-semibold">Funeral Home District:</span>
-                              <div className="font-bold text-white text-xs mt-0.5">
+                              <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Funeral Home District:</span>
+                              <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                                 {selectedApp.details?.funeralDistrict || 'District 2'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[9px] uppercase font-semibold">Accredited Funeral Home:</span>
-                              <div className="font-bold text-white text-xs mt-0.5">
-                                {selectedApp.details?.funeralHomeName || selectedApp.details?.selectedFuneralHome || selectedApp.hospitalFacility || 'Vivs Funeral Homes'}
+                              <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Accredited Funeral Home:</span>
+                              <div className={`font-bold text-xs mt-0.5 truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                                {selectedApp.details?.funeralHomeName || 'St. James Memorial Chapel'}
                               </div>
                             </div>
                           </>
                         )}
-                        {!isFuneralRecord && (
-                          <div>
-                            <span className="text-slate-400 text-[9px] uppercase font-semibold">Relationship to Patient:</span>
-                            <div className="font-bold text-slate-200 text-xs mt-0.5">
-                              {selectedApp.details?.isApplicantPatient ? 'Self' : (selectedApp.details?.patientRelation || 'Self')}
-                            </div>
-                          </div>
-                        )}
                         <div>
-                          <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                          <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             First Name:
                           </span>
-                          <div className="font-bold text-slate-200 text-xs mt-0.5">
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                             {selectedApp.details?.isApplicantPatient && !isFuneralRecord ? (selectedApp.details?.firstName || 'JEFFERSON') : (selectedApp.details?.patientFirstName || selectedApp.details?.firstName || 'Deceased')}
                           </div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                          <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             Middle Name:
                           </span>
-                          <div className="font-bold text-slate-200 text-xs mt-0.5">
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                             {selectedApp.details?.isApplicantPatient && !isFuneralRecord ? (selectedApp.details?.middleName || 'FERNANDO') : (selectedApp.details?.patientMiddleName || selectedApp.details?.middleName || 'N/A')}
                           </div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                          <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             Last Name:
                           </span>
-                          <div className="font-bold text-slate-200 text-xs mt-0.5">
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                             {selectedApp.details?.isApplicantPatient && !isFuneralRecord ? (selectedApp.details?.lastName || 'LEE') : (selectedApp.details?.patientLastName || selectedApp.details?.lastName || 'N/A')}
                           </div>
                         </div>
                         {isFuneralRecord && (
                           <div>
-                            <span className="text-slate-400 text-[9px] uppercase font-semibold">Suffix:</span>
-                            <div className="font-semibold text-slate-300 text-xs mt-0.5">
+                            <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Suffix:</span>
+                            <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                               {selectedApp.details?.patientSuffix || 'N/A'}
                             </div>
                           </div>
                         )}
                         <div>
-                          <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                          <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             Gender:
                           </span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                             {selectedApp.details?.isApplicantPatient && !isFuneralRecord ? (selectedApp.details?.gender || 'Male') : (selectedApp.details?.patientGender || 'N/A')}
                           </div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                          <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             DOB & Age:
                           </span>
-                          <div className="font-mono text-slate-300 text-xs mt-0.5">
+                          <div className={`font-mono text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                             {selectedApp.details?.patientDob ? `${selectedApp.details?.patientDob} (${selectedApp.details?.patientAge || ''} yrs)` : (selectedApp.details?.dob ? `${selectedApp.details?.dob} (${selectedApp.details?.age || ''} yrs)` : 'N/A')}
                           </div>
                         </div>
                         {isFuneralRecord && (
                           <>
                             <div>
-                              <span className="text-slate-400 text-[9px] uppercase font-semibold">Date of Death:</span>
-                              <div className="font-mono text-slate-200 text-xs mt-0.5">
+                              <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date of Death:</span>
+                              <div className={`font-mono text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                 {selectedApp.details?.deceasedDateOfDeath || 'N/A'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[9px] uppercase font-semibold">Place of Death:</span>
-                              <div className="font-semibold text-slate-200 text-xs mt-0.5">
+                              <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Place of Death:</span>
+                              <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                 {selectedApp.details?.deceasedPlaceOfDeath || 'N/A'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[9px] uppercase font-semibold">Cremation or Burial:</span>
-                              <div className="font-bold text-white text-xs mt-0.5">
+                              <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Cremation or Burial:</span>
+                              <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                                 {selectedApp.details?.deceasedCremationOrBurial || 'Burial'}
                               </div>
                             </div>
                             <div>
-                              <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                              <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                                 {(selectedApp.details?.deceasedCremationOrBurial || '').toLowerCase() === 'cremation' ? 'Where will it be cremated:' : 'Where will it be buried:'}
                               </span>
-                              <div className="font-semibold text-slate-200 text-xs mt-0.5 truncate">
+                              <div className={`font-semibold text-xs mt-0.5 truncate ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                 {(selectedApp.details?.deceasedCremationOrBurial || '').toLowerCase() === 'cremation'
                                   ? (selectedApp.details?.cremationLocationSite || selectedApp.details?.burialLocationSite || 'N/A')
                                   : (selectedApp.details?.burialLocationSite || selectedApp.details?.cremationLocationSite || 'N/A')}
                               </div>
                             </div>
-                            {((selectedApp.details?.deceasedCremationOrBurial || '').toLowerCase() === 'cremation'
-                              ? (selectedApp.details?.cremationLocationSite || '').toLowerCase().includes('other')
-                              : (selectedApp.details?.burialLocationSite || '').toLowerCase().includes('other')) && (
-                              <div>
-                                <span className="text-slate-400 text-[9px] uppercase font-semibold text-amber-400">
-                                  {(selectedApp.details?.deceasedCremationOrBurial || '').toLowerCase() === 'cremation' ? 'Specify Cremation Location:' : 'Specify Burial Location:'}
-                                </span>
-                                <div className="font-bold text-amber-300 text-xs mt-0.5">
-                                  {((selectedApp.details?.deceasedCremationOrBurial || '').toLowerCase() === 'cremation'
-                                    ? selectedApp.details?.otherCremationLocation
-                                    : selectedApp.details?.otherBurialLocation) || 'Specified'}
-                                </div>
-                              </div>
-                            )}
                             <div>
-                              <span className="text-slate-400 text-[9px] uppercase font-semibold">Date of Burial:</span>
-                              <div className="font-mono text-slate-200 text-xs mt-0.5">
+                              <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date of Burial:</span>
+                              <div className={`font-mono text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                                 {selectedApp.details?.deceasedDateOfBurial || 'N/A'}
                               </div>
                             </div>
                           </>
                         )}
                         <div>
-                          <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                          <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             House / Bldg No.
                           </span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                             {selectedApp.details?.patientHouseNo || selectedApp.details?.houseNo || 'N/A'}
                           </div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                          <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             Street Name
                           </span>
-                          <div className="font-semibold text-slate-300 text-xs mt-0.5">
+                          <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                             {selectedApp.details?.patientStreet || selectedApp.details?.patientStreetName || selectedApp.details?.street || 'N/A'}
                           </div>
                         </div>
                         <div>
-                          <span className="text-slate-400 text-[9px] uppercase font-semibold">
+                          <span className={`text-[9px] uppercase font-semibold ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                             Barangay
                           </span>
-                          <div className="font-bold text-slate-200 text-xs mt-0.5">
+                          <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                             {selectedApp.details?.patientBarangay || selectedApp.details?.barangay || 'N/A'}
                           </div>
                         </div>
@@ -784,9 +768,9 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
               </div>
 
               {/* STEP 3: UPLOADED DOCUMENTS (INSPECTION) */}
-              <div className="p-4 rounded-xl bg-[#091124] border border-slate-800 space-y-3">
-                <div className="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
-                  <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider">
+              <div className={`p-4 rounded-xl border space-y-3 ${darkMode ? "bg-[#091124] border-slate-800" : "bg-slate-50 border-slate-200"}`}>
+                <div className={`flex items-center justify-between border-b pb-1.5 ${darkMode ? "border-slate-800/80" : "border-slate-200"}`}>
+                  <span className={`text-[11px] font-extrabold uppercase tracking-wider ${darkMode ? "text-slate-200" : "text-slate-800"}`}>
                     UPLOADED REQUIREMENTS (CLICK TO VIEW / INSPECT)
                   </span>
                 </div>
@@ -818,15 +802,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <FileText className="w-4 h-4 text-blue-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Referral Form (Optional) – Original Copy
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.referral_form 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.referral_form === 'object' ? selectedApp.details.uploadedDocData.referral_form.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Optional Document / Pending Upload'}
@@ -848,15 +832,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <FileCheck2 className="w-4 h-4 text-emerald-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Death Certificate – Original Certified True Copy
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.death_cert 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.death_cert === 'object' ? selectedApp.details.uploadedDocData.death_cert.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -878,15 +862,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Notarized Funeral Contract – Original Copy
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.funeral_contract 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.funeral_contract === 'object' ? selectedApp.details.uploadedDocData.funeral_contract.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -908,15 +892,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <FileText className="w-4 h-4 text-purple-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Barangay Certificate of Indigency – Original Copy
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.indigency 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.indigency === 'object' ? selectedApp.details.uploadedDocData.indigency.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -938,15 +922,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <ImageIcon className="w-4 h-4 text-teal-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Valid ID of Informant / Nearest Kin
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {(selectedApp.details?.uploadedDocData?.government_id || selectedApp.details?.uploadedDocData?.qcid_patient) 
                                     ? `✓ Uploaded: ${typeof (selectedApp.details?.uploadedDocData?.government_id || selectedApp.details?.uploadedDocData?.qcid_patient) === 'object' ? (selectedApp.details?.uploadedDocData?.government_id || selectedApp.details?.uploadedDocData?.qcid_patient).name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -974,15 +958,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <FileCheck2 className="w-4 h-4 text-emerald-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Medical Certificate / Clinical Abstract
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.med_cert 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.med_cert === 'object' ? selectedApp.details.uploadedDocData.med_cert.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -1004,15 +988,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <Pill className="w-4 h-4 text-amber-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Doctor Prescription / Medicine Prescription
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.reseta 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.reseta === 'object' ? selectedApp.details.uploadedDocData.reseta.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -1034,15 +1018,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <FileText className="w-4 h-4 text-purple-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Barangay Certificate of Indigency
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.indigency 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.indigency === 'object' ? selectedApp.details.uploadedDocData.indigency.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -1064,15 +1048,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <ImageIcon className="w-4 h-4 text-blue-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Patient QC ID (Card Photo)
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.qcid_patient 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.qcid_patient === 'object' ? selectedApp.details.uploadedDocData.qcid_patient.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -1094,15 +1078,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                                 docObj: doc
                               });
                             }}
-                            className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                            className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                           >
                             <div className="flex items-center gap-2.5 overflow-hidden">
                               <FileText className="w-4 h-4 text-teal-400 shrink-0" />
                               <div className="truncate">
-                                <span className="text-[11px] font-extrabold text-white block truncate">
+                                <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                   Authorization / Personal Letter
                                 </span>
-                                <span className="text-[9px] text-slate-400 font-mono block">
+                                <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                   {selectedApp.details?.uploadedDocData?.authorization 
                                     ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.authorization === 'object' ? selectedApp.details.uploadedDocData.authorization.name || 'Photo Attached' : 'Photo Attached'}` 
                                     : 'Pending Citizen Upload'}
@@ -1129,15 +1113,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                               docObj: doc
                             });
                           }}
-                          className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                          className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                         >
                           <div className="flex items-center gap-2.5 overflow-hidden">
                             <Building2 className="w-4 h-4 text-blue-400 shrink-0" />
                             <div className="truncate">
-                              <span className="text-[11px] font-extrabold text-white block truncate">
+                              <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                 Hospital Statement of Account
                               </span>
-                              <span className="text-[9px] text-slate-400 font-mono block">
+                              <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                 {selectedApp.details?.uploadedDocData?.reseta 
                                   ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.reseta === 'object' ? selectedApp.details.uploadedDocData.reseta.name || 'Photo Attached' : 'Photo Attached'}` 
                                   : 'Pending Citizen Upload'}
@@ -1158,15 +1142,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                               docObj: doc
                             });
                           }}
-                          className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                          className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                         >
                           <div className="flex items-center gap-2.5 overflow-hidden">
                             <FileCheck2 className="w-4 h-4 text-emerald-400 shrink-0" />
                             <div className="truncate">
-                              <span className="text-[11px] font-extrabold text-white block truncate">
+                              <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                 Medical Certificate / Clinical Abstract
                               </span>
-                              <span className="text-[9px] text-slate-400 font-mono block">
+                              <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                 {selectedApp.details?.uploadedDocData?.med_cert 
                                   ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.med_cert === 'object' ? selectedApp.details.uploadedDocData.med_cert.name || 'Photo Attached' : 'Photo Attached'}` 
                                   : 'Pending Citizen Upload'}
@@ -1187,15 +1171,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                               docObj: doc
                             });
                           }}
-                          className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                          className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                         >
                           <div className="flex items-center gap-2.5 overflow-hidden">
                             <FileText className="w-4 h-4 text-purple-400 shrink-0" />
                             <div className="truncate">
-                              <span className="text-[11px] font-extrabold text-white block truncate">
+                              <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                 Barangay Certificate of Indigency
                               </span>
-                              <span className="text-[9px] text-slate-400 font-mono block">
+                              <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                 {selectedApp.details?.uploadedDocData?.indigency 
                                   ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.indigency === 'object' ? selectedApp.details.uploadedDocData.indigency.name || 'Photo Attached' : 'Photo Attached'}` 
                                   : 'Pending Citizen Upload'}
@@ -1216,15 +1200,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                               docObj: doc
                             });
                           }}
-                          className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                          className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                         >
                           <div className="flex items-center gap-2.5 overflow-hidden">
                             <ImageIcon className="w-4 h-4 text-amber-400 shrink-0" />
                             <div className="truncate">
-                              <span className="text-[11px] font-extrabold text-white block truncate">
+                              <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                 Valid Government Photo ID (PhilSys)
                               </span>
-                              <span className="text-[9px] text-slate-400 font-mono block">
+                              <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                 {selectedApp.details?.uploadedDocData?.qcid_patient 
                                   ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.qcid_patient === 'object' ? selectedApp.details.uploadedDocData.qcid_patient.name || 'Photo Attached' : 'Photo Attached'}` 
                                   : 'Pending Citizen Upload'}
@@ -1246,15 +1230,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                               docObj: doc
                             });
                           }}
-                          className="p-3 rounded-xl bg-[#0d1830] hover:bg-[#15264a] border border-slate-700/80 flex items-center justify-between transition-all group text-left cursor-pointer shadow-md"
+                          className={`p-3 rounded-xl border flex items-center justify-between transition-all group text-left cursor-pointer shadow-sm ${darkMode ? "bg-[#0d1830] hover:bg-[#15264a] border-slate-700/80 text-white" : "bg-white hover:bg-slate-100 border-slate-200 text-slate-900"}`}
                         >
                           <div className="flex items-center gap-2.5 overflow-hidden">
                             <FileText className="w-4 h-4 text-teal-400 shrink-0" />
                             <div className="truncate">
-                              <span className="text-[11px] font-extrabold text-white block truncate">
+                              <span className={`text-[11px] font-extrabold block truncate ${darkMode ? "text-white" : "text-slate-900"}`}>
                                 Authorization / Personal Letter
                               </span>
-                              <span className="text-[9px] text-slate-400 font-mono block">
+                              <span className={`text-[9px] font-mono block ${darkMode ? "text-slate-400" : "text-slate-500"}`}>
                                 {selectedApp.details?.uploadedDocData?.authorization 
                                   ? `✓ Uploaded: ${typeof selectedApp.details.uploadedDocData.authorization === 'object' ? selectedApp.details.uploadedDocData.authorization.name || 'Photo Attached' : 'Photo Attached'}` 
                                   : 'Pending Citizen Upload'}
@@ -1290,7 +1274,7 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
             </div>
 
             {/* FOOTER ACTIONS */}
-            <div className="p-4 bg-[#0a1120] border-t border-slate-800 flex justify-end gap-2.5 flex-wrap shrink-0">
+            <div className={`p-4 border-t flex justify-end gap-2.5 flex-wrap shrink-0 ${darkMode ? "bg-[#0a1120] border-slate-800" : "bg-slate-100 border-slate-200"}`}>
               {selectedApp.status === 'Rejected' ? (
                 <span className="px-4 py-2 bg-rose-950/60 border border-rose-700/50 text-rose-300 font-bold text-xs rounded-xl flex items-center gap-1.5">
                   <X className="w-4 h-4" />
