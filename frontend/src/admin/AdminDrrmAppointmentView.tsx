@@ -191,16 +191,19 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
         .then((data) => {
           if (Array.isArray(data) && data.length > 0) {
             const mappedFromDb: DrrmAppointmentRecord[] = data.map((dbItem: any) => {
-              const rawStatus = String(dbItem.status || '');
-              const mappedStatus: DrrmAppointmentRecord['status'] =
-                rawStatus.toUpperCase().includes('APPROV') ||
-                rawStatus.toUpperCase().includes('VOUCHER')
-                  ? 'Approved & Voucher Issued'
-                  : rawStatus.toUpperCase().includes('REJECT')
-                  ? 'Rejected'
-                  : rawStatus.toUpperCase().includes('SCHED')
-                  ? 'Interview Scheduled'
-                  : 'Pending Schedule';
+              const rawStatus = String(dbItem.status || '').trim();
+              const hasDate = Boolean(dbItem.appointment_date || dbItem.appointmentDate);
+
+              let mappedStatus: DrrmAppointmentRecord['status'] = 'Pending Schedule';
+              if (rawStatus.toUpperCase().includes('APPROV') || rawStatus.toUpperCase().includes('VOUCHER')) {
+                mappedStatus = 'Approved & Voucher Issued';
+              } else if (rawStatus.toUpperCase().includes('REJECT')) {
+                mappedStatus = 'Rejected';
+              } else if (rawStatus.toUpperCase().includes('PENDING') || !hasDate) {
+                mappedStatus = 'Pending Schedule';
+              } else if (rawStatus.toUpperCase().includes('SCHED')) {
+                mappedStatus = 'Interview Scheduled';
+              }
 
               return {
                 referenceNo: dbItem.reference_no || dbItem.referenceNo,
@@ -228,7 +231,10 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
 
   const getCurrentDateString = (): string => {
     const now = new Date();
-    return now.toISOString().split('T')[0];
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const getCurrentTimeString = (): string => {
@@ -779,7 +785,7 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                         </span>
                         {rec.status !== 'Pending Schedule' && dateFormatted ? (
                           <span className="font-mono font-bold">
-                            📅 {dateFormatted} {timeFormatted ? `· ${timeFormatted}` : ''}
+                            {dateFormatted} {timeFormatted ? `· ${timeFormatted}` : ''}
                           </span>
                         ) : (
                           <span className="text-amber-400 italic text-[11px]">
@@ -952,7 +958,7 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                           >
                             {rec.status !== 'Pending Schedule' && dateFormatted ? (
                               <div className="font-bold">
-                                📅 {dateFormatted}{' '}
+                                {dateFormatted}{' '}
                                 {timeFormatted ? `· ${timeFormatted}` : ''}
                               </div>
                             ) : (

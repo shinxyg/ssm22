@@ -2809,8 +2809,14 @@ app.post('/api/drrm/appointments', async (req, res) => {
     reporterName || reporter_name || applicantName || clientName || 'DRRM Client';
   const finalCaseType =
     caseType || case_type || incidentType || incident || 'Medical';
-  const finalDate = appointmentDate || appointment_date || null;
-  const finalTime = appointmentTime || appointment_time || null;
+
+  // Get current Philippine local date and time if appointmentDate is passed or omitted
+  const now = new Date();
+  const manilaDateStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' }); // YYYY-MM-DD
+  const manilaTimeStr = now.toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', hour12: false }); // HH:MM
+
+  const finalDate = appointmentDate || appointment_date || (req.body.withSchedule ? manilaDateStr : null);
+  const finalTime = appointmentTime || appointment_time || (req.body.withSchedule ? manilaTimeStr : null);
   const finalStatus = status || (finalDate ? 'Interview Scheduled' : 'Pending Schedule');
   const finalVoucher = voucherNo || voucher_no || null;
 
