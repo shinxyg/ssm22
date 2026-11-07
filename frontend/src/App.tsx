@@ -1139,7 +1139,7 @@ export default function App() {
               />
               <div className="flex flex-col justify-center truncate">
                 <h1 className="font-extrabold text-sm tracking-tight leading-none text-white">GovServe</h1>
-                <span className="text-[10px] font-bold tracking-wide text-purple-400 uppercase mt-0.5">Admin Portal</span>
+                <span className="text-[10px] font-medium tracking-wide text-slate-400">Admin Portal</span>
               </div>
             </div>
             <button
@@ -1267,7 +1267,7 @@ export default function App() {
               {sidebarOpen && (
                 <div className="flex flex-col justify-center truncate">
                   <h1 className="font-extrabold text-base tracking-tight leading-none text-white">GovServe</h1>
-                  <span className="text-[10px] font-bold tracking-wide text-purple-400 uppercase mt-0.5">Admin Portal</span>
+                  <span className="text-[10px] font-medium tracking-wide text-slate-400">Admin Portal</span>
                 </div>
               )}
             </div>
