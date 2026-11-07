@@ -674,8 +674,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Avatar Squircle Badge on the right (AD / JL or uploaded Profile Photo) */}
-            <div className="relative w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-sky-400 text-white font-extrabold text-xs flex items-center justify-center shrink-0">
-              {userRole !== 'admin' && (currentUserData?.profile_photo || currentUserData?.profilePhoto) ? (
+            <div className="relative w-8 h-8 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-sky-400 text-white font-extrabold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+              {currentUserData?.profile_photo || currentUserData?.profilePhoto ? (
                 <img
                   src={currentUserData.profile_photo || currentUserData.profilePhoto}
                   alt={displayName}
