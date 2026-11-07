@@ -1464,18 +1464,22 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
       {/* QCID Digital Card Modal */}
       {showQcidModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-md bg-[#0e172a] border border-slate-700 rounded-2xl p-6 shadow-2xl space-y-4 text-center">
-            <div className="flex justify-between items-center border-b border-slate-700 pb-3">
-              <h3 className="text-sm font-extrabold text-white flex items-center gap-2">
-                <CreditCard className="w-4 h-4 text-blue-400" />
+          <div className={`relative w-full max-w-md border rounded-2xl p-6 shadow-2xl space-y-4 text-center ${
+            darkMode ? 'bg-[#0e172a] border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className={`flex justify-between items-center border-b pb-3 ${
+              darkMode ? 'border-slate-700' : 'border-slate-200'
+            }`}>
+              <h3 className={`text-sm font-extrabold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
+                <CreditCard className="w-4 h-4 text-blue-500" />
                 Quezon City Digital Resident Identification (QCID)
               </h3>
-              <button onClick={() => setShowQcidModal(false)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setShowQcidModal(false)} className={`cursor-pointer ${darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-800'}`}>
                 ✕
               </button>
             </div>
 
-            <div className="p-6 bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-900 border border-blue-500/50 rounded-2xl text-left space-y-4 shadow-xl">
+            <div className="p-6 bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-900 border border-blue-500/50 rounded-2xl text-left space-y-4 shadow-xl text-white">
               <div className="flex justify-between items-center">
                 <span className="text-[11px] font-mono font-bold text-blue-300 uppercase tracking-widest">QUEZON CITY RESIDENT ID</span>
                 <span className="text-[10px] bg-emerald-500 text-slate-950 font-bold px-2 py-0.5 rounded-full uppercase">VERIFIED</span>
@@ -1506,21 +1510,31 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
         </div>
       )}
 
-      {/* CHANGE PROFILE PICTURE COOLDOWN MODAL (CENTERED) */}
+      {/* CHANGE PROFILE PICTURE COOLDOWN MODAL (CENTERED & DARK/LIGHT MODE READY) */}
       {showPhotoCooldownModal && (
         <div className="fixed inset-0 z-[99999] bg-[#030712]/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-7 w-full max-w-sm text-center shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95">
-            <h3 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
+          <div className={`rounded-3xl p-6 sm:p-7 w-full max-w-sm text-center shadow-2xl border animate-in fade-in zoom-in-95 ${
+            darkMode
+              ? 'bg-[#0e172a] text-white border-slate-700/80'
+              : 'bg-white text-slate-900 border-slate-200'
+          }`}>
+            <h3 className={`text-base sm:text-lg font-extrabold tracking-tight ${
+              darkMode ? 'text-white' : 'text-slate-900'
+            }`}>
               Change Profile Picture
             </h3>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-3 leading-relaxed">
+            <p className={`text-xs sm:text-sm font-medium mt-3 leading-relaxed ${
+              darkMode ? 'text-slate-300' : 'text-slate-600'
+            }`}>
               Please wait for {photoCooldownDaysLeft} {photoCooldownDaysLeft === 1 ? 'day' : 'days'} before changing your profile photo!
             </p>
-            <div className="mt-6 pt-2 border-t border-slate-100">
+            <div className={`mt-6 pt-2 border-t ${
+              darkMode ? 'border-slate-800' : 'border-slate-100'
+            }`}>
               <button
                 type="button"
                 onClick={() => setShowPhotoCooldownModal(false)}
-                className="w-full text-center text-sm font-bold text-blue-600 hover:text-blue-700 py-1 transition-colors cursor-pointer"
+                className="w-full text-center text-sm font-bold text-blue-500 hover:text-blue-400 py-1 transition-colors cursor-pointer"
               >
                 Cancel
               </button>

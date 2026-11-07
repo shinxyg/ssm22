@@ -424,9 +424,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
       {/* MANAGE APPLICATION MODAL (STEPS 1-3 USER INPUT DETAILS) */}
       {selectedApp && createPortal(
         <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
-          <div className="bg-[#0e172a] text-slate-100 rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-slate-800 my-auto">
+          <div className={`rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border my-auto ${
+            darkMode 
+              ? 'bg-[#0e172a] text-slate-100 border-slate-800' 
+              : 'bg-white text-slate-900 border-slate-200'
+          }`}>
             {/* Header */}
-            <div className="p-5 bg-[#121e36] border-b border-slate-800 flex justify-between items-center gap-4 shrink-0">
+            <div className={`p-5 border-b flex justify-between items-center gap-4 shrink-0 ${
+              darkMode ? 'bg-[#121e36] border-slate-800' : 'bg-slate-100 border-slate-200'
+            }`}>
               {(() => {
                 const dynName = resolveApplicantDynamicName(selectedApp);
                 const dynInitials = getApplicantInitials(dynName);
@@ -450,9 +456,9 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                     </div>
                     <div className="min-w-0">
                       <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider block">{selectedApp.referenceNo}</span>
-                      <h3 className="text-base font-extrabold text-white mt-0.5 truncate">{selectedApp.serviceName}</h3>
-                      <p className="text-[11px] font-semibold text-slate-300 mt-0.5 truncate">
-                        Applicant: <span className="text-white font-extrabold">{dynName}</span>
+                      <h3 className={`text-base font-extrabold mt-0.5 truncate ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.serviceName}</h3>
+                      <p className={`text-[11px] font-semibold mt-0.5 truncate ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
+                        Applicant: <span className={`font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{dynName}</span>
                       </p>
                     </div>
                   </div>
@@ -461,7 +467,9 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
               <button
                 type="button"
                 onClick={() => setSelectedApp(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 shrink-0 cursor-pointer"
+                className={`p-1.5 rounded-lg shrink-0 cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -469,19 +477,23 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
 
             <div className="p-6 space-y-5 text-xs overflow-y-auto flex-1 custom-modal-scroll">
               {/* STEP 1: SERVICE & ASSISTANCE CATEGORY */}
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-3">
-                <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+              <div className={`p-4 rounded-xl border space-y-3 ${
+                darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider block border-b pb-1.5 flex items-center justify-between ${
+                  darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                }`}>
                   <span>ASSISTANCE CATEGORY & DETAILS</span>
-                  <span className="text-[9px] font-mono text-slate-400">INPUTTED BY USER</span>
+                  <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>INPUTTED BY USER</span>
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Category / Program</span>
-                    <div className="font-extrabold text-white mt-0.5">{selectedApp.details?.category || selectedApp.category || 'AICS Assistance'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Category / Program</span>
+                    <div className={`font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.category || selectedApp.category || 'AICS Assistance'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Assistance Type</span>
-                    <div className="font-extrabold text-white mt-0.5">{selectedApp.details?.assistanceType || selectedApp.assistanceType || selectedApp.serviceName}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Assistance Type</span>
+                    <div className={`font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.assistanceType || selectedApp.assistanceType || selectedApp.serviceName}</div>
                   </div>
                   {[
                     selectedApp.serviceName,
@@ -493,14 +505,14 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                   ].some(str => typeof str === 'string' && (str.toLowerCase().includes('funeral') || str.toLowerCase().includes('burial'))) ? (
                     <>
                       <div>
-                        <span className="text-slate-400 text-[10px] font-semibold uppercase">Relation to Deceased</span>
-                        <div className="font-bold text-white mt-0.5">
+                        <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Relation to Deceased</span>
+                        <div className={`font-bold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                           {selectedApp.details?.patientRelation || selectedApp.details?.relationToDeceased || 'Sibling'}
                         </div>
                       </div>
                       <div>
-                        <span className="text-slate-400 text-[10px] font-semibold uppercase">Burial / Funeral Details</span>
-                        <div className="font-medium text-slate-300 mt-0.5">
+                        <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Burial / Funeral Details</span>
+                        <div className={`font-medium mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                           {selectedApp.details?.medicalCondition || selectedApp.medicalCondition || 'Burial Assistance Request'}
                         </div>
                       </div>
@@ -510,14 +522,14 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                   ) && (
                     <>
                       <div>
-                        <span className="text-slate-400 text-[10px] font-semibold uppercase">Health Facility / Hospital</span>
-                        <div className="font-bold text-slate-200 mt-0.5">
+                        <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Health Facility / Hospital</span>
+                        <div className={`font-bold mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                           {selectedApp.details?.hospitalFacility || selectedApp.hospitalFacility || selectedApp.details?.hospital || 'Quezon City General Hospital (QCGH)'}
                         </div>
                       </div>
                       <div className="sm:col-span-2">
-                        <span className="text-slate-400 text-[10px] font-semibold uppercase">Medical Condition / Reason</span>
-                        <div className="font-medium text-slate-300 mt-0.5">
+                        <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Medical Condition / Reason</span>
+                        <div className={`font-medium mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                           {selectedApp.details?.medicalCondition || selectedApp.medicalCondition || selectedApp.details?.diagnosis || 'Medical Assistance Request'}
                         </div>
                       </div>
@@ -527,54 +539,58 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
               </div>
 
               {/* STEP 2: APPLICANT & PATIENT/DECEASED PERSONAL INFORMATION */}
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/90 space-y-4">
-                <span className="text-[11px] font-extrabold text-slate-200 uppercase tracking-wider block border-b border-slate-800 pb-1.5 flex items-center justify-between">
+              <div className={`p-4 rounded-xl border space-y-4 ${
+                darkMode ? 'bg-slate-900/80 border-slate-800/90' : 'bg-slate-50 border-slate-200'
+              }`}>
+                <span className={`text-[11px] font-extrabold uppercase tracking-wider block border-b pb-1.5 flex items-center justify-between ${
+                  darkMode ? 'text-slate-200 border-slate-800' : 'text-slate-800 border-slate-200'
+                }`}>
                   <span>APPLICANT PERSONAL INFORMATION (INDIVIDUAL FIELDS)</span>
-                  <span className="text-[9px] font-mono text-slate-400">VERIFIED QCITIZEN PROFILE</span>
+                  <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>VERIFIED QCITIZEN PROFILE</span>
                 </span>
 
                 {/* Applicant Profile Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
 
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">First Name</span>
-                    <div className="font-bold text-white text-xs mt-0.5">{selectedApp.details?.firstName || (selectedApp.applicantName ? selectedApp.applicantName.split(' ')[0] : 'JEFFERSON')}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>First Name</span>
+                    <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.firstName || (selectedApp.applicantName ? selectedApp.applicantName.split(' ')[0] : 'JEFFERSON')}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Middle Name</span>
-                    <div className="font-bold text-white text-xs mt-0.5">{selectedApp.details?.middleName || 'FERNANDO'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Middle Name</span>
+                    <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.middleName || 'FERNANDO'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Last Name</span>
-                    <div className="font-bold text-white text-xs mt-0.5">{selectedApp.details?.lastName || (selectedApp.applicantName ? selectedApp.applicantName.split(' ').pop() : 'LEE')}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Last Name</span>
+                    <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>{selectedApp.details?.lastName || (selectedApp.applicantName ? selectedApp.applicantName.split(' ').pop() : 'LEE')}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Suffix</span>
-                    <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.details?.suffix || 'N/A'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Suffix</span>
+                    <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.suffix || 'N/A'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Nationality</span>
-                    <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.details?.nationality || 'FILIPINO'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Nationality</span>
+                    <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.nationality || 'FILIPINO'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Date of Birth</span>
-                    <div className="font-mono text-slate-200 text-xs mt-0.5">{selectedApp.details?.dob || '2004-09-27'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Date of Birth</span>
+                    <div className={`font-mono text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.details?.dob || '2004-09-27'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Age</span>
-                    <div className="font-bold text-slate-200 text-xs mt-0.5">{selectedApp.details?.age || '22'} yrs old</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Age</span>
+                    <div className={`font-bold text-xs mt-0.5 ${darkMode ? 'text-slate-200' : 'text-slate-800'}`}>{selectedApp.details?.age || '22'} yrs old</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Gender</span>
-                    <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.details?.gender || 'Male'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Gender</span>
+                    <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.gender || 'Male'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">Civil Status</span>
-                    <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.details?.civilStatus || 'Single'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Civil Status</span>
+                    <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.civilStatus || 'Single'}</div>
                   </div>
                   <div>
-                    <span className="text-slate-400 text-[10px] font-semibold uppercase">House / Bldg No.</span>
-                    <div className="font-semibold text-slate-300 text-xs mt-0.5">{selectedApp.details?.houseNo || '176'}</div>
+                    <span className={`text-[10px] font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>House / Bldg No.</span>
+                    <div className={`font-semibold text-xs mt-0.5 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>{selectedApp.details?.houseNo || '176'}</div>
                   </div>
                   <div>
                     <span className="text-slate-400 text-[10px] font-semibold uppercase">Street Name</span>
