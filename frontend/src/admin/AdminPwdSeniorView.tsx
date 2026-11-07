@@ -600,13 +600,8 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                   return (
                     <div className="flex items-center gap-3.5 min-w-0">
                       <div
-                        onClick={() => {
-                          if (photoUrl) {
-                            setViewingDoc({ title: `${dynName} — Applicant Profile Photo`, fileName: 'profile_photo.jpg', dataUrl: photoUrl, url: photoUrl });
-                          }
-                        }}
-                        title={photoUrl ? 'Click to view applicant profile photo' : dynName}
-                        className={`w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 ${photoUrl ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all' : ''}`}
+                        title={dynName}
+                        className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 select-none cursor-default"
                       >
                         {photoUrl ? (
                           <img src={photoUrl} alt={dynName} className="w-full h-full object-cover" />
@@ -626,10 +621,16 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                             return (
                               <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border uppercase ${
                                 isApproved
-                                  ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                                  ? darkMode
+                                    ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                                    : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                                   : isRejected
-                                  ? 'bg-red-950 text-red-400 border-red-800'
-                                  : 'bg-amber-950 text-amber-400 border-amber-800'
+                                  ? darkMode
+                                    ? 'bg-red-950 text-red-400 border-red-800'
+                                    : 'bg-rose-100 text-rose-700 border-rose-300'
+                                  : darkMode
+                                  ? 'bg-amber-950 text-amber-400 border-amber-800'
+                                  : 'bg-amber-100 text-amber-800 border-amber-300'
                               }`}>
                                 {selectedApp.status}
                               </span>
@@ -944,7 +945,11 @@ export const AdminPwdSeniorView: React.FC<AdminPwdSeniorViewProps> = ({
                             setRejectReason('');
                             setSelectedApp(null);
                           }}
-                          className="px-4 py-2 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-300 hover:text-white font-extrabold text-xs border border-rose-800 transition-all flex items-center gap-1.5 cursor-pointer shadow-md"
+                          className={`px-4 py-2 rounded-xl font-extrabold text-xs border transition-all flex items-center gap-1.5 cursor-pointer shadow-md ${
+                            darkMode
+                              ? 'bg-rose-950/80 hover:bg-rose-900 text-rose-300 hover:text-white border-rose-800'
+                              : 'bg-rose-100 hover:bg-rose-200 text-rose-700 border-rose-300'
+                          }`}
                         >
                           <XCircle className="w-4 h-4 text-rose-400" />
                           <span>Reject</span>

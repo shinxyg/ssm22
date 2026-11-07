@@ -709,13 +709,8 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                 return (
                   <div className="flex items-center gap-3.5 min-w-0">
                     <div
-                      onClick={() => {
-                        if (photoUrl) {
-                          setInspectingDoc({ title: `${dynName} — Applicant Profile Photo`, filename: 'profile_photo.jpg', dataUrl: photoUrl });
-                        }
-                      }}
-                      title={photoUrl ? 'Click to view applicant profile photo' : dynName}
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 ${photoUrl ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all' : ''}`}
+                      title={dynName}
+                      className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 select-none cursor-default"
                     >
                       {photoUrl ? (
                         <img src={photoUrl} alt={dynName} className="w-full h-full object-cover" />
@@ -1341,7 +1336,11 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                       <button
                         type="button"
                         onClick={() => handleOpenRejectModal(selectedApp)}
-                        className="px-4 py-2 bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border border-rose-500/40 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5"
+                        className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 border ${
+                          darkMode
+                            ? 'bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border-rose-500/40'
+                            : 'bg-rose-100 hover:bg-rose-200 text-rose-700 border-rose-300'
+                        }`}
                       >
                         <XCircle className="w-4 h-4" />
                         <span>Reject</span>
@@ -1361,16 +1360,24 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
 
                 if (isRejected) {
                   return (
-                    <div className="px-6 py-2.5 bg-rose-950/80 text-rose-400 border border-rose-500/40 font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-inner">
-                      <XCircle className="w-4 h-4 text-rose-400" />
+                    <div className={`px-6 py-2.5 font-extrabold text-xs rounded-xl flex items-center gap-2 border ${
+                      darkMode
+                        ? 'bg-rose-950/80 text-rose-400 border-rose-500/40'
+                        : 'bg-rose-100 text-rose-700 border-rose-300'
+                    }`}>
+                      <XCircle className={`w-4 h-4 ${darkMode ? 'text-rose-400' : 'text-rose-600'}`} />
                       <span>Application Disapproved / Rejected</span>
                     </div>
                   );
                 }
 
                 return (
-                  <div className="px-6 py-2.5 bg-emerald-950/80 text-emerald-400 border border-emerald-500/40 font-extrabold text-xs rounded-xl flex items-center gap-2 shadow-inner">
-                    <Check className="w-4 h-4 text-emerald-400 stroke-[3]" />
+                  <div className={`px-6 py-2.5 font-extrabold text-xs rounded-xl flex items-center gap-2 border ${
+                    darkMode
+                      ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/40'
+                      : 'bg-emerald-100 text-emerald-800 border-emerald-300'
+                  }`}>
+                    <Check className={`w-4 h-4 stroke-[3] ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                     <span>✓ Approved & Transferred to Appointments / Payout</span>
                   </div>
                 );

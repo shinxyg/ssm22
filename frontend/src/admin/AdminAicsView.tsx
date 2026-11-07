@@ -440,13 +440,8 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                 return (
                   <div className="flex items-center gap-3.5 min-w-0">
                     <div
-                      onClick={() => {
-                        if (photoUrl) {
-                          setInspectingDoc({ title: `${dynName} — Applicant Profile Photo`, type: 'Profile Photo', url: photoUrl });
-                        }
-                      }}
-                      title={photoUrl ? 'Click to view applicant profile photo' : dynName}
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 ${photoUrl ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all' : ''}`}
+                      title={dynName}
+                      className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 select-none cursor-default"
                     >
                       {photoUrl ? (
                         <img src={photoUrl} alt={dynName} className="w-full h-full object-cover" />
@@ -1276,13 +1271,21 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
             {/* FOOTER ACTIONS */}
             <div className={`p-4 border-t flex justify-end gap-2.5 flex-wrap shrink-0 ${darkMode ? "bg-[#0a1120] border-slate-800" : "bg-slate-100 border-slate-200"}`}>
               {selectedApp.status === 'Rejected' ? (
-                <span className="px-4 py-2 bg-rose-950/60 border border-rose-700/50 text-rose-300 font-bold text-xs rounded-xl flex items-center gap-1.5">
-                  <X className="w-4 h-4" />
+                <span className={`px-4 py-2 font-bold text-xs rounded-xl flex items-center gap-1.5 border ${
+                  darkMode
+                    ? 'bg-rose-950/80 border-rose-500/40 text-rose-300'
+                    : 'bg-rose-100 border-rose-300 text-rose-700'
+                }`}>
+                  <X className={`w-4 h-4 ${darkMode ? 'text-rose-400' : 'text-rose-600'}`} />
                   <span>Application Disqualified / Rejected</span>
                 </span>
               ) : selectedApp.status !== 'Under Review' && selectedApp.status !== 'Pending Documents' ? (
-                <span className="px-5 py-2 bg-emerald-950/80 border border-emerald-600/60 text-emerald-400 font-bold text-xs rounded-xl flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-emerald-400" />
+                <span className={`px-5 py-2 font-bold text-xs rounded-xl flex items-center gap-1.5 border ${
+                  darkMode
+                    ? 'bg-emerald-950/80 border-emerald-600/60 text-emerald-400'
+                    : 'bg-emerald-100 border-emerald-300 text-emerald-800'
+                }`}>
+                  <Check className={`w-4 h-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                   <span>✓ Approved & Transferred to Appointments</span>
                 </span>
               ) : (
@@ -1293,7 +1296,11 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                       if (onUpdateStatus) onUpdateStatus(selectedApp.referenceNo, 'Rejected');
                       setSelectedApp(null);
                     }}
-                    className="px-4 py-2 bg-rose-950/60 hover:bg-rose-900 border border-rose-700/50 text-rose-300 font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5"
+                    className={`px-4 py-2 font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 border cursor-pointer ${
+                      darkMode
+                        ? 'bg-rose-950/60 hover:bg-rose-900 border-rose-700/50 text-rose-300'
+                        : 'bg-rose-100 hover:bg-rose-200 border-rose-300 text-rose-700'
+                    }`}
                   >
                     <X className="w-4 h-4" />
                     <span>Reject Application</span>
@@ -1305,7 +1312,7 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                       if (onUpdateStatus) onUpdateStatus(selectedApp.referenceNo, 'Pending Appointment');
                       setSelectedApp(null);
                     }}
-                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition-colors flex items-center gap-1.5"
+                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <Check className="w-4 h-4" />
                     <span>Approve & Transfer to Appointments</span>

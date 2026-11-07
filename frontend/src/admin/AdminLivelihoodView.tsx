@@ -617,13 +617,8 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
                 return (
                   <div className="flex items-center gap-3.5 min-w-0">
                     <div
-                      onClick={() => {
-                        if (photoUrl) {
-                          setInspectingDoc({ title: `${dynName} — Applicant Profile Photo`, filename: 'profile_photo.jpg', url: photoUrl });
-                        }
-                      }}
-                      title={photoUrl ? 'Click to view applicant profile photo' : dynName}
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 ${photoUrl ? 'cursor-pointer hover:ring-2 hover:ring-blue-400 transition-all' : ''}`}
+                      title={dynName}
+                      className="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-extrabold text-sm flex items-center justify-center shadow-lg shrink-0 overflow-hidden border border-blue-400/40 select-none cursor-default"
                     >
                       {photoUrl ? (
                         <img src={photoUrl} alt={dynName} className="w-full h-full object-cover" />
@@ -1240,8 +1235,12 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
 
                 if (isApproved) {
                   return (
-                    <span className="px-4 py-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-extrabold text-xs rounded-xl inline-flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span className={`px-4 py-2 border font-extrabold text-xs rounded-xl inline-flex items-center gap-2 ${
+                      darkMode
+                        ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400'
+                        : 'bg-emerald-100 border-emerald-300 text-emerald-800'
+                    }`}>
+                      <CheckCircle2 className={`w-4 h-4 ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
                       <span>Approved (Forwarded to Appointments Module)</span>
                     </span>
                   );
@@ -1249,8 +1248,12 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
 
                 if (isRejected) {
                   return (
-                    <span className="px-4 py-2 bg-rose-950/80 border border-rose-500/40 text-rose-300 font-extrabold text-xs rounded-xl inline-flex items-center gap-2">
-                      <XCircle className="w-4 h-4 text-rose-400" />
+                    <span className={`px-4 py-2 border font-extrabold text-xs rounded-xl inline-flex items-center gap-2 ${
+                      darkMode
+                        ? 'bg-rose-950/80 border-rose-500/40 text-rose-300'
+                        : 'bg-rose-100 border-rose-300 text-rose-700'
+                    }`}>
+                      <XCircle className={`w-4 h-4 ${darkMode ? 'text-rose-400' : 'text-rose-600'}`} />
                       <span>Application Disapproved</span>
                     </span>
                   );
@@ -1264,7 +1267,11 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
                         setAppToReject(selectedApp);
                         setShowRejectModal(true);
                       }}
-                      className="px-4 py-2.5 bg-rose-950 hover:bg-rose-900 text-rose-300 text-xs font-bold rounded-xl border border-rose-800 transition-all inline-flex items-center gap-1.5 cursor-pointer"
+                      className={`px-4 py-2.5 text-xs font-bold rounded-xl border transition-all inline-flex items-center gap-1.5 cursor-pointer ${
+                        darkMode
+                          ? 'bg-rose-950 hover:bg-rose-900 text-rose-300 border-rose-800'
+                          : 'bg-rose-100 hover:bg-rose-200 text-rose-700 border-rose-300'
+                      }`}
                     >
                       <XCircle className="w-4 h-4" />
                       <span>Disapprove Application</span>
