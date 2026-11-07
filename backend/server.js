@@ -140,6 +140,7 @@ const handleResetAllData = async (req, res) => {
       'livelihood_applications',
       'training_applications',
       'appointments',
+      'drrm_appointments',
       'financial_disbursements',
       'activity_logs',
       'beneficiary_verifications'
@@ -2741,6 +2742,144 @@ app.put('/api/appointments/:id/status', async (req, res) => {
 
     res.json(row);
   } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// DRRM INTEGRATION APPOINTMENTS API (/api/drrm/appointments)
+// ============================================================================
+
+// GET all DRRM appointments from drrm_appointments table
+app.get('/api/drrm/appointments', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM drrm_appointments ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching DRRM appointments:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET single DRRM appointment by reference_no or id
+app.get('/api/drrm/appointments/:referenceNo', async (req, res) => {
+  try {
+    const { referenceNo } = req.params;
+    const result = await pool.query(
+      'SELECT * FROM drrm_appointments WHERE reference_no = $1 OR id::text = $1 LIMIT 1;',
+      [referenceNo]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'DRRM appointment not found' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error fetching single DRRM appointment:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST create or update DRRM appointment (Inbound from DRRM System)
+app.post('/api/drrm/appointments', async (req, res) => {
+  const {
+    referenceNo,
+    reference_no,
+    reporterName,
+    reporter_name,
+    applicantName,
+    clientName,
+    caseType,
+    case_type,
+    incidentType,
+    incident,
+    appointmentDate,
+    appointment_date,
+    appointmentTime,
+    appointment_time,
+    status,
+    voucherNo,
+    voucher_no
+  } = req.body || {};
+
+  const finalRefNo =
+    referenceNo ||
+    reference_no ||
+    `DRRM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const finalReporterName =
+    reporterName || reporter_name || applicantName || clientName || 'DRRM Client';
+  const finalCaseType =
+    caseType || case_type || incidentType || incident || 'Medical';
+  const finalDate = appointmentDate || appointment_date || null;
+  const finalTime = appointmentTime || appointment_time || null;
+  const finalStatus = status || (finalDate ? 'Interview Scheduled' : 'Pending Schedule');
+  const finalVoucher = voucherNo || voucher_no || null;
+
+  try {
+    const result = await pool.query(
+      `
+        INSERT INTO drrm_appointments
+          (reference_no, reporter_name, case_type, appointment_date, appointment_time, status, voucher_no)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        ON CONFLICT (reference_no) DO UPDATE SET
+          reporter_name = COALESCE(EXCLUDED.reporter_name, drrm_appointments.reporter_name),
+          case_type = COALESCE(EXCLUDED.case_type, drrm_appointments.case_type),
+          appointment_date = COALESCE(EXCLUDED.appointment_date, drrm_appointments.appointment_date),
+          appointment_time = COALESCE(EXCLUDED.appointment_time, drrm_appointments.appointment_time),
+          status = COALESCE(EXCLUDED.status, drrm_appointments.status),
+          voucher_no = COALESCE(EXCLUDED.voucher_no, drrm_appointments.voucher_no)
+        RETURNING *;
+      `,
+      [finalRefNo, finalReporterName, finalCaseType, finalDate, finalTime, finalStatus, finalVoucher]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error saving DRRM appointment:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT update schedule, status, or voucher of a DRRM appointment
+app.put('/api/drrm/appointments/:referenceNo', async (req, res) => {
+  const { referenceNo } = req.params;
+  const {
+    appointmentDate,
+    appointment_date,
+    appointmentTime,
+    appointment_time,
+    status,
+    voucherNo,
+    voucher_no,
+    reporterName,
+    caseType
+  } = req.body || {};
+
+  const finalDate = appointmentDate !== undefined ? appointmentDate : appointment_date;
+  const finalTime = appointmentTime !== undefined ? appointmentTime : appointment_time;
+  const finalVoucher = voucherNo !== undefined ? voucherNo : voucher_no;
+
+  try {
+    const result = await pool.query(
+      `
+        UPDATE drrm_appointments
+        SET
+          appointment_date = COALESCE($1, appointment_date),
+          appointment_time = COALESCE($2, appointment_time),
+          status = COALESCE($3, status),
+          voucher_no = COALESCE($4, voucher_no),
+          reporter_name = COALESCE($5, reporter_name),
+          case_type = COALESCE($6, case_type)
+        WHERE reference_no = $7 OR id::text = $7
+        RETURNING *;
+      `,
+      [finalDate ?? null, finalTime ?? null, status ?? null, finalVoucher ?? null, reporterName ?? null, caseType ?? null, referenceNo]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'DRRM appointment not found' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error updating DRRM appointment:', err);
     res.status(500).json({ error: err.message });
   }
 });

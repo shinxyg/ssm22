@@ -122,53 +122,39 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
     } catch {}
   }, [records]);
 
-  // Also sync any DRRM-prefixed appointments from PostgreSQL backend
+  // Sync DRRM appointments from Railway PostgreSQL drrm_appointments table
   useEffect(() => {
     const fetchBackendDrrm = () => {
-      fetch(`${API_BASE_URL}/api/appointments`)
+      fetch(`${API_BASE_URL}/api/drrm/appointments`)
         .then((res) => res.json())
         .then((data) => {
-          if (Array.isArray(data)) {
-            const drrmFromDb = data.filter(
-              (item: any) =>
-                typeof item.reference_no === 'string' &&
-                item.reference_no.toUpperCase().startsWith('DRRM-')
-            );
-            if (drrmFromDb.length > 0) {
-              setRecords((prev) => {
-                const updated = [...prev];
-                drrmFromDb.forEach((dbItem: any) => {
-                  const existingIdx = updated.findIndex(
-                    (r) => r.referenceNo === dbItem.reference_no
-                  );
-                  const mappedStatus: DrrmAppointmentRecord['status'] =
-                    (dbItem.status || '').toUpperCase().includes('APPROV') ||
-                    (dbItem.status || '').toUpperCase().includes('VOUCHER')
-                      ? 'Approved & Voucher Issued'
-                      : (dbItem.status || '').toUpperCase().includes('REJECT')
-                      ? 'Rejected'
-                      : (dbItem.status || '').toUpperCase().includes('SCHED')
-                      ? 'Interview Scheduled'
-                      : 'Pending Schedule';
+          if (Array.isArray(data) && data.length > 0) {
+            const mappedFromDb: DrrmAppointmentRecord[] = data.map((dbItem: any) => {
+              const rawStatus = String(dbItem.status || '');
+              const mappedStatus: DrrmAppointmentRecord['status'] =
+                rawStatus.toUpperCase().includes('APPROV') ||
+                rawStatus.toUpperCase().includes('VOUCHER')
+                  ? 'Approved & Voucher Issued'
+                  : rawStatus.toUpperCase().includes('REJECT')
+                  ? 'Rejected'
+                  : rawStatus.toUpperCase().includes('SCHED')
+                  ? 'Interview Scheduled'
+                  : 'Pending Schedule';
 
-                  if (existingIdx === -1) {
-                    updated.unshift({
-                      referenceNo: dbItem.reference_no,
-                      reporterName: dbItem.applicant_name || 'DRRM Citizen',
-                      reporterRole: 'DRRM Reporter',
-                      caseType: (dbItem.purpose as DrrmCaseType) || 'Medical',
-                      moduleService: 'Medical Assistance',
-                      appointmentDate: dbItem.appointment_date || '',
-                      appointmentTime: dbItem.appointment_time || '',
-                      venue: dbItem.venue || 'SSDD Medical Assistance Desk, QC Hall',
-                      status: mappedStatus,
-                      notes: dbItem.social_worker_notes || ''
-                    });
-                  }
-                });
-                return updated;
-              });
-            }
+              return {
+                referenceNo: dbItem.reference_no || dbItem.referenceNo,
+                reporterName: dbItem.reporter_name || dbItem.reporterName || 'DRRM Citizen',
+                reporterRole: 'DRRM Reporter',
+                caseType: ((dbItem.case_type || dbItem.caseType) as DrrmCaseType) || 'Medical',
+                moduleService: 'Medical Assistance',
+                appointmentDate: dbItem.appointment_date || dbItem.appointmentDate || '',
+                appointmentTime: dbItem.appointment_time || dbItem.appointmentTime || '',
+                venue: 'SSDD Medical Assistance Desk, QC Hall',
+                status: mappedStatus,
+                notes: 'Verified DRRM referral for medical assistance.'
+              };
+            });
+            setRecords(mappedFromDb);
           }
         })
         .catch(() => {});
@@ -357,20 +343,18 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
     );
 
     try {
-      await fetch(`${API_BASE_URL}/api/appointments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          referenceNo: updatedRec.referenceNo,
-          moduleName: 'DRRM',
-          applicantName: updatedRec.reporterName,
-          appointmentDate: updatedRec.appointmentDate,
-          appointmentTime: updatedRec.appointmentTime,
-          venue: updatedRec.venue,
-          purpose: updatedRec.caseType,
-          socialWorkerNotes: updatedRec.notes
-        })
-      });
+      await fetch(
+        `${API_BASE_URL}/api/drrm/appointments/${encodeURIComponent(updatedRec.referenceNo)}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            appointmentDate: updatedRec.appointmentDate,
+            appointmentTime: updatedRec.appointmentTime,
+            status: 'Interview Scheduled'
+          })
+        }
+      );
     } catch {}
 
     setSchedulingRecord(null);
@@ -388,11 +372,15 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
 
     try {
       await fetch(
-        `${API_BASE_URL}/api/appointments/${encodeURIComponent(rec.referenceNo)}/status`,
+        `${API_BASE_URL}/api/drrm/appointments/${encodeURIComponent(rec.referenceNo)}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status: newStatus })
+          body: JSON.stringify({
+            status: newStatus,
+            voucherNo:
+              newStatus === 'Approved & Voucher Issued' ? `VCH-${rec.referenceNo}` : null
+          })
         }
       );
     } catch {}

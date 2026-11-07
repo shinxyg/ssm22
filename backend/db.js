@@ -856,7 +856,38 @@ export const initDB = async () => {
         last_active_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         is_active BOOLEAN DEFAULT TRUE
       );
+
+      CREATE TABLE IF NOT EXISTS drrm_appointments (
+        id SERIAL PRIMARY KEY,
+        reference_no VARCHAR(50) UNIQUE NOT NULL,
+        reporter_name VARCHAR(255) NOT NULL,
+        case_type VARCHAR(100) NOT NULL,
+        appointment_date VARCHAR(50),
+        appointment_time VARCHAR(50),
+        status VARCHAR(50) DEFAULT 'Pending Schedule',
+        voucher_no VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
+
+    // Seed initial DRRM appointments if empty
+    try {
+      const drrmCheck = await client.query('SELECT COUNT(*) FROM drrm_appointments;');
+      if (parseInt(drrmCheck.rows[0].count, 10) === 0) {
+        await client.query(`
+          INSERT INTO drrm_appointments (reference_no, reporter_name, case_type, appointment_date, appointment_time, status, voucher_no)
+          VALUES
+            ('DRRM-2026-8841', 'Ramon Bautista', 'Fire', NULL, NULL, 'Pending Schedule', NULL),
+            ('DRRM-2026-8842', 'Maria Clara Santos', 'Vehicular Accident', '2026-11-10', '09:30 AM', 'Interview Scheduled', NULL),
+            ('DRRM-2026-8839', 'Carlo Mendoza', 'Flood', '2026-11-07', '02:00 PM', 'Approved & Voucher Issued', 'VCH-DRRM-2026-8839'),
+            ('DRRM-2026-8835', 'Jerome Villanueva', 'Electrical Hazard', '2026-11-06', '11:00 AM', 'Approved & Voucher Issued', 'VCH-DRRM-2026-8835')
+          ON CONFLICT (reference_no) DO NOTHING;
+        `);
+        console.log('✅ Default DRRM Appointments seeded in PostgreSQL DB!');
+      }
+    } catch (drrmErr) {
+      console.warn('Notice seeding drrm_appointments:', drrmErr.message);
+    }
 
     // Clean up any demo or inactive sessions so table is purely driven by actual active logins
     try {
