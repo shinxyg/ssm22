@@ -119,6 +119,7 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
   const [profilePhotoUpdatedAt, setProfilePhotoUpdatedAt] = useState<string | null>(null);
   const [photoUploadMsg, setPhotoUploadMsg] = useState<string | null>(null);
   const [photoCooldownError, setPhotoCooldownError] = useState<string | null>(null);
+  const [showPhotoCooldownModal, setShowPhotoCooldownModal] = useState<boolean>(false);
   const photoInputRef = React.useRef<HTMLInputElement | null>(null);
 
   // Calculate remaining cooldown days (7-day lock after uploading a profile photo)
@@ -619,16 +620,13 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 <div
                   onClick={() => {
                     if (photoCooldownDaysLeft > 0) {
-                      setPhotoCooldownError(`You can change your photo again in ${photoCooldownDaysLeft} day${photoCooldownDaysLeft === 1 ? '' : 's'}.`);
-                      setTimeout(() => setPhotoCooldownError(null), 4000);
+                      setShowPhotoCooldownModal(true);
                       return;
                     }
                     photoInputRef.current?.click();
                   }}
                   title={photoCooldownDaysLeft > 0 ? `Photo change locked for ${photoCooldownDaysLeft} more day(s)` : 'Click to upload profile photo'}
-                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-500/50 flex items-center justify-center font-bold text-lg shrink-0 overflow-hidden ${
-                    photoCooldownDaysLeft > 0 ? 'cursor-not-allowed opacity-90' : 'cursor-pointer'
-                  } ${
+                  className={`w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-blue-500/50 flex items-center justify-center font-bold text-lg shrink-0 overflow-hidden cursor-pointer ${
                     darkMode ? 'bg-slate-800 text-slate-300' : 'bg-white text-slate-700'
                   }`}
                 >
@@ -653,12 +651,6 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                         {photoUploadMsg}
                       </span>
                     )}
-                    {photoCooldownError && (
-                      <span className={`text-[11px] font-bold flex items-center gap-1 ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>
-                        <Clock className="w-3.5 h-3.5" />
-                        {photoCooldownError}
-                      </span>
-                    )}
                   </div>
                 </div>
               </div>
@@ -671,45 +663,25 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
                 className="hidden"
               />
 
-              <div className="flex flex-col sm:items-end gap-1">
+              <div className="flex flex-col sm:items-end">
                 <button
                   type="button"
-                  disabled={photoCooldownDaysLeft > 0}
                   onClick={() => {
-                    if (photoCooldownDaysLeft > 0) return;
+                    if (photoCooldownDaysLeft > 0) {
+                      setShowPhotoCooldownModal(true);
+                      return;
+                    }
                     photoInputRef.current?.click();
                   }}
-                  className={`w-full sm:w-auto justify-center px-3.5 py-2 text-xs font-semibold rounded-xl border flex items-center gap-2 transition-all ${
-                    photoCooldownDaysLeft > 0
-                      ? darkMode
-                        ? 'bg-slate-800/50 text-amber-400 border-amber-500/30 cursor-not-allowed'
-                        : 'bg-amber-50 text-amber-700 border-amber-300 cursor-not-allowed'
-                      : darkMode
-                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 cursor-pointer'
-                      : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 cursor-pointer shadow-sm'
+                  className={`w-full sm:w-auto justify-center px-4 py-2 text-xs font-semibold rounded-xl border flex items-center gap-2 transition-all cursor-pointer ${
+                    darkMode
+                      ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700'
+                      : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-300 shadow-sm'
                   }`}
                 >
-                  {photoCooldownDaysLeft > 0 ? (
-                    <>
-                      <Clock className={`w-4 h-4 ${darkMode ? 'text-amber-400' : 'text-amber-600'}`} />
-                      <span>Change Photo in {photoCooldownDaysLeft} {photoCooldownDaysLeft === 1 ? 'day' : 'days'}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Camera className={`w-4 h-4 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
-                      <span>Upload Photo</span>
-                    </>
-                  )}
+                  <Camera className={`w-4 h-4 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`} />
+                  <span>Change Photo</span>
                 </button>
-                <span className={`text-[10px] font-medium ${
-                  photoCooldownDaysLeft > 0
-                    ? darkMode ? 'text-amber-400/90' : 'text-amber-700'
-                    : darkMode ? 'text-slate-500' : 'text-slate-500'
-                }`}>
-                  {photoCooldownDaysLeft > 0
-                    ? `Locked • ${photoCooldownDaysLeft} day${photoCooldownDaysLeft === 1 ? '' : 's'} left before next change`
-                    : 'Can be changed once every 7 days'}
-                </span>
               </div>
             </div>
           </div>
@@ -1526,10 +1498,33 @@ export const UserProfileView: React.FC<UserProfileViewProps> = ({
 
             <button
               onClick={() => setShowQcidModal(false)}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl"
+              className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl cursor-pointer"
             >
               Close QCID Card
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* CHANGE PROFILE PICTURE COOLDOWN MODAL (CENTERED) */}
+      {showPhotoCooldownModal && (
+        <div className="fixed inset-0 z-[99999] bg-[#030712]/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-7 w-full max-w-sm text-center shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95">
+            <h3 className="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight">
+              Change Profile Picture
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium mt-3 leading-relaxed">
+              Please wait for {photoCooldownDaysLeft} {photoCooldownDaysLeft === 1 ? 'day' : 'days'} before changing your profile photo!
+            </p>
+            <div className="mt-6 pt-2 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setShowPhotoCooldownModal(false)}
+                className="w-full text-center text-sm font-bold text-blue-600 hover:text-blue-700 py-1 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
