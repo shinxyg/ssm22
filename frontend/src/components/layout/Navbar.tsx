@@ -161,6 +161,31 @@ export const Navbar: React.FC<NavbarProps> = ({
   // Track unseen other device logins & count for Profile Red Number Badge (strictly separated by userRole)
   const [hasUnseenOtherDevices, setHasUnseenOtherDevices] = useState<boolean>(false);
   const [otherDevicesCount, setOtherDevicesCount] = useState<number>(0);
+  const [drrmPendingList, setDrrmPendingList] = useState<any[]>([]);
+
+  // Fetch pending DRRM appointments periodically for admin notification bell
+  useEffect(() => {
+    if (userRole !== 'admin') return;
+
+    const fetchDrrm = () => {
+      fetch(`${API_BASE_URL}/api/drrm/appointments`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            const pending = data.filter((item: any) => {
+              const st = String(item.status || '').toUpperCase();
+              return st.includes('PENDING') || !item.appointment_date;
+            });
+            setDrrmPendingList(pending);
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchDrrm();
+    const interval = setInterval(fetchDrrm, 5000);
+    return () => clearInterval(interval);
+  }, [userRole]);
 
   useEffect(() => {
     const checkOtherDevices = async () => {
@@ -270,6 +295,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           });
         }
       });
+
+      // DRRM Referrals Notification for Admin
+      drrmPendingList.forEach((drrm) => {
+        const ref = drrm.reference_no || drrm.referenceNo || 'DRRM-REF';
+        const name = drrm.reporter_name || drrm.reporterName || 'DRRM Reporter';
+        const caseType = drrm.case_type || drrm.caseType || 'Medical';
+
+        list.unshift({
+          id: `admin-drrm-${ref}`,
+          title: `New DRRM Referral: ${caseType}`,
+          message: `Reporter ${name} submitted an emergency medical referral (Ref: ${ref}). Awaiting schedule.`,
+          time: 'Just Now',
+          type: 'warning'
+        });
+      });
+
       return list;
     }
 
@@ -382,7 +423,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     });
 
     return list;
-  }, [applications, userRole]);
+  }, [applications, userRole, drrmPendingList]);
 
   // Active (non-dismissed) notifications
   const notificationsList = useMemo(() => {
