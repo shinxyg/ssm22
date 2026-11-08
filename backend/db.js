@@ -896,8 +896,22 @@ export const initDB = async () => {
           '90c0ebce-3863-4171-b632-ac8826711efb'
         );
       `);
+      await client.query(`
+        DELETE FROM appointments
+        WHERE reference_no LIKE 'DRRM-%'
+           OR module_name ILIKE '%DRRM%'
+           OR reference_no = 'LVH-2026-3625';
+      `);
+      await client.query(`
+        DELETE FROM livelihood_applications
+        WHERE reference_no = 'LVH-2026-3625';
+      `);
+      await client.query(`
+        DELETE FROM financial_disbursements
+        WHERE reference_no = 'LVH-2026-3625';
+      `);
     } catch (drrmErr) {
-      console.warn('Notice cleaning dummy drrm_appointments:', drrmErr.message);
+      console.warn('Notice cleaning dummy drrm_appointments / livelihood records:', drrmErr.message);
     }
 
     // Clean up any demo or inactive sessions so table is purely driven by actual active logins

@@ -197,7 +197,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
-          const mapped: AppointmentEntry[] = data.map((item: any) => ({
+          const mapped: AppointmentEntry[] = data.filter((item: any) => !String(item.reference_no || '').toUpperCase().startsWith('DRRM-') && !String(item.module_name || '').toUpperCase().includes('DRRM') && String(item.reference_no || '').toUpperCase() !== 'LVH-2026-3625').map((item: any) => ({
             id: item.id,
             referenceNo: item.reference_no,
             moduleName: item.module_name,
@@ -242,7 +242,8 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
         st === 'SUBMITTED' ||
         st === 'FOR VALIDATION';
 
-      return !isPendingDoc && !isRejected;
+      const refUpper = String(app.referenceNo || '').toUpperCase();
+      return !isPendingDoc && !isRejected && !refUpper.startsWith('DRRM-') && refUpper !== 'LVH-2026-3625';
     });
 
     const merged: (ApplicationRecord & { appointmentDetails?: AppointmentEntry })[] = approvedApps.map((app) => {

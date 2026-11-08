@@ -145,7 +145,9 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
         date_submitted: row.date_submitted ? new Date(row.date_submitted).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Today'
       }));
 
-      const merged = [...(Array.isArray(lvhData) ? lvhData : []), ...mappedTrn];
+      const merged = [...(Array.isArray(lvhData) ? lvhData : []), ...mappedTrn].filter(
+        (item) => String(item.reference_no || '').toUpperCase() !== 'LVH-2026-3625'
+      );
       setApplications(merged);
     } catch (err) {
       console.error('Error fetching applications:', err);
