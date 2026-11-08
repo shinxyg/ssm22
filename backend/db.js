@@ -859,15 +859,29 @@ export const initDB = async () => {
 
       CREATE TABLE IF NOT EXISTS drrm_appointments (
         id SERIAL PRIMARY KEY,
-        reference_no VARCHAR(50) UNIQUE NOT NULL,
+        reference_no VARCHAR(150) UNIQUE NOT NULL,
         reporter_name VARCHAR(255) NOT NULL,
         case_type VARCHAR(100) NOT NULL,
         appointment_date VARCHAR(50),
         appointment_time VARCHAR(50),
         status VARCHAR(50) DEFAULT 'Pending Schedule',
-        voucher_no VARCHAR(100),
+        voucher_no VARCHAR(150),
+        granted_at TIMESTAMPTZ,
+        webhook_event_id VARCHAR(100),
+        webhook_delivery_status VARCHAR(50),
+        webhook_attempts INTEGER DEFAULT 0,
+        webhook_last_attempt_at TIMESTAMPTZ,
+        webhook_last_error TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+      ALTER TABLE drrm_appointments ALTER COLUMN reference_no TYPE VARCHAR(150);
+      ALTER TABLE drrm_appointments ALTER COLUMN voucher_no TYPE VARCHAR(150);
+      ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS granted_at TIMESTAMPTZ;
+      ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_event_id VARCHAR(100);
+      ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_delivery_status VARCHAR(50);
+      ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_attempts INTEGER DEFAULT 0;
+      ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_last_attempt_at TIMESTAMPTZ;
+      ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_last_error TEXT;
     `);
 
     // Seed initial DRRM appointments if empty

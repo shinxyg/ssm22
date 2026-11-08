@@ -5,6 +5,7 @@ import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { pool, initDB } from './db.js';
+import { deliverDrrmVoucherWebhook, isVoucherGrantStatus } from './drrmWebhook.js';
 
 dotenv.config();
 
@@ -2861,9 +2862,37 @@ app.put('/api/drrm/appointments/:referenceNo', async (req, res) => {
 
   const finalDate = appointmentDate !== undefined ? appointmentDate : appointment_date;
   const finalTime = appointmentTime !== undefined ? appointmentTime : appointment_time;
-  const finalVoucher = voucherNo !== undefined ? voucherNo : voucher_no;
+  const rawVoucher = voucherNo !== undefined ? voucherNo : voucher_no;
 
   try {
+    const existingRes = await pool.query(
+      'SELECT * FROM drrm_appointments WHERE reference_no = $1 OR id::text = $1 LIMIT 1;',
+      [referenceNo]
+    );
+    if (existingRes.rows.length === 0) {
+      return res.status(404).json({ error: 'DRRM appointment not found' });
+    }
+
+    const existingRow = existingRes.rows[0];
+    const targetStatus = status ?? existingRow.status;
+    const grantingVoucher = isVoucherGrantStatus(targetStatus);
+
+    // Ensure a voucher number exists when granting a medical voucher, without overwriting an existing voucher
+    let finalVoucher = rawVoucher !== undefined ? rawVoucher : existingRow.voucher_no;
+    if (grantingVoucher && (!finalVoucher || String(finalVoucher).trim() === '')) {
+      finalVoucher = `MV-${new Date().getFullYear()}-${String(existingRow.id).padStart(4, '0')}`;
+    }
+
+    const initialEventId = grantingVoucher
+      ? existingRow.webhook_event_id || crypto.randomUUID()
+      : existingRow.webhook_event_id || null;
+    const initialGrantedAt = grantingVoucher
+      ? existingRow.granted_at || new Date().toISOString()
+      : existingRow.granted_at || null;
+    const initialDeliveryStatus = grantingVoucher
+      ? existingRow.webhook_delivery_status || 'pending'
+      : existingRow.webhook_delivery_status || null;
+
     const result = await pool.query(
       `
         UPDATE drrm_appointments
@@ -2873,19 +2902,91 @@ app.put('/api/drrm/appointments/:referenceNo', async (req, res) => {
           status = COALESCE($3, status),
           voucher_no = COALESCE($4, voucher_no),
           reporter_name = COALESCE($5, reporter_name),
-          case_type = COALESCE($6, case_type)
-        WHERE reference_no = $7 OR id::text = $7
+          case_type = COALESCE($6, case_type),
+          webhook_event_id = COALESCE(webhook_event_id, $7),
+          granted_at = COALESCE(granted_at, $8),
+          webhook_delivery_status = COALESCE(webhook_delivery_status, $9)
+        WHERE id = $10
         RETURNING *;
       `,
-      [finalDate ?? null, finalTime ?? null, status ?? null, finalVoucher ?? null, reporterName ?? null, caseType ?? null, referenceNo]
+      [
+        finalDate ?? null,
+        finalTime ?? null,
+        status ?? null,
+        finalVoucher ?? null,
+        reporterName ?? null,
+        caseType ?? null,
+        initialEventId,
+        initialGrantedAt,
+        initialDeliveryStatus,
+        existingRow.id
+      ]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'DRRM appointment not found' });
+    let savedRow = result.rows[0];
+
+    // Trigger outbound DRRM webhook ONLY after voucher grant is saved in DB with a valid voucher_no
+    let webhookDelivery = null;
+    if (grantingVoucher && savedRow.voucher_no) {
+      try {
+        webhookDelivery = await deliverDrrmVoucherWebhook(savedRow, { dbPool: pool });
+        const refreshed = await pool.query(
+          'SELECT * FROM drrm_appointments WHERE id = $1 LIMIT 1;',
+          [savedRow.id]
+        );
+        if (refreshed.rows.length > 0) {
+          savedRow = refreshed.rows[0];
+        }
+      } catch (whErr) {
+        console.warn('DRRM outbound webhook non-fatal error:', whErr.message);
+      }
     }
-    res.json(result.rows[0]);
+
+    res.json({
+      ...savedRow,
+      ...(webhookDelivery ? { webhook_result: webhookDelivery } : {})
+    });
   } catch (err) {
     console.error('Error updating DRRM appointment:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST manual resend of DRRM medical voucher granted webhook using the same event_id and reference_no
+app.post('/api/drrm/appointments/:referenceNo/resend-webhook', async (req, res) => {
+  const { referenceNo } = req.params;
+  try {
+    const existingRes = await pool.query(
+      'SELECT * FROM drrm_appointments WHERE reference_no = $1 OR id::text = $1 LIMIT 1;',
+      [referenceNo]
+    );
+    if (existingRes.rows.length === 0) {
+      return res.status(404).json({ error: 'DRRM appointment not found' });
+    }
+
+    const row = existingRes.rows[0];
+    if (!row.voucher_no || !isVoucherGrantStatus(row.status)) {
+      return res.status(400).json({
+        error: 'Cannot resend webhook: medical voucher has not been granted for this DRRM appointment.'
+      });
+    }
+
+    const delivery = await deliverDrrmVoucherWebhook(row, {
+      dbPool: pool,
+      forceResend: true
+    });
+
+    const refreshed = await pool.query(
+      'SELECT * FROM drrm_appointments WHERE id = $1 LIMIT 1;',
+      [row.id]
+    );
+
+    res.json({
+      appointment: refreshed.rows[0] || row,
+      webhook_result: delivery
+    });
+  } catch (err) {
+    console.error('Error resending DRRM webhook:', err);
     res.status(500).json({ error: err.message });
   }
 });
