@@ -884,29 +884,20 @@ export const initDB = async () => {
       ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_last_error TEXT;
     `);
 
-    // Seed initial DRRM appointments if empty
+    // Remove dummy DRRM appointments and initial test entry so table is purely driven by live DRRM referrals
     try {
-      const drrmCheck = await client.query('SELECT COUNT(*) FROM drrm_appointments;');
-      if (parseInt(drrmCheck.rows[0].count, 10) === 0) {
-        await client.query(`
-          INSERT INTO drrm_appointments (reference_no, reporter_name, case_type, appointment_date, appointment_time, status, voucher_no)
-          VALUES
-            ('DRRM-2026-8841', 'Ramon Bautista', 'Fire', NULL, NULL, 'Pending Schedule', NULL),
-            ('DRRM-2026-8842', 'Maria Clara Santos', 'Vehicular Accident', '2026-11-07', '09:30 AM', 'Interview Scheduled', NULL),
-            ('DRRM-2026-8839', 'Carlo Mendoza', 'Flood', '2026-11-07', '02:00 PM', 'Approved & Voucher Issued', 'VCH-DRRM-2026-8839'),
-            ('DRRM-2026-8835', 'Jerome Villanueva', 'Electrical Hazard', '2026-11-06', '11:00 AM', 'Approved & Voucher Issued', 'VCH-DRRM-2026-8835')
-          ON CONFLICT (reference_no) DO NOTHING;
-        `);
-        console.log('✅ Default DRRM Appointments seeded in PostgreSQL DB!');
-      } else {
-        await client.query(`
-          UPDATE drrm_appointments
-          SET appointment_date = '2026-11-07'
-          WHERE reference_no = 'DRRM-2026-8842' AND appointment_date = '2026-11-10';
-        `);
-      }
+      await client.query(`
+        DELETE FROM drrm_appointments
+        WHERE reference_no IN (
+          'DRRM-2026-8841',
+          'DRRM-2026-8842',
+          'DRRM-2026-8839',
+          'DRRM-2026-8835',
+          '90c0ebce-3863-4171-b632-ac8826711efb'
+        );
+      `);
     } catch (drrmErr) {
-      console.warn('Notice seeding drrm_appointments:', drrmErr.message);
+      console.warn('Notice cleaning dummy drrm_appointments:', drrmErr.message);
     }
 
     // Clean up any demo or inactive sessions so table is purely driven by actual active logins

@@ -39,57 +39,6 @@ interface AdminDrrmAppointmentViewProps {
   darkMode?: boolean;
 }
 
-const INITIAL_DRRM_APPOINTMENTS: DrrmAppointmentRecord[] = [
-  {
-    referenceNo: 'DRRM-2026-8841',
-    reporterName: 'Ramon Bautista',
-    reporterRole: 'DRRM Reporter',
-    caseType: 'Fire',
-    moduleService: 'Medical Assistance',
-    appointmentDate: '',
-    appointmentTime: '',
-    venue: 'SSDD Medical Assistance Desk, QC Hall',
-    status: 'Pending Schedule',
-    notes: 'Please bring original Statement of Account (SOA), Medical Abstract, and valid ID.'
-  },
-  {
-    referenceNo: 'DRRM-2026-8842',
-    reporterName: 'Maria Clara Santos',
-    reporterRole: 'DRRM Reporter',
-    caseType: 'Vehicular Accident',
-    moduleService: 'Medical Assistance',
-    appointmentDate: '2026-11-07',
-    appointmentTime: '09:30',
-    venue: 'SSDD Medical Assistance Desk, QC Hall',
-    status: 'Interview Scheduled',
-    notes: 'Please bring original Statement of Account (SOA), Medical Abstract, and valid ID.'
-  },
-  {
-    referenceNo: 'DRRM-2026-8839',
-    reporterName: 'Carlo Mendoza',
-    reporterRole: 'DRRM Reporter',
-    caseType: 'Flood',
-    moduleService: 'Medical Assistance',
-    appointmentDate: '2026-11-07',
-    appointmentTime: '14:00',
-    venue: 'SSDD Medical Assistance Desk, QC Hall',
-    status: 'Approved & Voucher Issued',
-    notes: 'Verified DRRM flood emergency medical referral.'
-  },
-  {
-    referenceNo: 'DRRM-2026-8835',
-    reporterName: 'Jerome Villanueva',
-    reporterRole: 'DRRM Reporter',
-    caseType: 'Electrical Hazard',
-    moduleService: 'Medical Assistance',
-    appointmentDate: '2026-11-06',
-    appointmentTime: '11:00',
-    venue: 'SSDD Medical Assistance Desk, QC Hall',
-    status: 'Approved & Voucher Issued',
-    notes: 'Verified DRRM electrical hazard medical referral.'
-  }
-];
-
 const STORAGE_KEY = 'govserve_drrm_appointments_v1';
 
 export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> = ({
@@ -99,18 +48,7 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
   const [moduleFilter, setModuleFilter] = useState<string>('Medical Assistance');
   const [statusFilter, setStatusFilter] = useState<string>('All Statuses');
 
-  const [records, setRecords] = useState<DrrmAppointmentRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
-        }
-      }
-    } catch {}
-    return INITIAL_DRRM_APPOINTMENTS;
-  });
+  const [records, setRecords] = useState<DrrmAppointmentRecord[]>([]);
 
   const [schedulingRecord, setSchedulingRecord] = useState<DrrmAppointmentRecord | null>(null);
   const [assessmentRecord, setAssessmentRecord] = useState<DrrmAppointmentRecord | null>(null);
@@ -179,9 +117,9 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+      localStorage.removeItem(STORAGE_KEY);
     } catch {}
-  }, [records]);
+  }, []);
 
   // Sync DRRM appointments from Railway PostgreSQL drrm_appointments table
   useEffect(() => {
@@ -189,7 +127,7 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
       fetch(`${API_BASE_URL}/api/drrm/appointments`)
         .then((res) => res.json())
         .then((data) => {
-          if (Array.isArray(data) && data.length > 0) {
+          if (Array.isArray(data)) {
             const mappedFromDb: DrrmAppointmentRecord[] = data.map((dbItem: any) => {
               const rawStatus = String(dbItem.status || '').trim();
               const hasDate = Boolean(dbItem.appointment_date || dbItem.appointmentDate);
