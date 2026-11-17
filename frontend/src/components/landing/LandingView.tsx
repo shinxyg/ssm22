@@ -4,8 +4,6 @@ import {
   ArrowRight,
   ArrowLeft,
   ArrowUp,
-  Smartphone,
-  Download,
   ShieldCheck,
   CheckCircle2,
   Clock,
@@ -29,8 +27,6 @@ import {
   ChevronRight,
   Menu,
   X,
-  HardDrive,
-  Wifi,
   UserCheck,
   BookOpen,
   Scale,
@@ -47,7 +43,7 @@ interface LandingViewProps {
   onToggleDarkMode?: () => void;
 }
 
-type PublicPage = 'home' | 'mobile-app' | 'announcements' | 'how-it-works' | 'legal';
+type PublicPage = 'home' | 'announcements' | 'how-it-works' | 'legal';
 
 interface BilingualText {
   en: string;
@@ -652,7 +648,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
   const parseLocationState = (): { page: PublicPage; docId: string | null } => {
     try {
       const path = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
-      if (path === '/mobile-app') return { page: 'mobile-app', docId: null };
       if (path === '/announcements') return { page: 'announcements', docId: null };
       if (path === '/how-it-works') return { page: 'how-it-works', docId: null };
       if (path === '/legal' || path === '/legals') return { page: 'legal', docId: null };
@@ -754,8 +749,7 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
 
     try {
       let targetPath = '/';
-      if (page === 'mobile-app') targetPath = '/mobile-app';
-      else if (page === 'announcements') targetPath = '/announcements';
+      if (page === 'announcements') targetPath = '/announcements';
       else if (page === 'how-it-works') targetPath = '/how-it-works';
       else if (page === 'legal') targetPath = docId ? `/legal/${docId}` : '/legal';
 
@@ -835,7 +829,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
 
   const navItems: { page: PublicPage; label: string }[] = [
     { page: 'home', label: tr('Home', 'Tahanan') },
-    { page: 'mobile-app', label: tr('Mobile app', 'Mobile App') },
     { page: 'announcements', label: tr('Announcements', 'Mga Anunsyo') },
     { page: 'how-it-works', label: tr('How It Works', 'Paano Ito Gumagana') },
     { page: 'legal', label: tr('Legals', 'Legals') }
@@ -855,10 +848,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
       title: tr('System Access', 'Access sa Sistema'),
       links: [
         { label: tr('Sign In', 'Mag-sign In'), onClick: onAccessPortal },
-        {
-          label: tr('Download Mobile App', 'I-download ang Mobile App'),
-          onClick: () => navigateTo('mobile-app')
-        },
         {
           label: tr('How It Works', 'Paano Ito Gumagana'),
           onClick: () => navigateTo('how-it-works')
@@ -1222,26 +1211,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
                       <ArrowRight className="w-[18px] h-[18px] transition-transform group-hover:translate-x-[2px]" />
                     </button>
                   </div>
-
-                  {/* Download Mobile App Mini Card */}
-                  <button
-                    type="button"
-                    onClick={() => navigateTo('mobile-app')}
-                    className="mt-[20px] grid w-full max-w-[432px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-[11.2px] rounded-[14px] border border-[#2563eb29] bg-[#ffffffbd] px-[13.1px] py-[11.5px] text-left text-[#0f2c59] shadow-[0_16px_32px_-28px_#0f2c59cc] transition hover:translate-y-[-2px] hover:border-[#2563eb59] hover:shadow-[0_20px_36px_-26px_#0f2c59b3] cursor-pointer"
-                  >
-                    <span className="grid h-[34px] w-[34px] place-items-center rounded-[10px] bg-[linear-gradient(145deg,#1870d5,#0f2c59)] text-white shadow-[0_8px_16px_-10px_#2563ebe6]">
-                      <Smartphone className="w-4 h-4" />
-                    </span>
-                    <span className="min-w-0">
-                      <strong className="block text-[12.8px] leading-[1.2]">
-                        {tr('Download Mobile App', 'I-download ang Mobile App')}
-                      </strong>
-                      <small className="mt-[3.2px] block text-[11.2px] leading-[1.4] text-[#5b6b7f]">
-                        {tr('APK for Android 8.0 or higher', 'APK para sa Android 8.0 pataas')}
-                      </small>
-                    </span>
-                    <Download className="w-4 h-4 text-[#1870d5]" />
-                  </button>
                 </div>
 
                 {/* Right Tilted Preview Card (Responsive on CP & Desktop) */}
@@ -1447,52 +1416,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
               </div>
             </section>
 
-            {/* Mobile App Promo Banner */}
-            <section className="relative bg-white pt-[8px] pb-[clamp(56px,7vw,96px)]">
-              <div className={containerClass}>
-                <div className="grid grid-cols-1 items-center gap-[20px] rounded-[18px] border border-[#2563eb29] bg-[linear-gradient(120deg,#f6faff,#edf5ff_57%,#fff9ec)] p-[clamp(18.4px,3vw,26.4px)] shadow-[0_24px_56px_-42px_#0f2c59c7] sm:grid-cols-[auto_minmax(0,1fr)] md:grid-cols-[auto_minmax(0,1fr)_auto]">
-                  <div className="grid h-[58px] w-[58px] place-items-center rounded-[18px] bg-[linear-gradient(145deg,#1870d5,#0f2c59)] text-white shadow-[0_8px_16px_-10px_#2563ebe6]">
-                    <Smartphone className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <span className="inline-flex items-center gap-2 text-[11.5px] font-extrabold uppercase leading-none tracking-[0.13em] text-[#0f2c59]">
-                      {tr('Mobile app', 'Mobile App')}
-                    </span>
-                    <h2 className="my-[5.6px] text-[clamp(23px,3vw,34px)] font-semibold leading-[1.22] tracking-[-0.035em] text-[#0f2c59]">
-                      {tr(
-                        'Social Services and Aid in Your Pocket',
-                        'Serbisyo at Tulong, Hawak Mo'
-                      )}
-                    </h2>
-                    <p className="max-w-[57ch] text-[14.4px] leading-[1.6] text-[#5b6b7f]">
-                      {tr(
-                        'Download the official GovServe mobile app to apply for welfare programs, check orientation schedules, and track Guarantee Letters and payouts on your phone.',
-                        'I-download ang opisyal na GovServe mobile app para makapag-apply sa mga programa, makita ang iskedyul ng oryentasyon, at masubaybayan ang Guarantee Letter at payout sa phone mo.'
-                      )}
-                    </p>
-                    <div className="mt-[12px] flex flex-wrap gap-x-[17.6px] gap-y-[10px] text-[11.5px] font-bold text-[#0f2c59]">
-                      <span className="inline-flex items-center gap-[5px]">
-                        <ShieldCheck className="w-3.5 h-3.5 text-[#1870d5]" />
-                        {tr('Official GovServe app', 'Opisyal na GovServe app')}
-                      </span>
-                      <span className="inline-flex items-center gap-[5px]">
-                        <Smartphone className="w-3.5 h-3.5 text-[#1870d5]" />
-                        {tr('Android 8.0 or higher', 'Android 8.0 pataas')}
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => navigateTo('mobile-app')}
-                    className="group inline-flex w-full sm:col-span-2 sm:w-auto sm:justify-self-start md:col-span-1 items-center justify-center gap-2 whitespace-nowrap rounded-full bg-[#1870d5] px-[25px] py-[13px] text-[15.5px] font-semibold leading-tight text-white shadow-[0_14px_30px_-12px_#1870d5a6] transition-colors hover:bg-[#1563bb] cursor-pointer"
-                  >
-                    <span>{tr('Download Mobile App', 'I-download ang Mobile App')}</span>
-                    <ArrowRight className="w-[18px] h-[18px] transition-transform group-hover:translate-x-[2px]" />
-                  </button>
-                </div>
-              </div>
-            </section>
-
             {/* Dark-Blue Citizen Portal CTA Section */}
             <section className="relative pt-[8px] pb-[clamp(56px,7vw,96px)]">
               <div
@@ -1523,300 +1446,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
                   <span>{tr('Sign In', 'Mag-sign In')}</span>
                   <ArrowRight className="w-[18px] h-[18px] transition-transform group-hover:translate-x-[2px]" />
                 </button>
-              </div>
-            </section>
-          </div>
-        )}
-
-        {/* --------------------------------------------------------------------
-           PAGE 2: MOBILE APP PAGE
-           -------------------------------------------------------------------- */}
-        {currentPage === 'mobile-app' && (
-          <div className="animate-fade-in">
-            <section className="py-8 md:py-[40px]">
-              <div className={containerClass}>
-                <span className="inline-flex items-center gap-[6px] rounded-full border border-[#1870d52e] bg-white px-[12px] py-[4px] text-[11.8px] font-semibold text-[#0f2c59] shadow-[0_6px_18px_-12px_#0f2c5966]">
-                  <Smartphone className="w-[13px] h-[13px] text-[#1870d5]" />
-                  {tr('Mobile app', 'Mobile App')}
-                </span>
-                <h1 className="mt-[16px] text-[clamp(26px,calc(18.4px+2vw),40px)] font-bold leading-[1.15] tracking-[-0.03em] text-[#0f2c59]">
-                  {tr('Social Services and Aid in', 'Serbisyo at Tulong,')}{' '}
-                  <span className="text-[#1870d5]">{tr('Your Pocket', 'Hawak Mo')}</span>
-                </h1>
-                <p className="mt-[16px] max-w-[62ch] text-[15.5px] sm:text-[16px] leading-[1.6] text-[#5b6b7f]">
-                  {tr(
-                    'Download the official GovServe Social Services mobile app to apply for AICS, PWD, Senior Citizen, Solo Parent, Educational, and Livelihood programs, check orientation schedules, and track payouts on your Android phone.',
-                    'I-download ang opisyal na GovServe Social Services mobile app para makapag-apply sa AICS, PWD, Senior Citizen, Solo Parent, Educational, at Livelihood programs, makita ang iskedyul ng oryentasyon, at masubaybayan ang payout sa iyong Android phone.'
-                  )}
-                </p>
-              </div>
-            </section>
-
-            {/* Download Card + What's in the App */}
-            <section className="py-4 md:py-[20px]">
-              <div className={`${containerClass} grid grid-cols-1 lg:grid-cols-2 gap-[16px]`}>
-                {/* Left: APK Download Card */}
-                <article
-                  id="download"
-                  className="relative overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white scroll-mt-[120px]"
-                >
-                  <div className="relative bg-[linear-gradient(120deg,#0d2b58,#17447e_58%,#2469ad)] px-[22px] pt-[22px] pb-[54px]">
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute right-[-40px] top-[-60px] h-[180px] w-[180px] rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.16),transparent_70%)]"
-                    />
-                    <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-[10px] py-[2px] text-[11.5px] font-semibold text-[#cfe0f6]">
-                      {tr('Version 1.0.0 · build 1', 'Bersyon 1.0.0 · build 1')}
-                    </span>
-                  </div>
-
-                  <div className="relative px-[22px] pb-[22px]">
-                    <div className="mt-[-36px] flex items-start gap-4">
-                      <span className="grid h-[72px] w-[72px] shrink-0 place-items-center rounded-[20px] border-4 border-white bg-white shadow-[0_14px_30px_-14px_#0f2c5999]">
-                        <img
-                          src="/Government Service Integrity Seal.png"
-                          alt="GSSM Logo"
-                          className="h-14 w-14 object-contain"
-                        />
-                      </span>
-                      <div className="pt-11">
-                        <h2 className="text-[21px] sm:text-[23px] font-bold leading-[1.2] tracking-[-0.015em] text-[#0f2c59]">
-                          GSSM
-                        </h2>
-                        <p className="text-[13px] text-[#5b6b7f]">
-                          {tr(
-                            'GovServe Social Services app for Android',
-                            'GovServe Social Services app para sa Android'
-                          )}
-                        </p>
-                      </div>
-                    </div>
-
-                    <dl className="mt-[18px] grid grid-cols-2 gap-[10px] text-[13px]">
-                      <div className="rounded-[12px] bg-[#eef2f7] px-[12px] py-[9px]">
-                        <dt className="text-[11.5px] text-[#5b6b7f]">
-                          {tr('File type', 'Uri ng file')}
-                        </dt>
-                        <dd className="font-semibold text-[#0f2c59]">Android APK</dd>
-                      </div>
-                      <div className="rounded-[12px] bg-[#eef2f7] px-[12px] py-[9px]">
-                        <dt className="text-[11.5px] text-[#5b6b7f]">Package</dt>
-                        <dd className="font-mono text-[12px] font-semibold text-[#0f2c59] truncate">
-                          com.govserve.ssm
-                        </dd>
-                      </div>
-                    </dl>
-
-                    <button
-                      type="button"
-                      onClick={onAccessPortal}
-                      className="mt-[18px] flex w-full items-center justify-center gap-[9px] rounded-[14px] bg-[#1870d5] px-[18px] py-[13px] text-[15px] font-bold text-white shadow-[0_14px_30px_-12px_#1870d5a6] transition-colors hover:bg-[#1563bb] cursor-pointer"
-                    >
-                      <Download className="w-[18px] h-[18px]" />
-                      <span>
-                        {tr('Download APK for Android', 'I-download ang APK para sa Android')}
-                      </span>
-                    </button>
-
-                    <p className="mt-[12px] flex items-start gap-2 text-[12.5px] leading-normal text-[#5b6b7f]">
-                      <ShieldCheck className="mt-[2px] w-[15px] h-[15px] shrink-0 text-[#067647]" />
-                      {tr(
-                        'Official Quezon City Social Services mobile package for Android devices.',
-                        'Opisyal na Quezon City Social Services mobile package para sa mga Android device.'
-                      )}
-                    </p>
-                  </div>
-                </article>
-
-                {/* Right: What's in the app */}
-                <article className="relative overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-[22px]">
-                  <h3 className="text-[17px] font-semibold leading-[1.22] text-[#0f2c59]">
-                    {tr("What's in the app", 'Ano ang nasa app')}
-                  </h3>
-                  <p className="mt-[6px] text-[13.5px] text-[#5b6b7f]">
-                    {tr(
-                      'The same screens as the web portal, made for your phone.',
-                      'Parehong mga screen ng web portal, ginawa para sa phone mo.'
-                    )}
-                  </p>
-
-                  <div className="mt-[18px] grid gap-4">
-                    {[
-                      {
-                        icon: <Users className="w-4 h-4" />,
-                        title: tr('For citizens', 'Para sa mamamayan'),
-                        items: [
-                          tr(
-                            'Personal Social Services Dashboard',
-                            'Personal na Social Services Dashboard'
-                          ),
-                          tr(
-                            'AICS Medical & Burial Assistance Application',
-                            'Aplikasyon sa AICS Medical at Burial Assistance'
-                          ),
-                          tr(
-                            'PWD, Senior Citizen, Solo Parent & Child Welfare',
-                            'PWD, Senior Citizen, Solo Parent at Child Welfare'
-                          ),
-                          tr(
-                            'Appointments & Financial Aid Disbursement Tracker',
-                            'Tracker ng Appointment at Financial Aid Payout'
-                          )
-                        ]
-                      },
-                      {
-                        icon: <Briefcase className="w-4 h-4" />,
-                        title: tr('For MSWDO staff', 'Para sa kawani ng MSWDO'),
-                        items: [
-                          tr(
-                            'Application Verification & Case Review',
-                            'Beripikasyon ng Aplikasyon at Case Review'
-                          ),
-                          tr(
-                            'Guarantee Letter (GL) & Payroll Release',
-                            'Paglalabas ng Guarantee Letter (GL) at Payroll'
-                          ),
-                          tr(
-                            'Orientation & Appointment Scheduling',
-                            'Pagtatakda ng Oryentasyon at Appointment'
-                          ),
-                          tr(
-                            'Beneficiary Masterlist & Activity Audit Log',
-                            'Beneficiary Masterlist at Activity Audit Log'
-                          )
-                        ]
-                      }
-                    ].map((group) => (
-                      <div
-                        key={group.title}
-                        className="rounded-[14px] border border-[#eef2f7] bg-[#fbfdff] p-4"
-                      >
-                        <div className="flex items-center gap-[10px]">
-                          <span className="grid h-[30px] w-[30px] place-items-center rounded-[9px] bg-[#eaf2fd] text-[#1870d5]">
-                            {group.icon}
-                          </span>
-                          <strong className="text-[14px] text-[#0f2c59]">{group.title}</strong>
-                        </div>
-                        <ul className="mt-[10px] grid gap-2 sm:grid-cols-2">
-                          {group.items.map((it) => (
-                            <li
-                              key={it}
-                              className="flex items-start gap-2 text-[13px] leading-[1.45] text-[#1e293b]"
-                            >
-                              <CheckCircle2 className="mt-[2px] w-4 h-4 shrink-0 text-[#1870d5]" />
-                              <span>{it}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </article>
-              </div>
-            </section>
-
-            {/* System Requirements & Installing on Android */}
-            <section className="py-6 md:py-[32px]">
-              <div className={`${containerClass} grid grid-cols-1 lg:grid-cols-2 gap-[16px]`}>
-                <article className="relative overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-[22px]">
-                  <h3 className="text-[17px] font-semibold leading-[1.22] text-[#0f2c59]">
-                    {tr('System requirements', 'Mga kailangan')}
-                  </h3>
-                  <ul className="mt-[16px] grid gap-[12px]">
-                    {[
-                      {
-                        icon: <Smartphone className="w-[18px] h-[18px]" />,
-                        title: tr('Android 8.0 (Oreo) or higher', 'Android 8.0 (Oreo) pataas'),
-                        note: tr(
-                          'Compatible with Android smartphones and tablets.',
-                          'Gumagana sa mga Android smartphone at tablet.'
-                        )
-                      },
-                      {
-                        icon: <HardDrive className="w-[18px] h-[18px]" />,
-                        title: tr(
-                          'At least 50 MB free space',
-                          'Hindi bababa sa 50 MB na bakanteng espasyo'
-                        ),
-                        note: tr(
-                          'For the app and saved document uploads.',
-                          'Para sa app at sa mga ia-upload na dokumento.'
-                        )
-                      },
-                      {
-                        icon: <Wifi className="w-[18px] h-[18px]" />,
-                        title: tr('Internet connection', 'Koneksyon sa internet'),
-                        note: tr(
-                          'Needed to submit applications, check status updates, and view payout schedules.',
-                          'Kailangan para magpasa ng aplikasyon, tumingin ng status, at makita ang payout schedule.'
-                        )
-                      },
-                      {
-                        icon: <UserCheck className="w-[18px] h-[18px]" />,
-                        title: tr('A GovServe account', 'GovServe account'),
-                        note: tr(
-                          'The same citizen or MSWDO staff account you use on the web portal.',
-                          'Parehong citizen o MSWDO staff account na gamit mo sa web portal.'
-                        )
-                      }
-                    ].map((req) => (
-                      <li key={req.title} className="flex items-start gap-[12px]">
-                        <span className="grid h-[38px] w-[38px] shrink-0 place-items-center rounded-[11px] bg-[#eaf2fd] text-[#1870d5]">
-                          {req.icon}
-                        </span>
-                        <span>
-                          <strong className="block text-[14px] leading-[1.35] text-[#0f2c59]">
-                            {req.title}
-                          </strong>
-                          <span className="text-[13px] leading-normal text-[#5b6b7f]">
-                            {req.note}
-                          </span>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-
-                <article className="relative overflow-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-[22px]">
-                  <h3 className="text-[17px] font-semibold leading-[1.22] text-[#0f2c59]">
-                    {tr('Installing on Android', 'Pag-install sa Android')}
-                  </h3>
-                  <ol className="mt-[16px] grid gap-[4px]">
-                    {[
-                      tr(
-                        'Tap Download APK and open the file when it finishes downloading.',
-                        'I-tap ang Download APK at buksan ang file kapag tapos nang ma-download.'
-                      ),
-                      tr(
-                        'If Android asks, allow installs from your browser.',
-                        'Kung magtanong ang Android, payagan ang pag-install mula sa browser mo.'
-                      ),
-                      tr(
-                        'Open GSSM and sign in with your GovServe account.',
-                        'Buksan ang GSSM at mag-sign in gamit ang GovServe account mo.'
-                      ),
-                      tr(
-                        'Allow camera and storage permissions so you can photograph and attach your QCitizen ID, medical bills, or Certificate of Enrollment.',
-                        'Payagan ang camera at storage permissions para makuhanan at mailakip ang iyong QCitizen ID, medical bill, o Certificate of Enrollment.'
-                      )
-                    ].map((stepText, idx, arr) => (
-                      <li key={idx} className="relative flex gap-4 pb-4 last:pb-0">
-                        {idx < arr.length - 1 && (
-                          <span
-                            aria-hidden="true"
-                            className="absolute left-[16px] top-[34px] bottom-0 w-px bg-[#e2e8f0]"
-                          />
-                        )}
-                        <span className="relative grid h-[33px] w-[33px] shrink-0 place-items-center rounded-full border border-[#1870d540] bg-white font-mono text-[12px] font-bold text-[#1870d5]">
-                          0{idx + 1}
-                        </span>
-                        <p className="pt-[6px] text-[13.5px] leading-[1.55] text-[#1e293b]">
-                          {stepText}
-                        </p>
-                      </li>
-                    ))}
-                  </ol>
-                </article>
               </div>
             </section>
           </div>
@@ -2029,8 +1658,8 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
                   </h2>
                   <p className="mt-[12px] text-[14px] leading-[1.6] text-[#5b6b7f]">
                     {tr(
-                      'Sign in to submit an application, or download the mobile app first.',
-                      'Mag-sign in para magpasa ng aplikasyon, o i-download muna ang mobile app.'
+                      'Sign in to submit an application and track your welfare benefits online.',
+                      'Mag-sign in para magpasa ng aplikasyon at subaybayan ang iyong tulong online.'
                     )}
                   </p>
                   <div className="mt-[16px] flex flex-wrap gap-[12px]">
@@ -2040,13 +1669,6 @@ export const LandingView: React.FC<LandingViewProps> = ({ onAccessPortal, darkMo
                       className="inline-flex w-full sm:w-auto items-center justify-center gap-[7.2px] whitespace-nowrap rounded-full border border-transparent bg-[#1870d5] px-[18px] py-[9.5px] text-[14.9px] font-semibold leading-tight text-white shadow-[0_6px_18px_-6px_#1870d58c] transition-colors hover:bg-[#1563bb] cursor-pointer"
                     >
                       {tr('Sign In', 'Mag-sign In')}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => navigateTo('mobile-app')}
-                      className="inline-flex w-full sm:w-auto items-center justify-center gap-[7.2px] whitespace-nowrap rounded-full border border-[#e2e8f0] bg-white px-[18px] py-[9.5px] text-[14.9px] font-semibold leading-tight text-[#0f2c59] transition-colors hover:border-[#1870d5] hover:bg-[#eaf2fd] cursor-pointer"
-                    >
-                      {tr('Download Mobile App', 'I-download ang Mobile App')}
                     </button>
                   </div>
                 </div>

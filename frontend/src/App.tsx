@@ -199,7 +199,7 @@ export default function App() {
       if (currentPath === '/login' || currentPath.startsWith('/login/')) {
         return 'login';
       }
-      if (currentPath === '/mobile-app' || currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/')) {
+      if (currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/')) {
         return 'landing';
       }
       const hasSession = Boolean(localStorage.getItem('currentUser') || sessionStorage.getItem('activeTab'));
@@ -303,7 +303,7 @@ export default function App() {
     try {
       const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
       if (activeTab === 'landing') {
-        const isPublicSubpath = currentPath === '/' || currentPath === '/mobile-app' || currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/');
+        const isPublicSubpath = currentPath === '/' || currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/');
         if (!isPublicSubpath) {
           window.history.pushState(null, '', '/');
         }
@@ -339,7 +339,7 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       const currentPath = (window.location.pathname || '/').replace(/\/+$/, '') || '/';
-      if (currentPath === '/' || currentPath === '/mobile-app' || currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/')) {
+      if (currentPath === '/' || currentPath === '/announcements' || currentPath === '/how-it-works' || currentPath === '/legal' || currentPath === '/legals' || currentPath.startsWith('/legal/')) {
         setActiveTab('landing');
         return;
       }
@@ -372,10 +372,9 @@ export default function App() {
   useEffect(() => {
     try {
       localStorage.setItem('govserve_theme_mode', darkMode ? 'dark' : 'light');
-      const isDarkActive = darkMode && activeTab !== 'landing' && activeTab !== 'login';
-      document.documentElement.classList.toggle('dark', isDarkActive);
-      document.body.classList.toggle('dark', isDarkActive);
-      document.documentElement.style.colorScheme = isDarkActive ? 'dark' : 'light';
+      document.documentElement.classList.toggle('dark', darkMode);
+      document.body.classList.toggle('dark', darkMode);
+      document.documentElement.style.colorScheme = darkMode ? 'dark' : 'light';
     } catch (e) {}
   }, [darkMode, activeTab]);
 
