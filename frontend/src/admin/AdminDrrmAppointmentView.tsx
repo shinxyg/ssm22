@@ -231,56 +231,48 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
     switch (caseType) {
       case 'Fire':
         return {
-          emoji: '🔥',
           cls: darkMode
             ? 'bg-rose-500/15 text-rose-300 border-rose-500/30'
             : 'bg-rose-50 text-rose-700 border-rose-300'
         };
       case 'Vehicular Accident':
         return {
-          emoji: '🚗',
           cls: darkMode
             ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
             : 'bg-emerald-50 text-emerald-700 border-emerald-300'
         };
       case 'Flood':
         return {
-          emoji: '💧',
           cls: darkMode
             ? 'bg-sky-500/15 text-sky-300 border-sky-500/30'
             : 'bg-sky-50 text-sky-700 border-sky-300'
         };
       case 'Electrical Hazard':
         return {
-          emoji: '🗼',
           cls: darkMode
             ? 'bg-amber-500/15 text-amber-300 border-amber-500/30'
             : 'bg-amber-50 text-amber-700 border-amber-300'
         };
       case 'Earthquake':
         return {
-          emoji: '⚡',
           cls: darkMode
             ? 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30'
             : 'bg-yellow-50 text-yellow-700 border-yellow-300'
         };
       case 'Landslide':
         return {
-          emoji: '⛰️',
           cls: darkMode
             ? 'bg-stone-500/15 text-stone-300 border-stone-500/30'
             : 'bg-stone-100 text-stone-700 border-stone-300'
         };
       case 'Search and Rescue':
         return {
-          emoji: '🔍',
           cls: darkMode
             ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
             : 'bg-purple-50 text-purple-700 border-purple-300'
         };
       case 'Road Obstruction':
         return {
-          emoji: '⚠️',
           cls: darkMode
             ? 'bg-orange-500/15 text-orange-300 border-orange-500/30'
             : 'bg-orange-50 text-orange-700 border-orange-300'
@@ -288,7 +280,6 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
       case 'Medical':
       default:
         return {
-          emoji: '💓',
           cls: darkMode
             ? 'bg-pink-500/15 text-pink-300 border-pink-500/30'
             : 'bg-pink-50 text-pink-700 border-pink-300'
@@ -687,9 +678,8 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                           Case Type
                         </span>
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg border font-bold text-xs ${badge.cls}`}
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-lg border font-bold text-xs ${badge.cls}`}
                         >
-                          <span>{badge.emoji}</span>
                           <span>{rec.caseType}</span>
                         </span>
                       </div>
@@ -874,9 +864,8 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
 
                           <td className="py-4 px-5">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border font-bold text-xs ${badge.cls}`}
+                              className={`inline-flex items-center px-2.5 py-1 rounded-lg border font-bold text-xs ${badge.cls}`}
                             >
-                              <span>{badge.emoji}</span>
                               <span>{rec.caseType}</span>
                             </span>
                           </td>
@@ -1072,7 +1061,6 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                       CASE TYPE
                     </span>
                     <span className="font-bold text-blue-400">
-                      {getCaseTypeBadge(schedulingRecord.caseType).emoji}{' '}
                       {schedulingRecord.caseType}
                     </span>
                   </div>
@@ -1196,7 +1184,6 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                       CASE TYPE / MODULE
                     </span>
                     <span className="font-bold text-blue-400 block">
-                      {getCaseTypeBadge(assessmentRecord.caseType).emoji}{' '}
                       {assessmentRecord.caseType}
                     </span>
                     <span className="text-[11px] text-slate-300">

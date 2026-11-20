@@ -5224,6 +5224,157 @@ Return ONLY valid JSON matching this exact structure:
   return res.json(fallbackResult);
 });
 
+// ============================================================================
+// CONSULTATION APPOINTMENTS ENDPOINTS
+// ============================================================================
+
+// GET /api/consult-appointments - List all consultation appointment requests
+app.get('/api/consult-appointments', async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        id,
+        reference_no,
+        applicant_name,
+        service_type,
+        preferred_date,
+        appointment_time,
+        reason_symptoms,
+        status,
+        notes,
+        created_at
+      FROM consult_appointments
+      ORDER BY created_at DESC, id DESC;
+    `);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching consult appointments:', err);
+    res.status(500).json({ error: 'Failed to fetch consult appointments', details: err.message });
+  }
+});
+
+// POST /api/consult-appointments - Create/submit a consultation appointment
+app.post('/api/consult-appointments', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const referenceNo =
+      (body.reference_no || body.referenceNo || '').trim() ||
+      `CONSULT-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const applicantName =
+      (body.applicant_name || body.applicantName || body.patient_name || body.patientName || 'Citizen Applicant').trim();
+    const serviceType =
+      (body.service_type || body.serviceType || 'General Consultation').trim();
+    const preferredDate =
+      (body.preferred_date || body.preferredDate || body.preferredConsultationDate || body.preferred_consultation_date || '').trim();
+    const appointmentTime =
+      (body.appointment_time || body.appointmentTime || '').trim();
+    const reasonSymptoms =
+      (body.reason_symptoms || body.reasonSymptoms || body.reasonForVisit || body.reason_for_visit || body.symptoms || '').trim();
+    const status =
+      (body.status || 'Pending Consultation').trim();
+    const notes =
+      (body.notes || '').trim();
+
+    const result = await pool.query(
+      `INSERT INTO consult_appointments (
+        reference_no,
+        applicant_name,
+        service_type,
+        preferred_date,
+        appointment_time,
+        reason_symptoms,
+        status,
+        notes
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      ON CONFLICT (reference_no)
+      DO UPDATE SET
+        applicant_name = EXCLUDED.applicant_name,
+        service_type = EXCLUDED.service_type,
+        preferred_date = COALESCE(NULLIF(EXCLUDED.preferred_date, ''), consult_appointments.preferred_date),
+        appointment_time = COALESCE(NULLIF(EXCLUDED.appointment_time, ''), consult_appointments.appointment_time),
+        reason_symptoms = COALESCE(NULLIF(EXCLUDED.reason_symptoms, ''), consult_appointments.reason_symptoms),
+        status = COALESCE(NULLIF(EXCLUDED.status, ''), consult_appointments.status),
+        notes = COALESCE(NULLIF(EXCLUDED.notes, ''), consult_appointments.notes)
+      RETURNING *;`,
+      [
+        referenceNo,
+        applicantName,
+        serviceType,
+        preferredDate || null,
+        appointmentTime || null,
+        reasonSymptoms || null,
+        status,
+        notes || null
+      ]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error creating consult appointment:', err);
+    res.status(500).json({ error: 'Failed to create consult appointment', details: err.message });
+  }
+});
+
+// PUT /api/consult-appointments/:referenceNo - Update schedule/status of a consultation appointment
+app.put('/api/consult-appointments/:referenceNo', async (req, res) => {
+  const { referenceNo } = req.params;
+  const body = req.body || {};
+  const preferredDate = body.preferred_date ?? body.preferredDate;
+  const appointmentTime = body.appointment_time ?? body.appointmentTime;
+  const status = body.status;
+  const notes = body.notes;
+  const serviceType = body.service_type ?? body.serviceType;
+  const reasonSymptoms = body.reason_symptoms ?? body.reasonSymptoms;
+
+  try {
+    const result = await pool.query(
+      `UPDATE consult_appointments
+       SET
+         preferred_date = COALESCE($1, preferred_date),
+         appointment_time = COALESCE($2, appointment_time),
+         status = COALESCE($3, status),
+         notes = COALESCE($4, notes),
+         service_type = COALESCE($5, service_type),
+         reason_symptoms = COALESCE($6, reason_symptoms)
+       WHERE reference_no = $7
+       RETURNING *;`,
+      [
+        preferredDate !== undefined ? preferredDate : null,
+        appointmentTime !== undefined ? appointmentTime : null,
+        status !== undefined ? status : null,
+        notes !== undefined ? notes : null,
+        serviceType !== undefined ? serviceType : null,
+        reasonSymptoms !== undefined ? reasonSymptoms : null,
+        referenceNo
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Consultation appointment not found' });
+    }
+
+    const updated = result.rows[0];
+    try {
+      await pool.query(
+        `INSERT INTO activity_logs (staff_name, action, module, details, reference_no)
+         VALUES ($1, $2, 'Consult Appointment', $3, $4);`,
+        [
+          'System Admin',
+          status || 'Updated Consult',
+          `Updated consultation appointment (${updated.service_type}) for ${updated.applicant_name} to status: ${updated.status}${updated.preferred_date ? ` (${updated.preferred_date}${updated.appointment_time ? ` ${updated.appointment_time}` : ''})` : ''}.`,
+          referenceNo
+        ]
+      );
+    } catch {}
+
+    res.json(updated);
+  } catch (err) {
+    console.error('Error updating consult appointment:', err);
+    res.status(500).json({ error: 'Failed to update consult appointment', details: err.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`GovServe Backend API server listening on http://localhost:${PORT}`);
   initDB();

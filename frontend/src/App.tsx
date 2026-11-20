@@ -40,6 +40,7 @@ import {
   AdminBeneficiaryView, 
   AdminAppointmentView, 
   AdminDrrmAppointmentView,
+  AdminConsultAppointmentView,
   AdminActivityView, 
   AdminUserView, 
   ReportsAnalyticsView 
@@ -144,6 +145,7 @@ const ADMIN_TAB_TO_PATH: Record<string, string> = {
   'beneficiaries': '/admin/beneficiaries',
   'appointments': '/admin/appointments',
   'drrm-appointments': '/admin/drrm-appointments',
+  'consult-appointments': '/admin/consult-appointments',
   'activity': '/admin/activity-log',
   'users': '/admin/users',
   'profile': '/admin/profile/account',
@@ -160,6 +162,7 @@ const PATH_TO_ADMIN_TAB: Record<string, string> = {
   '/admin/beneficiaries': 'beneficiaries',
   '/admin/appointments': 'appointments',
   '/admin/drrm-appointments': 'drrm-appointments',
+  '/admin/consult-appointments': 'consult-appointments',
   '/admin/activity-log': 'activity',
   '/admin/users': 'users',
   '/admin/profile': 'profile',
@@ -1111,6 +1114,7 @@ export default function App() {
       'beneficiaries': 'Beneficiary Master Registry',
       'appointments': 'Citizen Appointments Calendar',
       'drrm-appointments': 'DRRM Integration Appointments',
+      'consult-appointments': 'Consult Appointment',
       'activity': 'System Security & Activity Log',
       'users': 'User & Access Control Management',
     };
@@ -1236,6 +1240,20 @@ export default function App() {
               >
                 <Calendar className={`w-4 h-4 shrink-0 ${adminTab === 'drrm-appointments' ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
                 <span className="truncate">DRRM Appointments</span>
+              </button>
+              <button
+                onClick={() => {
+                  setAdminTab('consult-appointments');
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3.5 px-4 py-3 justify-start rounded-2xl text-[13px] font-semibold transition-all border ${
+                  adminTab === 'consult-appointments'
+                    ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                    : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                }`}
+              >
+                <Calendar className={`w-4 h-4 shrink-0 ${adminTab === 'consult-appointments' ? 'text-blue-400' : 'text-[#94a3b8]'}`} />
+                <span className="truncate">Consult Appointment</span>
               </button>
               <button
                 onClick={() => {
@@ -1401,6 +1419,22 @@ export default function App() {
                 }`} />
                 {sidebarOpen && <span className="truncate">DRRM Appointments</span>}
               </button>
+              <button
+                onClick={() => setAdminTab('consult-appointments')}
+                className={`w-full flex items-center ${
+                  sidebarOpen ? 'gap-3.5 px-4 py-3 justify-start' : 'justify-center p-3'
+                } rounded-2xl text-[13px] font-semibold transition-all duration-150 border group cursor-pointer ${
+                  adminTab === 'consult-appointments'
+                    ? 'bg-[#152747] text-white border-blue-500/30 shadow-md'
+                    : 'bg-transparent text-[#94a3b8] hover:text-white hover:bg-[#101e38] border-transparent'
+                }`}
+                title={sidebarOpen ? undefined : "Consult Appointment"}
+              >
+                <Calendar className={`w-4 h-4 shrink-0 transition-colors ${
+                  adminTab === 'consult-appointments' ? 'text-blue-400' : 'text-[#94a3b8] group-hover:text-white'
+                }`} />
+                {sidebarOpen && <span className="truncate">Consult Appointment</span>}
+              </button>
             </div>
 
             {/* MONITORING Section */}
@@ -1509,6 +1543,8 @@ export default function App() {
               />
             ) : adminTab === 'drrm-appointments' ? (
               <AdminDrrmAppointmentView darkMode={darkMode} />
+            ) : adminTab === 'consult-appointments' ? (
+              <AdminConsultAppointmentView darkMode={darkMode} />
             ) : adminTab === 'activity' ? (
               <AdminActivityView darkMode={darkMode} />
             ) : (

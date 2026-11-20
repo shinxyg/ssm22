@@ -882,6 +882,19 @@ export const initDB = async () => {
       ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_attempts INTEGER DEFAULT 0;
       ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_last_attempt_at TIMESTAMPTZ;
       ALTER TABLE drrm_appointments ADD COLUMN IF NOT EXISTS webhook_last_error TEXT;
+
+      CREATE TABLE IF NOT EXISTS consult_appointments (
+        id SERIAL PRIMARY KEY,
+        reference_no VARCHAR(150) UNIQUE NOT NULL,
+        applicant_name VARCHAR(255) NOT NULL,
+        service_type VARCHAR(150) DEFAULT 'General Consultation',
+        preferred_date VARCHAR(50),
+        appointment_time VARCHAR(50),
+        reason_symptoms TEXT,
+        status VARCHAR(80) DEFAULT 'Pending Consultation',
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
     `);
 
     // Remove dummy DRRM appointments and initial test entry so table is purely driven by live DRRM referrals
