@@ -1313,9 +1313,28 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                   darkMode ? 'text-slate-400' : 'text-slate-500'
                 }`}>CURRENT APPLICATION STATUS</span>
                 <div>
-                  <span className="px-3.5 py-1.5 rounded-full text-xs font-black bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 inline-block">
-                    {selectedApp.status.toUpperCase()}
-                  </span>
+                  {(() => {
+                    const st = (selectedApp.status || '').toUpperCase();
+                    const isRejected = st.includes('REJECT') || st.includes('DISAPPROV');
+                    const isPending = st.includes('PENDING') || st.includes('REVIEW') || st === 'SUBMITTED' || st === 'FOR VALIDATION';
+                    return (
+                      <span className={`px-3.5 py-1.5 rounded-full text-xs font-black border inline-block ${
+                        isRejected
+                          ? darkMode
+                            ? 'bg-rose-950/80 border-rose-700/60 text-rose-400'
+                            : 'bg-rose-100 border-rose-300 text-rose-700'
+                          : isPending
+                          ? darkMode
+                            ? 'bg-amber-950/80 border-amber-700/60 text-amber-400'
+                            : 'bg-amber-100 border-amber-300 text-amber-800'
+                          : darkMode
+                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                          : 'bg-emerald-100 border-emerald-300 text-emerald-800'
+                      }`}>
+                        {selectedApp.status.toUpperCase()}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -1391,17 +1410,23 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
 
       {/* DOCUMENT INSPECTION MODAL WITH ACTUAL USER PHOTO PREVIEW */}
       {inspectingDoc && createPortal(
-        <div className="fixed inset-0 z-[999999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#0e172a] border border-slate-700 text-slate-100 rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl my-auto">
-            <div className="p-4 bg-[#142036] border-b border-slate-800 flex justify-between items-center">
+        <div className="fixed inset-0 z-[999999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className={`border rounded-2xl max-w-xl w-full overflow-hidden shadow-2xl my-auto ${
+            darkMode ? 'bg-[#0e172a] border-slate-700 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className={`p-4 border-b flex justify-between items-center ${
+              darkMode ? 'bg-[#142036] border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <div>
-                <h4 className="text-sm font-extrabold text-white">{inspectingDoc.title}</h4>
-                <span className="text-[10px] text-blue-400 font-mono">Verified Citizen Uploaded Supporting Document</span>
+                <h4 className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{inspectingDoc.title}</h4>
+                <span className="text-[10px] text-blue-500 font-mono">Verified Citizen Uploaded Supporting Document</span>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectingDoc(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                className={`p-1.5 rounded-lg cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1409,18 +1434,26 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
 
             <div className="p-5 space-y-4">
               {inspectingDoc.dataUrl ? (
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center shadow-2xl relative overflow-hidden space-y-3">
-                  <div className="w-full flex items-center justify-between border-b border-slate-800/80 pb-2">
-                    <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-800 flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <div className={`border rounded-2xl p-4 flex flex-col items-center justify-center shadow-xl relative overflow-hidden space-y-3 ${
+                  darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <div className={`w-full flex items-center justify-between border-b pb-2 ${
+                    darkMode ? 'border-slate-800/80' : 'border-slate-200'
+                  }`}>
+                    <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${
+                      darkMode ? 'text-emerald-400 bg-emerald-950/80 border-emerald-800' : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                    }`}>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
                       ACTUAL CITIZEN UPLOADED FILE
                     </span>
-                    <span className="text-[10px] font-mono text-slate-400">
+                    <span className={`text-[10px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       {inspectingDoc.filename}
                     </span>
                   </div>
 
-                  <div className="w-full flex items-center justify-center bg-black/80 p-2 rounded-xl border border-slate-800 min-h-[260px] max-h-[380px] overflow-hidden">
+                  <div className={`w-full flex items-center justify-center p-2 rounded-xl border min-h-[260px] max-h-[380px] overflow-hidden ${
+                    darkMode ? 'bg-black/80 border-slate-800' : 'bg-slate-900/5 border-slate-200'
+                  }`}>
                     <img 
                       src={inspectingDoc.dataUrl} 
                       alt={inspectingDoc.title}
@@ -1429,24 +1462,32 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
                   </div>
 
                   <div className="text-center">
-                    <h5 className="text-xs font-extrabold text-white">{inspectingDoc.title}</h5>
-                    <p className="text-[10px] text-slate-400 mt-0.5 font-mono">
+                    <h5 className={`text-xs font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{inspectingDoc.title}</h5>
+                    <p className={`text-[10px] mt-0.5 font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       Verified & Stored in PostgreSQL DB
                     </p>
                   </div>
                 </div>
               ) : (
-                <div className="bg-[#091224] border border-slate-800 rounded-2xl p-4 space-y-3 text-center shadow-xl">
-                  <div className="w-full flex items-center justify-between border-b border-slate-800 pb-2">
-                    <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-800 flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <div className={`border rounded-2xl p-4 space-y-3 text-center shadow-xl ${
+                  darkMode ? 'bg-[#091224] border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <div className={`w-full flex items-center justify-between border-b pb-2 ${
+                    darkMode ? 'border-slate-800' : 'border-slate-200'
+                  }`}>
+                    <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${
+                      darkMode ? 'text-emerald-400 bg-emerald-950/80 border-emerald-800' : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                    }`}>
+                      <CheckCircle2 className="w-3.5 h-3.5" />
                       OFFICIAL ATTACHED DOCUMENT IMAGE
                     </span>
-                    <span className="text-[9px] font-mono text-slate-400">{inspectingDoc.filename}</span>
+                    <span className={`text-[9px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{inspectingDoc.filename}</span>
                   </div>
 
                   {/* REALISTIC GOVERNMENT DOCUMENT SVG IMAGE SHEET */}
-                  <div className="w-full flex items-center justify-center bg-black/90 p-2 rounded-xl border border-slate-800 overflow-hidden shadow-2xl">
+                  <div className={`w-full flex items-center justify-center p-2 rounded-xl border overflow-hidden shadow-2xl ${
+                    darkMode ? 'bg-black/90 border-slate-800' : 'bg-slate-200/70 border-slate-300'
+                  }`}>
                     <img 
                       src={`data:image/svg+xml;utf8,${encodeURIComponent(`
                         <svg xmlns="http://www.w3.org/2000/svg" width="600" height="420" viewBox="0 0 600 420">
@@ -1488,7 +1529,9 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
               )}
             </div>
 
-            <div className="p-4 bg-[#0a1120] border-t border-slate-800 flex justify-end">
+            <div className={`p-4 border-t flex justify-end ${
+              darkMode ? 'bg-[#0a1120] border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <button
                 type="button"
                 onClick={() => setInspectingDoc(null)}
@@ -1504,27 +1547,35 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
 
       {/* REJECT REASON MODAL */}
       {showRejectModal && appToReject && createPortal(
-        <div className="fixed inset-0 z-[999999] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#0e172a] border border-rose-500/50 rounded-2xl max-w-md w-full p-6 text-white space-y-4 shadow-2xl relative">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-extrabold text-rose-400">Reject Application ({appToReject.reference_no})</h3>
+        <div className="fixed inset-0 z-[999999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className={`border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative ${
+            darkMode ? 'bg-[#0e172a] border-rose-500/50 text-white' : 'bg-white border-rose-300 text-slate-900'
+          }`}>
+            <div className={`flex items-center justify-between border-b pb-3 ${
+              darkMode ? 'border-slate-800' : 'border-slate-200'
+            }`}>
+              <h3 className={`text-sm font-extrabold ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>Reject Application ({appToReject.reference_no})</h3>
               <button
                 type="button"
                 onClick={() => setShowRejectModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className={`p-1 rounded-lg cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-900'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-2 text-xs">
-              <label className="font-bold text-slate-300 uppercase block text-[10px]">Reason for Disapproval / Rejection</label>
+              <label className={`font-bold uppercase block text-[10px] ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Reason for Disapproval / Rejection</label>
               <textarea
                 rows={3}
                 placeholder="Enter reason for rejection (e.g. Invalid Solo Parent ID, missing affidavit, etc.)..."
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
-                className="w-full bg-[#0b1220] border border-slate-700/80 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500/50 resize-none"
+                className={`w-full border rounded-xl p-3 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500/50 resize-none ${
+                  darkMode ? 'bg-[#0b1220] border-slate-700/80 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
+                }`}
               />
             </div>
 
@@ -1532,14 +1583,16 @@ export const AdminSoloChildView: React.FC<{ darkMode?: boolean }> = ({ darkMode 
               <button
                 type="button"
                 onClick={() => setShowRejectModal(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl"
+                className={`px-4 py-2 font-bold text-xs rounded-xl cursor-pointer ${
+                  darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                }`}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmReject}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs rounded-xl shadow-lg"
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs rounded-xl shadow-lg cursor-pointer"
               >
                 Confirm Reject
               </button>

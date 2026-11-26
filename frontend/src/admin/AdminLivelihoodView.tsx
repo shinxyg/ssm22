@@ -1301,23 +1301,29 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
 
       {/* DOCUMENT INSPECTOR PREVIEW SUB-MODAL */}
       {inspectingDoc && createPortal(
-        <div className="fixed inset-0 z-[100000] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="max-w-2xl w-full rounded-3xl border border-slate-800 bg-[#0e172a] text-white p-6 space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-[100000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className={`max-w-2xl w-full rounded-3xl border p-6 space-y-4 shadow-2xl ${
+            darkMode ? 'border-slate-800 bg-[#0e172a] text-white' : 'border-slate-200 bg-white text-slate-900'
+          }`}>
+            <div className={`flex justify-between items-center border-b pb-3 ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
               <div>
-                <h3 className="text-sm font-extrabold text-blue-400">{inspectingDoc.title}</h3>
-                <span className="text-xs font-mono text-slate-400">{inspectingDoc.filename}</span>
+                <h3 className="text-sm font-extrabold text-blue-500">{inspectingDoc.title}</h3>
+                <span className={`text-xs font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{inspectingDoc.filename}</span>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectingDoc(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                className={`p-1 rounded-lg cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="rounded-2xl border border-slate-800 bg-slate-950 p-4 flex items-center justify-center min-h-[300px] max-h-[500px] overflow-hidden">
+            <div className={`rounded-2xl border p-4 flex items-center justify-center min-h-[300px] max-h-[500px] overflow-hidden ${
+              darkMode ? 'border-slate-800 bg-slate-950' : 'border-slate-200 bg-slate-50'
+            }`}>
               {inspectingDoc.url && (inspectingDoc.url.startsWith('http') || inspectingDoc.url.startsWith('data:') || inspectingDoc.url.startsWith('blob:')) ? (
                 <img
                   src={inspectingDoc.url}
@@ -1326,14 +1332,16 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
                 />
               ) : (
                 <div className="text-center space-y-3 p-6">
-                  <div className="w-16 h-16 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center mx-auto shadow-md">
+                  <div className="w-16 h-16 rounded-2xl bg-blue-600/20 text-blue-500 border border-blue-500/30 flex items-center justify-center mx-auto shadow-md">
                     <FileText className="w-8 h-8" />
                   </div>
                   <div>
-                    <span className="text-sm font-extrabold text-white block">{inspectingDoc.title}</span>
-                    <span className="text-xs font-mono text-slate-400 block mt-1">{inspectingDoc.filename}</span>
+                    <span className={`text-sm font-extrabold block ${darkMode ? 'text-white' : 'text-slate-900'}`}>{inspectingDoc.title}</span>
+                    <span className={`text-xs font-mono block mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>{inspectingDoc.filename}</span>
                   </div>
-                  <span className="inline-block text-[11px] text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-500/40 px-3 py-1 rounded-full">
+                  <span className={`inline-block text-[11px] font-bold border px-3 py-1 rounded-full ${
+                    darkMode ? 'text-emerald-400 bg-emerald-950/60 border-emerald-500/40' : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                  }`}>
                     ✓ Verified QCitizen Document Submitted
                   </span>
                   <span className="text-[10px] text-slate-500 block">
@@ -1343,8 +1351,8 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
               )}
             </div>
 
-            <div className="flex justify-between items-center pt-2 border-t border-slate-800">
-              <span className="text-[11px] text-slate-400 font-mono">QCitizen Document Verification System</span>
+            <div className={`flex justify-between items-center pt-2 border-t ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
+              <span className={`text-[11px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>QCitizen Document Verification System</span>
               <button
                 type="button"
                 onClick={() => setInspectingDoc(null)}
@@ -1361,22 +1369,26 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
       {/* REJECT REASON MODAL */}
       {showRejectModal && appToReject && createPortal(
         <div className="fixed inset-0 z-[100000] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-md w-full rounded-2xl border border-slate-800 bg-[#0d1627] text-white p-6 space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-800 pb-3">
-              <h3 className="text-sm font-extrabold text-rose-400 flex items-center gap-2">
+          <div className={`max-w-md w-full rounded-2xl border p-6 space-y-4 shadow-2xl ${
+            darkMode ? 'border-slate-800 bg-[#0d1627] text-white' : 'border-slate-200 bg-white text-slate-900'
+          }`}>
+            <div className={`flex justify-between items-center border-b pb-3 ${darkMode ? 'border-slate-800' : 'border-slate-200'}`}>
+              <h3 className={`text-sm font-extrabold flex items-center gap-2 ${darkMode ? 'text-rose-400' : 'text-rose-600'}`}>
                 <XCircle className="w-4 h-4" />
                 <span>Disapprove Livelihood Application</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setShowRejectModal(false)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 cursor-pointer"
+                className={`p-1 rounded-lg cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
+            <p className={`text-xs ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
               Please state the specific reason for rejecting the Livelihood application of <strong>{appToReject.applicant_name}</strong>:
             </p>
 
@@ -1385,14 +1397,18 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
               placeholder="e.g. Incomplete Barangay Clearance, blurry Valid ID attachment, or unqualified business proposal..."
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
-              className="w-full bg-[#0b1220] border border-slate-700/80 rounded-xl p-3 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-rose-500/50"
+              className={`w-full border rounded-xl p-3 text-xs focus:outline-none focus:ring-2 focus:ring-rose-500/50 ${
+                darkMode ? 'bg-[#0b1220] border-slate-700/80 text-slate-200 placeholder-slate-500' : 'bg-slate-50 border-slate-300 text-slate-900 placeholder-slate-400'
+              }`}
             />
 
             <div className="flex justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setShowRejectModal(false)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                }`}
               >
                 Cancel
               </button>
@@ -1404,7 +1420,9 @@ export const AdminLivelihoodView: React.FC<{ darkMode?: boolean }> = ({ darkMode
                 className={`px-5 py-2 text-xs font-bold rounded-xl transition-all ${
                   rejectReason.trim()
                     ? 'bg-rose-600 hover:bg-rose-500 text-white cursor-pointer'
-                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                    : darkMode
+                    ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                 }`}
               >
                 Confirm Disapproval

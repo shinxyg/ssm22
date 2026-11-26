@@ -4373,7 +4373,7 @@ app.get('/api/beneficiaries', async (req, res) => {
         category: 'aics',
         referenceNo: a.reference_no,
         date: a.date_submitted || a.created_at,
-        type: 'Hospital Guarantee Letter (GL)',
+        type: isMed ? 'Hospital Guarantee Letter (GL)' : 'Funeral Guarantee Letter (GL)',
         amountFormatted: 'Non-Cash (GL)',
         amountNumber: 0,
         status: a.status || 'Under Review',

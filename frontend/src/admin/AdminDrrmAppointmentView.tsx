@@ -1023,44 +1023,52 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
       {/* SET SCHEDULE MODAL */}
       {schedulingRecord &&
         createPortal(
-          <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-            <div className="bg-[#0f172a] border border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col">
-              <div className="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center bg-[#131f37] shrink-0">
+          <div className="fixed inset-0 z-[99999] bg-[#030712]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+            <div className={`border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col ${
+              darkMode ? 'bg-[#0f172a] border-slate-700/80 text-white' : 'bg-white border-slate-200 text-slate-900'
+            }`}>
+              <div className={`p-4 sm:p-5 border-b flex justify-between items-center shrink-0 ${
+                darkMode ? 'border-slate-800 bg-[#131f37]' : 'border-slate-200 bg-slate-50'
+              }`}>
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider">
+                  <span className="text-[10px] font-mono font-bold text-blue-500 uppercase tracking-wider">
                     {schedulingRecord.referenceNo}
                   </span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
+                  <h3 className={`text-sm sm:text-base font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                     Set Appointment Schedule
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSchedulingRecord(null)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                  className={`p-1.5 rounded-lg cursor-pointer ${
+                    darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                  }`}
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
-                <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex justify-between items-center">
+                <div className={`p-3 rounded-xl border flex justify-between items-center ${
+                  darkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div>
-                    <span className="text-slate-400 text-[10px] block font-semibold uppercase">
+                    <span className={`text-[10px] block font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       REPORTED BY / CLIENT
                     </span>
-                    <span className="font-extrabold text-white text-sm">
+                    <span className={`font-extrabold text-sm ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                       {schedulingRecord.reporterName}
                     </span>
-                    <span className="block text-[11px] text-slate-400">
+                    <span className={`block text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       {schedulingRecord.reporterRole}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-slate-400 text-[10px] block font-semibold uppercase">
+                    <span className={`text-[10px] block font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       CASE TYPE
                     </span>
-                    <span className="font-bold text-blue-400">
+                    <span className="font-bold text-blue-500">
                       {schedulingRecord.caseType}
                     </span>
                   </div>
@@ -1068,32 +1076,36 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">
+                    <label className={`text-[10px] font-extrabold uppercase tracking-wider block mb-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                       Appointment Date
                     </label>
                     <input
                       type="date"
                       value={schedDate}
                       onChange={(e) => setSchedDate(e.target.value)}
-                      className="w-full bg-[#0b1220] border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+                        darkMode ? 'bg-[#0b1220] border-slate-700/80 text-white' : 'bg-white border-slate-300 text-slate-900'
+                      }`}
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">
+                    <label className={`text-[10px] font-extrabold uppercase tracking-wider block mb-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                       Time Slot (Real Clock)
                     </label>
                     <input
                       type="time"
                       value={schedTime}
                       onChange={(e) => setSchedTime(e.target.value)}
-                      className="w-full bg-[#0b1220] border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+                        darkMode ? 'bg-[#0b1220] border-slate-700/80 text-white' : 'bg-white border-slate-300 text-slate-900'
+                      }`}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">
+                  <label className={`text-[10px] font-extrabold uppercase tracking-wider block mb-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                     Venue / Office Desk
                   </label>
                   <input
@@ -1101,12 +1113,14 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                     value={schedulingRecord.venue}
                     disabled
                     readOnly
-                    className="w-full bg-[#0b1220]/60 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 cursor-not-allowed select-none opacity-80"
+                    className={`w-full border rounded-xl px-3 py-2 text-xs cursor-not-allowed select-none opacity-80 ${
+                      darkMode ? 'bg-[#0b1220]/60 border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">
+                  <label className={`text-[10px] font-extrabold uppercase tracking-wider block mb-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                     Instructions for Client / Reporter
                   </label>
                   <textarea
@@ -1117,16 +1131,22 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                     }
                     disabled
                     readOnly
-                    className="w-full bg-[#0b1220]/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-400 cursor-not-allowed select-none opacity-80 resize-none"
+                    className={`w-full border rounded-xl p-3 text-xs cursor-not-allowed select-none opacity-80 resize-none ${
+                      darkMode ? 'bg-[#0b1220]/60 border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+                    }`}
                   />
                 </div>
               </div>
 
-              <div className="p-4 bg-[#0a1120] border-t border-slate-800 flex justify-between items-center">
+              <div className={`p-4 border-t flex justify-between items-center ${
+                darkMode ? 'bg-[#0a1120] border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <button
                   type="button"
                   onClick={() => setSchedulingRecord(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                  className={`px-4 py-2 font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                    darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                  }`}
                 >
                   Cancel
                 </button>
@@ -1146,54 +1166,64 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
       {/* GRANT VOUCHER & DECISION MODAL */}
       {assessmentRecord &&
         createPortal(
-          <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-            <div className="bg-[#0f172a] border border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col">
-              <div className="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center bg-[#131f37] shrink-0">
+          <div className="fixed inset-0 z-[99999] bg-[#030712]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+            <div className={`border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col ${
+              darkMode ? 'bg-[#0f172a] border-slate-700/80 text-white' : 'bg-white border-slate-200 text-slate-900'
+            }`}>
+              <div className={`p-4 sm:p-5 border-b flex justify-between items-center shrink-0 ${
+                darkMode ? 'border-slate-800 bg-[#131f37]' : 'border-slate-200 bg-slate-50'
+              }`}>
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider">
+                  <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-wider">
                     {assessmentRecord.referenceNo}
                   </span>
-                  <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
+                  <h3 className={`text-sm sm:text-base font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                     Grant Medical Assistance Voucher
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setAssessmentRecord(null)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 cursor-pointer"
+                  className={`p-1.5 rounded-lg cursor-pointer ${
+                    darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                  }`}
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
-                <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex justify-between items-center">
+                <div className={`p-3.5 rounded-xl border flex justify-between items-center ${
+                  darkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
                   <div>
-                    <span className="text-slate-400 text-[10px] block font-semibold uppercase">
+                    <span className={`text-[10px] block font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       REPORTED BY / CLIENT
                     </span>
-                    <span className="font-extrabold text-white text-sm">
+                    <span className={`font-extrabold text-sm ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                       {assessmentRecord.reporterName}
                     </span>
-                    <span className="block text-[11px] text-slate-400">
+                    <span className={`block text-[11px] ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       {assessmentRecord.reporterRole}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-slate-400 text-[10px] block font-semibold uppercase">
+                    <span className={`text-[10px] block font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       CASE TYPE / MODULE
                     </span>
-                    <span className="font-bold text-blue-400 block">
+                    <span className="font-bold text-blue-500 block">
                       {assessmentRecord.caseType}
                     </span>
-                    <span className="text-[11px] text-slate-300">
+                    <span className={`text-[11px] ${darkMode ? 'text-slate-300' : 'text-slate-600'}`}>
                       {assessmentRecord.moduleService}
                     </span>
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-800/40 text-emerald-300 space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">
+                <div className={`p-3.5 rounded-xl border space-y-1 ${
+                  darkMode ? 'bg-emerald-950/30 border-emerald-800/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                }`}>
+                  <span className={`text-[10px] font-extrabold uppercase tracking-wider block ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
                     VOUCHER GRANT REMARKS / NOTES
                   </span>
                   <p className="text-[11px]">
@@ -1202,11 +1232,15 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                 </div>
               </div>
 
-              <div className="p-4 bg-[#0a1120] border-t border-slate-800 flex justify-between items-center gap-2 flex-wrap">
+              <div className={`p-4 border-t flex justify-between items-center gap-2 flex-wrap ${
+                darkMode ? 'bg-[#0a1120] border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <button
                   type="button"
                   onClick={() => setAssessmentRecord(null)}
-                  className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                  className={`px-4 py-2 font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                    darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                  }`}
                 >
                   Cancel
                 </button>
@@ -1215,7 +1249,9 @@ export const AdminDrrmAppointmentView: React.FC<AdminDrrmAppointmentViewProps> =
                   <button
                     type="button"
                     onClick={() => handleDecision(assessmentRecord, 'Rejected')}
-                    className="px-4 py-2 bg-rose-950/70 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+                    className={`px-4 py-2 border font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                      darkMode ? 'bg-rose-950/70 hover:bg-rose-900 border-rose-700/60 text-rose-300' : 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-700'
+                    }`}
                   >
                     Reject
                   </button>

@@ -699,7 +699,7 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
         >
           <div 
             onClick={(e) => e.stopPropagation()}
-            className={`w-full md:max-w-xl h-screen shadow-2xl flex flex-col overflow-hidden border-l transition-all animate-slideLeft ${
+            className={`w-full md:max-w-xl h-dvh max-h-dvh shadow-2xl flex flex-col overflow-hidden border-l transition-all animate-slideLeft ${
               darkMode ? 'bg-[#0b1324] border-slate-800 text-slate-100' : 'bg-white border-slate-200 text-slate-900'
             }`}
           >
@@ -734,7 +734,7 @@ export const AdminBeneficiaryView: React.FC<{ darkMode?: boolean }> = ({ darkMod
             </div>
 
             {/* Drawer Content */}
-            <div className="p-6 overflow-y-auto space-y-6 flex-1">
+            <div className="p-4 sm:p-6 pb-28 sm:pb-10 overflow-y-auto space-y-6 flex-1">
               
               {/* Profile Card */}
               <div className={`p-5 rounded-2xl border flex items-start gap-4 ${

@@ -1248,18 +1248,24 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
               </div>
 
               <div>
-                <span className="text-slate-400 text-[10px] font-semibold uppercase block mb-1.5">Current Application Status</span>
+                <span className={`text-[10px] font-semibold uppercase block mb-1.5 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Current Application Status</span>
                 {(() => {
                   const st = selectedApp.status || '';
-                  const isApproved = st === 'Approved' || st === 'Ready for Payout' || st === 'RELEASED / COMPLETED' || st === 'Completed';
+                  const isApproved = st === 'Approved' || st === 'Ready for Payout' || st === 'RELEASED / COMPLETED' || st === 'Completed' || st.toLowerCase().includes('approv') || st.toLowerCase().includes('pending appointment');
                   const isRejected = st === 'Rejected' || st === 'Disapproved' || st === 'REJECTED' || st.toLowerCase().includes('reject') || st.toLowerCase().includes('disapprov');
                   return (
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
                       isApproved
-                        ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                        ? darkMode
+                          ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                          : 'bg-emerald-100 text-emerald-800 border-emerald-300'
                         : isRejected
-                        ? 'bg-red-950 text-red-400 border-red-800'
-                        : 'bg-amber-950 text-amber-300 border-amber-800'
+                        ? darkMode
+                          ? 'bg-red-950 text-red-400 border-red-800'
+                          : 'bg-rose-100 text-rose-700 border-rose-300'
+                        : darkMode
+                        ? 'bg-amber-950 text-amber-300 border-amber-800'
+                        : 'bg-amber-100 text-amber-800 border-amber-300'
                     }`}>
                       {selectedApp.status}
                     </span>
@@ -1327,20 +1333,26 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
 
       {/* DOCUMENT INSPECTOR PREVIEW OVERLAY MODAL */}
       {inspectingDoc && createPortal(
-        <div className="fixed inset-0 z-[100000] bg-[#030712]/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-[#0e172a] text-slate-100 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl border border-slate-700">
-            <div className="p-4 bg-[#142036] border-b border-slate-800 flex justify-between items-center">
+        <div className="fixed inset-0 z-[100000] bg-[#030712]/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className={`rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl border ${
+            darkMode ? 'bg-[#0e172a] text-slate-100 border-slate-700' : 'bg-white text-slate-900 border-slate-200'
+          }`}>
+            <div className={`p-4 border-b flex justify-between items-center ${
+              darkMode ? 'bg-[#142036] border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <div className="flex items-center gap-2">
-                <FileCheck2 className="w-5 h-5 text-blue-400" />
+                <FileCheck2 className="w-5 h-5 text-blue-500" />
                 <div>
-                  <h4 className="text-sm font-extrabold text-white">{inspectingDoc.title}</h4>
-                  <span className="text-[10px] text-slate-400 font-mono">Official Attached Supporting Document</span>
+                  <h4 className={`text-sm font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{inspectingDoc.title}</h4>
+                  <span className={`text-[10px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>Official Attached Supporting Document</span>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectingDoc(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className={`p-1.5 rounded-lg cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1349,18 +1361,26 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
             <div className="p-5 space-y-4">
               {inspectingDoc.url || (typeof inspectingDoc.docObj === 'object' && inspectingDoc.docObj?.dataUrl) ? (
                 /* ACTUAL USER UPLOADED IMAGE PREVIEW */
-                <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center shadow-2xl relative overflow-hidden space-y-3">
-                  <div className="w-full flex items-center justify-between border-b border-slate-800/80 pb-2">
-                    <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-800 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                <div className={`border rounded-2xl p-4 flex flex-col items-center justify-center shadow-xl relative overflow-hidden space-y-3 ${
+                  darkMode ? 'bg-slate-950 border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <div className={`w-full flex items-center justify-between border-b pb-2 ${
+                    darkMode ? 'border-slate-800/80' : 'border-slate-200'
+                  }`}>
+                    <span className={`text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full border flex items-center gap-1 ${
+                      darkMode ? 'text-emerald-400 bg-emerald-950/80 border-emerald-800' : 'text-emerald-800 bg-emerald-100 border-emerald-300'
+                    }`}>
+                      <CheckCircle2 className="w-3 h-3" />
                       ACTUAL CITIZEN UPLOADED FILE
                     </span>
-                    <span className="text-[10px] font-mono text-slate-400">
+                    <span className={`text-[10px] font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       {typeof inspectingDoc.docObj === 'object' ? inspectingDoc.docObj?.name || 'uploaded_file.jpg' : 'uploaded_file.jpg'}
                     </span>
                   </div>
 
-                  <div className="w-full flex items-center justify-center bg-black/70 p-2 rounded-xl border border-slate-800/90 min-h-[250px] max-h-[380px] overflow-hidden">
+                  <div className={`w-full flex items-center justify-center p-2 rounded-xl border min-h-[250px] max-h-[380px] overflow-hidden ${
+                    darkMode ? 'bg-black/70 border-slate-800/90' : 'bg-slate-900/5 border-slate-200'
+                  }`}>
                     <img 
                       src={inspectingDoc.url || (typeof inspectingDoc.docObj === 'object' ? inspectingDoc.docObj?.dataUrl : '')} 
                       alt={inspectingDoc.title}
@@ -1369,22 +1389,26 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
                   </div>
 
                   <div className="text-center">
-                    <h5 className="text-xs font-extrabold text-white">{inspectingDoc.title}</h5>
-                    <p className="text-[10px] text-slate-400 mt-0.5 font-mono">
+                    <h5 className={`text-xs font-extrabold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{inspectingDoc.title}</h5>
+                    <p className={`text-[10px] mt-0.5 font-mono ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       File Size: {typeof inspectingDoc.docObj === 'object' ? inspectingDoc.docObj?.size || 'Verified' : 'Verified'} • Stored in PostgreSQL DB
                     </p>
                   </div>
                 </div>
               ) : (
                 /* NO FILE ATTACHED NOTICE */
-                <div className="bg-[#091224] border border-slate-800 rounded-2xl p-8 text-center space-y-4 shadow-xl">
-                  <div className="w-16 h-16 mx-auto rounded-2xl bg-[#121e36] border border-slate-800 flex items-center justify-center text-slate-400">
+                <div className={`border rounded-2xl p-8 text-center space-y-4 shadow-xl ${
+                  darkMode ? 'bg-[#091224] border-slate-800' : 'bg-slate-50 border-slate-200'
+                }`}>
+                  <div className={`w-16 h-16 mx-auto rounded-2xl border flex items-center justify-center ${
+                    darkMode ? 'bg-[#121e36] border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'
+                  }`}>
                     <FileText className="w-8 h-8" />
                   </div>
                   <div className="space-y-1">
-                    <h5 className="text-sm font-bold text-white">{inspectingDoc.title}</h5>
-                    <p className="text-xs text-amber-400 font-medium">No document photo uploaded by applicant for this slot.</p>
-                    <p className="text-[11px] text-slate-400 max-w-sm mx-auto mt-1">
+                    <h5 className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-slate-900'}`}>{inspectingDoc.title}</h5>
+                    <p className={`text-xs font-medium ${darkMode ? 'text-amber-400' : 'text-amber-700'}`}>No document photo uploaded by applicant for this slot.</p>
+                    <p className={`text-[11px] max-w-sm mx-auto mt-1 ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                       When a citizen uploads a file in Step 3 of the application form, their actual uploaded picture will appear here.
                     </p>
                   </div>
@@ -1392,11 +1416,15 @@ export const AdminAicsView: React.FC<AdminAicsViewProps> = ({
               )}
             </div>
 
-            <div className="p-4 bg-[#0a1120] border-t border-slate-800 flex justify-end gap-2">
+            <div className={`p-4 border-t flex justify-end gap-2 ${
+              darkMode ? 'bg-[#0a1120] border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <button
                 type="button"
                 onClick={() => setInspectingDoc(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl"
+                className={`px-4 py-2 font-bold text-xs rounded-xl cursor-pointer ${
+                  darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-200 hover:bg-slate-300 text-slate-800'
+                }`}
               >
                 Close Inspector
               </button>

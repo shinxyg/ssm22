@@ -919,62 +919,74 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
 
       {/* SCHEDULING MODAL */}
       {schedulingApp && createPortal(
-        <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-[#0f172a] border border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col">
-            <div className="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center bg-[#131f37] shrink-0">
+        <div className="fixed inset-0 z-[99999] bg-[#030712]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className={`border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col ${
+            darkMode ? 'bg-[#0f172a] border-slate-700/80 text-white' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className={`p-4 sm:p-5 border-b flex justify-between items-center shrink-0 ${
+              darkMode ? 'border-slate-800 bg-[#131f37]' : 'border-slate-200 bg-slate-50'
+            }`}>
               <div>
-                <span className="text-[10px] font-mono font-bold text-blue-400 uppercase tracking-wider">{schedulingApp.referenceNo}</span>
-                <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
+                <span className="text-[10px] font-mono font-bold text-blue-500 uppercase tracking-wider">{schedulingApp.referenceNo}</span>
+                <h3 className={`text-sm sm:text-base font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                   {((schedulingApp as any)?.category === 'training' || schedulingApp.referenceNo.startsWith('TRN') || schedulingApp.serviceName.toLowerCase().includes('training') || schedulingApp.serviceName.toLowerCase().includes('pastry') || schedulingApp.serviceName.toLowerCase().includes('welding') || schedulingApp.serviceName.toLowerCase().includes('barista')) ? 'Schedule Training Orientation' : 'Set Appointment Schedule'}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSchedulingApp(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className={`p-1.5 rounded-lg cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
-              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800 flex justify-between items-center">
+              <div className={`p-3 rounded-xl border flex justify-between items-center ${
+                darkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <div>
-                  <span className="text-slate-400 text-[10px] block font-semibold uppercase">APPLICANT</span>
-                  <span className="font-extrabold text-white text-sm">{(schedulingApp as any).applicantName || schedulingApp.details?.applicantName || 'Juan Dela Cruz'}</span>
+                  <span className={`text-[10px] block font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>APPLICANT</span>
+                  <span className={`font-extrabold text-sm ${darkMode ? 'text-white' : 'text-slate-900'}`}>{(schedulingApp as any).applicantName || schedulingApp.details?.applicantName || 'Juan Dela Cruz'}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-slate-400 text-[10px] block font-semibold uppercase">MODULE</span>
-                  <span className="font-bold text-blue-400">{schedulingApp.serviceName}</span>
+                  <span className={`text-[10px] block font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>MODULE</span>
+                  <span className="font-bold text-blue-500">{schedulingApp.serviceName}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">
+                  <label className={`text-[10px] font-extrabold uppercase tracking-wider block mb-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                     {((schedulingApp as any)?.category === 'training' || schedulingApp.referenceNo.startsWith('TRN') || schedulingApp.serviceName.toLowerCase().includes('training') || schedulingApp.serviceName.toLowerCase().includes('pastry') || schedulingApp.serviceName.toLowerCase().includes('welding') || schedulingApp.serviceName.toLowerCase().includes('barista')) ? 'Orientation Date' : 'Appointment Date'}
                   </label>
                   <input
                     type="date"
                     value={schedDate}
                     onChange={(e) => setSchedDate(e.target.value)}
-                    className="w-full bg-[#0b1220] border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+                      darkMode ? 'bg-[#0b1220] border-slate-700/80 text-white' : 'bg-white border-slate-300 text-slate-900'
+                    }`}
                   />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">Time Slot (Real Clock)</label>
+                  <label className={`text-[10px] font-extrabold uppercase tracking-wider block mb-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Time Slot (Real Clock)</label>
                   <input
                     type="time"
                     value={schedTime}
                     onChange={(e) => setSchedTime(e.target.value)}
-                    className="w-full bg-[#0b1220] border border-slate-700/80 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                    className={`w-full border rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/50 ${
+                      darkMode ? 'bg-[#0b1220] border-slate-700/80 text-white' : 'bg-white border-slate-300 text-slate-900'
+                    }`}
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">Venue / Office Desk</label>
+                <label className={`text-[10px] font-extrabold uppercase tracking-wider block mb-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Venue / Office Desk</label>
                 <input
                   type="text"
                   value={
@@ -988,12 +1000,14 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                   }
                   disabled
                   readOnly
-                  className="w-full bg-[#0b1220]/60 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 cursor-not-allowed select-none opacity-80"
+                  className={`w-full border rounded-xl px-3 py-2 text-xs cursor-not-allowed select-none opacity-80 ${
+                    darkMode ? 'bg-[#0b1220]/60 border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+                  }`}
                 />
               </div>
 
               <div>
-                <label className="text-[10px] font-extrabold text-slate-300 uppercase tracking-wider block mb-1">Instructions for Applicant</label>
+                <label className={`text-[10px] font-extrabold uppercase tracking-wider block mb-1 ${darkMode ? 'text-slate-300' : 'text-slate-700'}`}>Instructions for Applicant</label>
                 <textarea
                   rows={2}
                   value={
@@ -1007,23 +1021,29 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                   }
                   disabled
                   readOnly
-                  className="w-full bg-[#0b1220]/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-400 cursor-not-allowed select-none opacity-80 resize-none"
+                  className={`w-full border rounded-xl p-3 text-xs cursor-not-allowed select-none opacity-80 resize-none ${
+                    darkMode ? 'bg-[#0b1220]/60 border-slate-800 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-600'
+                  }`}
                 />
               </div>
             </div>
 
-            <div className="p-4 bg-[#0a1120] border-t border-slate-800 flex justify-between items-center">
+            <div className={`p-4 border-t flex justify-between items-center ${
+              darkMode ? 'bg-[#0a1120] border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <button
                 type="button"
                 onClick={() => setSchedulingApp(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-colors"
+                className={`px-4 py-2 font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                  darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                }`}
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSaveSchedule}
-                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-colors"
+                className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-colors cursor-pointer"
               >
                 Save Schedule & Send SMS
               </button>
@@ -1035,12 +1055,16 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
 
       {/* SOCIAL WORKER PHYSICAL ASSESSMENT & DECISION MODAL */}
       {assessmentApp && createPortal(
-        <div className="fixed inset-0 z-[99999] bg-[#030712]/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-          <div className="bg-[#0f172a] border border-slate-700/80 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col">
-            <div className="p-4 sm:p-5 border-b border-slate-800 flex justify-between items-center bg-[#131f37] shrink-0">
+        <div className="fixed inset-0 z-[99999] bg-[#030712]/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+          <div className={`border rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 font-sans my-auto max-h-[92vh] flex flex-col ${
+            darkMode ? 'bg-[#0f172a] border-slate-700/80 text-white' : 'bg-white border-slate-200 text-slate-900'
+          }`}>
+            <div className={`p-4 sm:p-5 border-b flex justify-between items-center shrink-0 ${
+              darkMode ? 'border-slate-800 bg-[#131f37]' : 'border-slate-200 bg-slate-50'
+            }`}>
               <div>
-                <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider">{assessmentApp.referenceNo}</span>
-                <h3 className="text-sm sm:text-base font-extrabold text-white mt-0.5">
+                <span className="text-[10px] font-mono font-bold text-emerald-500 uppercase tracking-wider">{assessmentApp.referenceNo}</span>
+                <h3 className={`text-sm sm:text-base font-extrabold mt-0.5 ${darkMode ? 'text-white' : 'text-slate-900'}`}>
                   {((assessmentApp as any)?.category === 'training' || assessmentApp.referenceNo.startsWith('TRN') || assessmentApp.serviceName.toLowerCase().includes('training') || assessmentApp.serviceName.toLowerCase().includes('pastry') || assessmentApp.serviceName.toLowerCase().includes('welding') || assessmentApp.serviceName.toLowerCase().includes('barista'))
                     ? 'Vocational Training Assessment & Enrollment'
                     : ((assessmentApp as any)?.category === 'soloparent' || assessmentApp.referenceNo.startsWith('SP') || assessmentApp.serviceName.toLowerCase().includes('solo'))
@@ -1053,26 +1077,32 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
               <button
                 type="button"
                 onClick={() => setAssessmentApp(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className={`p-1.5 rounded-lg cursor-pointer ${
+                  darkMode ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'
+                }`}
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-4 sm:p-6 space-y-4 text-xs overflow-y-auto flex-1">
-              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex justify-between items-center">
+              <div className={`p-3.5 rounded-xl border flex justify-between items-center ${
+                darkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200'
+              }`}>
                 <div>
-                  <span className="text-slate-400 text-[10px] block font-semibold uppercase">APPLICANT NAME</span>
-                  <span className="font-extrabold text-white text-sm">{(assessmentApp as any).applicantName || assessmentApp.details?.applicantName || 'Juan Dela Cruz'}</span>
+                  <span className={`text-[10px] block font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>APPLICANT NAME</span>
+                  <span className={`font-extrabold text-sm ${darkMode ? 'text-white' : 'text-slate-900'}`}>{(assessmentApp as any).applicantName || assessmentApp.details?.applicantName || 'Juan Dela Cruz'}</span>
                 </div>
                 <div className="text-right">
-                  <span className="text-slate-400 text-[10px] block font-semibold uppercase">SERVICE PROGRAM</span>
-                  <span className="font-bold text-blue-400">{assessmentApp.serviceName}</span>
+                  <span className={`text-[10px] block font-semibold uppercase ${darkMode ? 'text-slate-400' : 'text-slate-500'}`}>SERVICE PROGRAM</span>
+                  <span className="font-bold text-blue-500">{assessmentApp.serviceName}</span>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-800/40 text-emerald-300 space-y-1">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 block">
+              <div className={`p-3.5 rounded-xl border space-y-1 ${
+                darkMode ? 'bg-emerald-950/30 border-emerald-800/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              }`}>
+                <span className={`text-[10px] font-extrabold uppercase tracking-wider block ${darkMode ? 'text-emerald-400' : 'text-emerald-700'}`}>
                   {((assessmentApp as any)?.category === 'training' || assessmentApp.referenceNo.startsWith('TRN') || assessmentApp.serviceName.toLowerCase().includes('training') || assessmentApp.serviceName.toLowerCase().includes('pastry') || assessmentApp.serviceName.toLowerCase().includes('welding') || assessmentApp.serviceName.toLowerCase().includes('barista'))
                     ? 'TRAINING ORIENTATION & DOCUMENT VERIFICATION'
                     : ((assessmentApp as any)?.category === 'soloparent' || assessmentApp.referenceNo.startsWith('SP') || assessmentApp.serviceName.toLowerCase().includes('solo'))
@@ -1093,11 +1123,15 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
               </div>
             </div>
 
-            <div className="p-4 bg-[#0a1120] border-t border-slate-800 flex justify-between items-center gap-2 flex-wrap">
+            <div className={`p-4 border-t flex justify-between items-center gap-2 flex-wrap ${
+              darkMode ? 'bg-[#0a1120] border-slate-800' : 'bg-slate-50 border-slate-200'
+            }`}>
               <button
                 type="button"
                 onClick={() => setAssessmentApp(null)}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-colors"
+                className={`px-4 py-2 font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                  darkMode ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'
+                }`}
               >
                 Cancel
               </button>
@@ -1131,7 +1165,9 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                         setAssessmentApp(null);
                         setTimeout(fetchAppointments, 500);
                       }}
-                      className="px-4 py-2 bg-rose-950/70 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-bold text-xs rounded-xl transition-colors"
+                      className={`px-4 py-2 border font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                        darkMode ? 'bg-rose-950/70 hover:bg-rose-900 border-rose-700/60 text-rose-300' : 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-700'
+                      }`}
                     >
                       ❌ Unqualified
                     </button>
@@ -1162,7 +1198,7 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                         setAssessmentApp(null);
                         setTimeout(fetchAppointments, 500);
                       }}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-colors"
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow-lg transition-colors cursor-pointer"
                     >
                       ✅ Enroll Trainee
                     </button>
@@ -1190,7 +1226,9 @@ export const AdminAppointmentView: React.FC<AdminAppointmentViewProps> = ({
                         setAssessmentApp(null);
                         setTimeout(fetchAppointments, 500);
                       }}
-                      className="px-4 py-2 bg-rose-950/70 hover:bg-rose-900 border border-rose-700/60 text-rose-300 font-bold text-xs rounded-xl transition-colors"
+                      className={`px-4 py-2 border font-bold text-xs rounded-xl transition-colors cursor-pointer ${
+                        darkMode ? 'bg-rose-950/70 hover:bg-rose-900 border-rose-700/60 text-rose-300' : 'bg-rose-50 hover:bg-rose-100 border-rose-300 text-rose-700'
+                      }`}
                     >
                       Reject
                     </button>
